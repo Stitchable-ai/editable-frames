@@ -28,7 +28,8 @@
     "check:assets": "node scripts/assets.mjs verify",
     "pack:assets": "node scripts/assets.mjs pack",
     "check:public": "node scripts/check-public.mjs",
-    "test:beta": "node tests/beta-integration.mjs"
+    "test:beta": "node tests/beta-integration.mjs",
+    "test:render": "node tests/render-regression.mjs"
   },
   "dependencies": {
     "esbuild": "0.25.10",
