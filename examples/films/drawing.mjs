@@ -1,6 +1,6 @@
 export const W=1280,H=720,clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v)),mix=(a,b,t)=>a+(b-a)*t,ease=t=>{t=clamp(t);return t*t*(3-2*t)},out=t=>1-Math.pow(1-clamp(t),3),fract=t=>t-Math.floor(t),rand=n=>fract(Math.sin(n*127.1+311.7)*43758.5453),tau=Math.PI*2;
 export function text(x,s,a,b,size=30,color='#fff',align='left',font='Arial',weight=400){x.fillStyle=color;x.font=`${weight} ${size}px ${font}`;x.textAlign=align;x.fillText(s,a,b)}
-export function rect(x,a,b,w,h,color,r=0){x.fillStyle=color;x.beginPath();x.roundRect(a,b,w,h,r);x.fill()}
+export function rect(x,a,b,w,h,color,r=0){x.fillStyle=color;if(!r){x.fillRect(a,b,w,h);return}x.beginPath();x.roundRect(a,b,w,h,r);x.fill()}
 export function circle(x,a,b,r,color){x.fillStyle=color;x.beginPath();x.arc(a,b,r,0,tau);x.fill()}
 export function line(x,points,color,width=2){x.strokeStyle=color;x.lineWidth=width;x.lineJoin='round';x.lineCap='round';x.beginPath();for(let i=0;i<points.length;i++)x[i?'lineTo':'moveTo'](...points[i]);x.stroke()}
 export function poly(x,points,color,stroke){x.beginPath();for(let i=0;i<points.length;i++)x[i?'lineTo':'moveTo'](...points[i]);x.closePath();x.fillStyle=color;x.fill();if(stroke){x.strokeStyle=stroke;x.lineWidth=1;x.stroke()}}
