@@ -6,8 +6,7 @@ export function evaluateClip(studio,clip,time){
  return {sourceTime,nodes,ports:resolvePorts(studio.templates[clip.template],nodes)};
 }
 export function createCompositor(canvas,{templates,createRenderer,host}){
- // Keep composition on a stable raster path when previews/exports read pixels.
- const ctx=canvas.getContext('2d',{alpha:true,willReadFrequently:true}),renderers=new Map();let chain=Promise.resolve(),generation=0;
+ const ctx=canvas.getContext('2d',{alpha:true}),renderers=new Map();let chain=Promise.resolve(),generation=0;
  const draw=async(studio,time,{selected,timeline=false}={})=>{
   if(!Number.isFinite(time)||time<0)throw Error('Invalid render time');
   const clips=timeline?studio.doc.clips.filter(c=>time>=c.start/HZ&&time<(c.start+c.duration)/HZ):[studio.clip(selected)];
