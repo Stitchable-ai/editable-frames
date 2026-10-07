@@ -23,6 +23,14 @@ No token is committed, embedded in browser code or stored in GitHub Actions. Loc
 
 **No D1, KV, R2, paid AI API or backend service is required.** Curated scenes and edits run in the browser. The full device pack is distributed through GitHub Releases; three credited phone models ship with the website.
 
+## Remaining GitHub permission step
+
+Cloudflare configuration and a manual hosted build are working. Push-triggered builds for this new repository were **not observed** after two verification pushes. The organization's Cloudflare GitHub App uses **selected repositories**, and the CLI request to add this repository returned HTTP 403. Do not treat automatic deployment as verified until the repository grant and a real push build are confirmed.
+
+An organization owner should open [Cloudflare Workers and Pages repository access](https://github.com/organizations/Stitchable-ai/settings/installations/152216409), retain **Only select repositories**, add **Stitchable-ai/editable-frames**, and save. Keep the existing repository selections. This authorizes Cloudflare to receive this repository's push events. The signed-in CLI account has organization-owner membership, but GitHub rejected this installed-app change through its available OAuth authorization; use the normal GitHub settings UI rather than copying credentials or widening token scopes.
+
+After saving, push a normal change to `main` and confirm a new Cloudflare build reports `build_trigger_source: push_event` and the expected commit. All Worker/build/domain settings are already in place. The main Stitchable site's existing push-triggered build was independently verified successfully for its new EditableFrames shortcut.
+
 ## Build and deploy with the new CF CLI
 
 Use Node 22.22.0. From `website/`:
@@ -47,9 +55,9 @@ npx cf deploy --prebuilt
 
 ## CI/CD behavior
 
-GitHub Actions runs **Framework validation**, **Rendering regression** and **Website validation** on pushes and pull requests. It needs no Cloudflare credentials. Cloudflare Builds deploys pushes to `main`, repeating the website checks. Cloudflare does not wait for GitHub Actions; its own command validates the website, while a repository owner can additionally require all three GitHub checks in a main-branch ruleset before merges.
+GitHub Actions runs **Framework validation**, **Rendering regression** and **Website validation** on pushes and pull requests. It needs no Cloudflare credentials. Cloudflare Builds is configured to deploy pushes to `main`, repeating the website checks; the repository permission step above remains to verify automatic triggering. Cloudflare does not wait for GitHub Actions; its own command validates the website, while a repository owner can additionally require all three GitHub checks in a main-branch ruleset before merges.
 
-All paths are watched initially to avoid missing a dependency. Keep the main site's build connection separate. The deployment account already had the organization's GitHub app connection, so no additional installation was needed for this repository.
+All paths are watched initially to avoid missing a dependency. Keep the main site's build connection separate. The deployment account already had the organization's GitHub app installation. This new repository still needs its repository selection confirmed as described above.
 
 ## Launch verification receipt
 
