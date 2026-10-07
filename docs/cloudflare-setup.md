@@ -51,6 +51,10 @@ GitHub Actions runs **Framework validation**, **Rendering regression** and **Web
 
 All paths are watched initially to avoid missing a dependency. Keep the main site's build connection separate. The deployment account already had the organization's GitHub app connection, so no additional installation was needed for this repository.
 
+## Launch verification receipt
+
+The first Cloudflare-hosted build completed successfully on **2026-10-07**: build `0deb1482-1159-4267-83ea-ab63dca9468f`, deployment version `8d225e11-ac5d-4ad7-9994-190ae8286d8c`. It installed Node 22.22.0, cloned the repository, passed the website checks and deployed using `cf deploy --prebuilt`. HTTPS, the live GLB phone swaps and undo/redo were exercised after launch. These are historical verification identifiers; later pushes create new versions.
+
 ## Verification and recovery
 
 Verify `/`, `/genres/device/`, `/guide/`, `/robots.txt`, `/sitemap-index.xml`, a missing-route 404, playback, phone swaps, edits, undo/redo and the main-site iframe. An upload alone does not confirm a launch: check the production URL over HTTPS. Do not create a conflicting manual DNS record for a Worker custom domain.
