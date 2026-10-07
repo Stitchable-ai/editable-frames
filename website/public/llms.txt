@@ -1,0 +1,23 @@
+# EditableFrames
+
+> EditableFrames is an MIT-licensed beta JavaScript framework for code-generated video with optional scene-specific controls, stable anchors, validated edits and reversible history. Built by parent company Stitchable.
+
+The independent browser playground has 12 curated studies using Canvas and Three.js. It saves PNG frames and runtime-specific JSON edit recipes, not video files. Browser edits stay on the device. The local SDK supports MP4 with audio, transparent ProRes 4444 MOV and PNG/WAV sequences for supported clip projects. The hosted studies are not all CLI export templates.
+
+The framework is model-neutral and needs no Stitchable account or model API key. Its CLI and shared SKILL.md can be used by tool-capable agents; host-specific integration needs independent testing. The beta runs trusted local JavaScript, not arbitrary untrusted code. Control schemas do not restrict future renderers or creative source code.
+
+## Authoritative pages
+- [Playground and collection](https://editableframes.stitchable.ai/): 12 interactive code-generated scenes.
+- [Browser guide](https://editableframes.stitchable.ai/guide/): Playback, controls, history and saved settings.
+- [Framework reference](https://editableframes.stitchable.ai/reference/): Controls, agent setup, export scope and current limits.
+- [Credits](https://editableframes.stitchable.ai/credits/): Framework, library, device and HDR licenses.
+- [MIT source](https://github.com/Stitchable-ai/editable-frames): Setup and source code.
+- [Beta contract](https://github.com/Stitchable-ai/editable-frames/blob/main/docs/beta.md): Implemented capabilities and gaps.
+- [Agent setup](https://github.com/Stitchable-ai/editable-frames/blob/main/docs/agents.md): Shared skill and CLI usage.
+- [Stitchable Pro Studio](https://stitchable.ai/studio/): Parent company's broader video-editing product.
+
+## Examples
+- [3D phone product demo](https://editableframes.stitchable.ai/genres/device/): iPhone 17 Pro, iPhone 12 and Pixel 6 swaps, app screens and camera controls.
+- [Scientific U-Net explainer](https://editableframes.stitchable.ai/genres/unet/): Teaching schematic; not neural inference.
+- [Paper animation](https://editableframes.stitchable.ai/genres/paper/): Colors, texture and held-pose timing.
+- [Isometric logistics](https://editableframes.stitchable.ai/genres/warehouse/): Parcel movement and camera framing.

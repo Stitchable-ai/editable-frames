@@ -95,7 +95,7 @@ The included [website](website/) offers **12 editable studies**, including a rea
 
 ![Real-device product demo with editable camera, app screen and phone model](website/public/demos/device.jpg)
 
-Production deployment to **editableframes.stitchable.ai** is configured; domain activation awaits Cloudflare account setup. See the [setup guide](docs/cloudflare-setup.md). The browser playground exports frames and edit recipes; the local SDK provides supported video exports.
+The playground is live at **[editableframes.stitchable.ai](https://editableframes.stitchable.ai/)**. See the [setup guide](docs/cloudflare-setup.md). The browser playground exports frames and edit recipes; the local SDK provides supported video exports.
 
 The canonical package, CLI and agent skill use `editableframes`. The original `editableframe` CLI entry point and saved-project identifiers remain compatible.
 
