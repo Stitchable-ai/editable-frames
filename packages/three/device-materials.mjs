@@ -57,7 +57,7 @@ export function prepareMaterials(root, renderer, asset={}, profiles={}, options=
           if(peak>.8)material.color.multiplyScalar(.7/peak);
           if('specularIntensity'in material){material.specularIntensity=1;material.specularIntensityMap=null;}
         }
-        if(correction)Object.assign(material,correction.values);
+        if(correction&&role==='body')Object.assign(material,correction.values);
       }
       material.needsUpdate=true;
     }

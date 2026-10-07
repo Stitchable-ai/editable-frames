@@ -43,3 +43,10 @@ test('website adds controls to old sessions without losing edits or undo/redo',a
  upgraded.undo();assert.equal(upgraded.doc.clips[0].nodes[0].props.brand,'NORTH');upgraded.redo();assert.equal(upgraded.doc.clips[0].nodes[0].props.brand,'SAVED');
  assert.equal(migrateDeviceSession(upgraded.serialize()),upgraded.serialize());
 });
+
+test('an explicit authored role also takes priority over a reviewed correction',()=>{
+ const root=new T.Group(),body=mesh('Housing',new T.MeshPhysicalMaterial({metalness:0}));body.material.name='Anodized_aluminum';root.add(body);
+ const profiles={phone:{modelSha256:'good',materials:{Anodized_aluminum:{values:{metalness:1}}}}};
+ prepareMaterials(root,renderer,{id:'phone',runtimeSha256:'good'},profiles,{roles:{Housing:'authored'}});
+ assert.equal(body.material.metalness,0);
+});
