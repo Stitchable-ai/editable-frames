@@ -16,18 +16,18 @@
 ## Try media, audio and alpha
 
 ```sh
-node bin/editableframe.mjs init ./my-film --media
-node bin/editableframe.mjs preview ./my-film
-node bin/editableframe.mjs render ./my-film ./film.mp4
-node bin/editableframe.mjs render ./my-film ./overlay.mov
-node bin/editableframe.mjs render ./my-film ./frames --format png --fps 30000/1001
+node bin/editableframes.mjs init ./my-film --media
+node bin/editableframes.mjs preview ./my-film
+node bin/editableframes.mjs render ./my-film ./film.mp4
+node bin/editableframes.mjs render ./my-film ./overlay.mov
+node bin/editableframes.mjs render ./my-film ./frames --format png --fps 30000/1001
 ```
 
 The media starter generates an original MP4 test pattern with a tone using FFmpeg. It is a diagnostic/example, not stock footage or a human avatar. Import your own authorized talking-person video:
 
 ```sh
-node bin/editableframe.mjs asset-add ./my-film presenter ./presenter.mp4
-node bin/editableframe.mjs rebind ./my-film
+node bin/editableframes.mjs asset-add ./my-film presenter ./presenter.mp4
+node bin/editableframes.mjs rebind ./my-film
 ```
 
 Then set the presenter's **Asset ID** control to `presenter`. Source bytes are copied to content-addressed project storage. IDs are immutable: a replacement uses a new ID and a reversible property edit. Rebind archives the previous project/source binding. Copy the complete project directory to move it between machines.

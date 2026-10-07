@@ -1,8 +1,8 @@
-# EditableFrame 0.1.0-beta.1
+# EditableFrames 0.1.0-beta.1
 
 Code the motion. Keep the control.
 
-EditableFrame is an open-source framework for code-generated video with optional per-clip editing panels and reversible edits. Built by [Stitchable](https://stitchable.ai), the parent company behind [Stitchable Pro Studio](https://stitchable.ai).
+EditableFrames is an open-source framework for code-generated video with optional per-clip editing panels and reversible edits. Built by [Stitchable](https://stitchable.ai), the parent company behind [Stitchable Pro Studio](https://stitchable.ai).
 
 This first beta includes:
 

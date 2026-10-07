@@ -1,10 +1,10 @@
-# EditableFrame
+# EditableFrames
 
 **Code the motion. Keep the control.**
 
 Create videos with code. Give every clip its own editing panel. Change a detail without starting over.
 
-EditableFrame is an open-source framework for human and AI video creators. Your code defines the scene; optional, typed controls expose the details worth editing—colors, shapes, cameras, timing, media and more. People and agents use the same reversible edit history.
+EditableFrames is an open-source framework for human and AI video creators. Your code defines the scene; optional, typed controls expose the details worth editing—colors, shapes, cameras, timing, media and more. People and agents use the same reversible edit history.
 
 **Beta 0.1 · MIT framework · Runs locally · Model-neutral**
 
@@ -14,7 +14,7 @@ Built by parent company [Stitchable](https://stitchable.ai). For a complete vide
 
 ## Change the scene. Keep the code.
 
-![A real EditableFrame editing session: tower height and tree count change beside the animated castle, followed by undo and redo.](docs/media/edit-in-motion.gif)
+![A real EditableFrames editing session: tower height and tree count change beside the animated castle, followed by undo and redo.](docs/media/edit-in-motion.gif)
 
 **Watch:** grow the towers → remove the trees → undo twice → redo. The controls beside the scene are generated from that clip’s schema. This is the working film-study editor, captured at explicit source times; its edits can be downloaded. Project previews also save edits to disk.
 
@@ -26,45 +26,45 @@ Actual output from the included studies, effects and device viewer. Click any im
 
 <table>
   <tr>
-    <td align="center" width="33%"><strong>3D castle</strong><br><a href="apps/films/previews/castle.jpg"><img src="apps/films/previews/castle.jpg" width="280" alt="3D castle — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Skeletal dragon</strong><br><a href="apps/films/previews/dragon.jpg"><img src="apps/films/previews/dragon.jpg" width="280" alt="Skeletal dragon — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Underwater railway</strong><br><a href="apps/films/previews/underwater.jpg"><img src="apps/films/previews/underwater.jpg" width="280" alt="Underwater railway — rendered EditableFrame demo"></a></td>
+    <td align="center" width="33%"><strong>3D castle</strong><br><a href="apps/films/previews/castle.jpg"><img src="apps/films/previews/castle.jpg" width="280" alt="3D castle — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Skeletal dragon</strong><br><a href="apps/films/previews/dragon.jpg"><img src="apps/films/previews/dragon.jpg" width="280" alt="Skeletal dragon — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Underwater railway</strong><br><a href="apps/films/previews/underwater.jpg"><img src="apps/films/previews/underwater.jpg" width="280" alt="Underwater railway — rendered EditableFrames demo"></a></td>
   </tr>
   <tr>
-    <td align="center" width="33%"><strong>Scientific explainer</strong><br><a href="apps/films/previews/unet.jpg"><img src="apps/films/previews/unet.jpg" width="280" alt="Scientific explainer — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Grain &amp; sunset</strong><br><a href="apps/films/previews/grain.jpg"><img src="apps/films/previews/grain.jpg" width="280" alt="Grain &amp; sunset — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Isometric logistics</strong><br><a href="apps/films/previews/warehouse.jpg"><img src="apps/films/previews/warehouse.jpg" width="280" alt="Isometric logistics — rendered EditableFrame demo"></a></td>
+    <td align="center" width="33%"><strong>Scientific explainer</strong><br><a href="apps/films/previews/unet.jpg"><img src="apps/films/previews/unet.jpg" width="280" alt="Scientific explainer — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Grain &amp; sunset</strong><br><a href="apps/films/previews/grain.jpg"><img src="apps/films/previews/grain.jpg" width="280" alt="Grain &amp; sunset — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Isometric logistics</strong><br><a href="apps/films/previews/warehouse.jpg"><img src="apps/films/previews/warehouse.jpg" width="280" alt="Isometric logistics — rendered EditableFrames demo"></a></td>
   </tr>
   <tr>
-    <td align="center" width="33%"><strong>Paper stop motion</strong><br><a href="apps/films/previews/paper.jpg"><img src="apps/films/previews/paper.jpg" width="280" alt="Paper stop motion — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Storybook collage</strong><br><a href="apps/films/previews/storybook.jpg"><img src="apps/films/previews/storybook.jpg" width="280" alt="Storybook collage — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Ink animation</strong><br><a href="apps/films/previews/ink.jpg"><img src="apps/films/previews/ink.jpg" width="280" alt="Ink animation — rendered EditableFrame demo"></a></td>
+    <td align="center" width="33%"><strong>Paper stop motion</strong><br><a href="apps/films/previews/paper.jpg"><img src="apps/films/previews/paper.jpg" width="280" alt="Paper stop motion — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Storybook collage</strong><br><a href="apps/films/previews/storybook.jpg"><img src="apps/films/previews/storybook.jpg" width="280" alt="Storybook collage — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Ink animation</strong><br><a href="apps/films/previews/ink.jpg"><img src="apps/films/previews/ink.jpg" width="280" alt="Ink animation — rendered EditableFrames demo"></a></td>
   </tr>
   <tr>
-    <td align="center" width="33%"><strong>Kinetic showreel</strong><br><a href="apps/films/previews/showreel.jpg"><img src="apps/films/previews/showreel.jpg" width="280" alt="Kinetic showreel — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Product evolution</strong><br><a href="apps/films/previews/evolution.jpg"><img src="apps/films/previews/evolution.jpg" width="280" alt="Product evolution — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Aurora glow</strong><br><a href="apps/effects/previews/look.aurora.jpg"><img src="apps/effects/previews/look.aurora.jpg" width="280" alt="Aurora glow — rendered EditableFrame demo"></a></td>
+    <td align="center" width="33%"><strong>Kinetic showreel</strong><br><a href="apps/films/previews/showreel.jpg"><img src="apps/films/previews/showreel.jpg" width="280" alt="Kinetic showreel — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Product evolution</strong><br><a href="apps/films/previews/evolution.jpg"><img src="apps/films/previews/evolution.jpg" width="280" alt="Product evolution — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Aurora glow</strong><br><a href="apps/effects/previews/look.aurora.jpg"><img src="apps/effects/previews/look.aurora.jpg" width="280" alt="Aurora glow — rendered EditableFrames demo"></a></td>
   </tr>
   <tr>
-    <td align="center" width="33%"><strong>Motion echo</strong><br><a href="apps/effects/previews/look.echo.jpg"><img src="apps/effects/previews/look.echo.jpg" width="280" alt="Motion echo — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Print texture</strong><br><a href="apps/effects/previews/look.print.jpg"><img src="apps/effects/previews/look.print.jpg" width="280" alt="Print texture — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Graphic reveal</strong><br><a href="apps/effects/previews/look.reveal.jpg"><img src="apps/effects/previews/look.reveal.jpg" width="280" alt="Graphic reveal — rendered EditableFrame demo"></a></td>
+    <td align="center" width="33%"><strong>Motion echo</strong><br><a href="apps/effects/previews/look.echo.jpg"><img src="apps/effects/previews/look.echo.jpg" width="280" alt="Motion echo — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Print texture</strong><br><a href="apps/effects/previews/look.print.jpg"><img src="apps/effects/previews/look.print.jpg" width="280" alt="Print texture — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Graphic reveal</strong><br><a href="apps/effects/previews/look.reveal.jpg"><img src="apps/effects/previews/look.reveal.jpg" width="280" alt="Graphic reveal — rendered EditableFrames demo"></a></td>
   </tr>
   <tr>
-    <td align="center" width="33%"><strong>iPhone product shot</strong><br><a href="assets/devices/previews/craft-iphone-17-pro-max.jpg"><img src="assets/devices/previews/craft-iphone-17-pro-max.jpg" width="280" alt="iPhone product shot — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>MacBook product shot</strong><br><a href="assets/devices/previews/craft-macbook-pro-16.jpg"><img src="assets/devices/previews/craft-macbook-pro-16.jpg" width="280" alt="MacBook product shot — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>iMac product shot</strong><br><a href="assets/devices/previews/datsketch-imac-2021.jpg"><img src="assets/devices/previews/datsketch-imac-2021.jpg" width="280" alt="iMac product shot — rendered EditableFrame demo"></a></td>
+    <td align="center" width="33%"><strong>iPhone product shot</strong><br><a href="assets/devices/previews/craft-iphone-17-pro-max.jpg"><img src="assets/devices/previews/craft-iphone-17-pro-max.jpg" width="280" alt="iPhone product shot — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>MacBook product shot</strong><br><a href="assets/devices/previews/craft-macbook-pro-16.jpg"><img src="assets/devices/previews/craft-macbook-pro-16.jpg" width="280" alt="MacBook product shot — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>iMac product shot</strong><br><a href="assets/devices/previews/datsketch-imac-2021.jpg"><img src="assets/devices/previews/datsketch-imac-2021.jpg" width="280" alt="iMac product shot — rendered EditableFrames demo"></a></td>
   </tr>
   <tr>
-    <td align="center" width="33%"><strong>TV product shot</strong><br><a href="assets/devices/previews/animimo-modern-tv.jpg"><img src="assets/devices/previews/animimo-modern-tv.jpg" width="280" alt="TV product shot — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>iPad product shot</strong><br><a href="assets/devices/previews/cody-ipad-air.jpg"><img src="assets/devices/previews/cody-ipad-air.jpg" width="280" alt="iPad product shot — rendered EditableFrame demo"></a></td>
-    <td align="center" width="33%"><strong>Ink effect</strong><br><a href="apps/effects/previews/look.ink.jpg"><img src="apps/effects/previews/look.ink.jpg" width="280" alt="Ink effect — rendered EditableFrame demo"></a></td>
+    <td align="center" width="33%"><strong>TV product shot</strong><br><a href="assets/devices/previews/animimo-modern-tv.jpg"><img src="assets/devices/previews/animimo-modern-tv.jpg" width="280" alt="TV product shot — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>iPad product shot</strong><br><a href="assets/devices/previews/cody-ipad-air.jpg"><img src="assets/devices/previews/cody-ipad-air.jpg" width="280" alt="iPad product shot — rendered EditableFrames demo"></a></td>
+    <td align="center" width="33%"><strong>Ink effect</strong><br><a href="apps/effects/previews/look.ink.jpg"><img src="apps/effects/previews/look.ink.jpg" width="280" alt="Ink effect — rendered EditableFrames demo"></a></td>
   </tr>
 </table>
 
 These are original code-built studies and previews, not copies of other creators’ videos. Device models retain their creators’ licenses and [credits](assets/devices/ATTRIBUTIONS.txt). The scientific scene is a teaching schematic, not a running neural network. Studies demonstrate creative range; they are not all packaged as interchangeable CLI export templates yet.
 
-## Why EditableFrame?
+## Why EditableFrames?
 
 - **Keep creative freedom.** Use Canvas, SVG, Three.js, shaders or future libraries. Controls describe what can be edited; they do not restrict what code can draw.
 - **Give each clip the right controls.** Expose a camera for a 3D scene, colors for a title, or media timing for an embedded speaker. Panels support conditional fields, presets and numeric macros.
@@ -95,17 +95,19 @@ The included [website](website/) offers **12 editable studies**, including a rea
 
 ![Real-device product demo with editable camera, app screen and phone model](website/public/demos/device.jpg)
 
-Production deployment to **editableframe.stitchable.ai** is configured; domain activation awaits Cloudflare account setup. See the [setup guide](docs/cloudflare-setup.md). The browser playground exports frames and edit recipes; the local SDK provides supported video exports.
+Production deployment to **editableframes.stitchable.ai** is configured; domain activation awaits Cloudflare account setup. See the [setup guide](docs/cloudflare-setup.md). The browser playground exports frames and edit recipes; the local SDK provides supported video exports.
+
+The canonical package, CLI and agent skill use `editableframes`. The original `editableframe` CLI entry point and saved-project identifiers remain compatible.
 
 ## Make your own clip
 
 ```sh
-node bin/editableframe.mjs init /path/to/my-clip
-node bin/editableframe.mjs inspect /path/to/my-clip
-node bin/editableframe.mjs preview /path/to/my-clip
+node bin/editableframes.mjs init /path/to/my-clip
+node bin/editableframes.mjs inspect /path/to/my-clip
+node bin/editableframes.mjs preview /path/to/my-clip
 ```
 
-Edit `clip.mjs` to define the visual. `template.nodes` and `template.schemas` expose optional editable anchors. The initial starter exports a Canvas renderer. After editing source, run `node bin/editableframe.mjs rebind /path/to/my-clip`; add `--reset` when adopting a changed schema. Prior project and source snapshots are retained under `.editableframe/`. Other libraries can draw or composite into that canvas; new host adapters can support other output surfaces.
+Edit `clip.mjs` to define the visual. `template.nodes` and `template.schemas` expose optional editable anchors. The initial starter exports a Canvas renderer. After editing source, run `node bin/editableframes.mjs rebind /path/to/my-clip`; add `--reset` when adopting a changed schema. Prior project and source snapshots are retained under `.editableframe/`. Other libraries can draw or composite into that canvas; new host adapters can support other output surfaces.
 
 Use the exact IDs and revision from `inspect` in a proposal:
 
@@ -124,9 +126,9 @@ Use the exact IDs and revision from `inspect` in a proposal:
 ```
 
 ```sh
-node bin/editableframe.mjs apply /path/to/my-clip proposal.json
-node bin/editableframe.mjs undo /path/to/my-clip
-node bin/editableframe.mjs redo /path/to/my-clip
+node bin/editableframes.mjs apply /path/to/my-clip proposal.json
+node bin/editableframes.mjs undo /path/to/my-clip
+node bin/editableframes.mjs redo /path/to/my-clip
 ```
 
 The CLI and project preview share atomic disk writes, stale-revision checks and saved history. Preview edits persist immediately; **Download snapshot** makes a portable copy. Standalone film studies without a project server still download their edits.
@@ -137,20 +139,20 @@ Install FFmpeg on your system, then:
 
 ```sh
 npx playwright install chromium
-node bin/editableframe.mjs render /path/to/my-clip output.mp4
+node bin/editableframes.mjs render /path/to/my-clip output.mp4
 ```
 
 The beta exporter produces H.264 MP4 with embedded-port audio, transparent ProRes 4444 MOV, or RGBA PNG sequences with WAV audio. It records the source binding, project revision, asset hashes and rational frame clock. Existing outputs are never overwritten. This is a trusted local-code runtime, not an untrusted-code sandbox. See [the beta contract](docs/beta.md) for media imports, transparency, validation and limits.
 
 ```sh
-node bin/editableframe.mjs init ./media-study --media
-node bin/editableframe.mjs preview ./media-study
-node bin/editableframe.mjs render ./media-study ./overlay.mov
+node bin/editableframes.mjs init ./media-study --media
+node bin/editableframes.mjs preview ./media-study
+node bin/editableframes.mjs render ./media-study ./overlay.mov
 ```
 
 ## Use from an agent
 
-Read [agent installation](docs/agents.md). The canonical [SKILL.md](skills/editableframe/SKILL.md) works through the model-neutral CLI. A Claude plugin manifest is included; Codex and Grok can install the same skill into their discovery folders. Nothing is automatically added to your global agent configuration.
+Read [agent installation](docs/agents.md). The canonical [SKILL.md](skills/editableframes/SKILL.md) works through the model-neutral CLI. A Claude plugin manifest is included; Codex and Grok can install the same skill into their discovery folders. Nothing is automatically added to your global agent configuration.
 
 ## Open devices
 

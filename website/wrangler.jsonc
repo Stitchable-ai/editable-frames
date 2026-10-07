@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "editableframe-site",
+  "name": "editableframes-site",
   "compatibility_date": "2026-07-11",
   "assets": {"directory": "./dist", "html_handling": "auto-trailing-slash", "not_found_handling": "404-page"},
-  "routes": [{"pattern": "editableframe.stitchable.ai", "custom_domain": true}]
+  "routes": [{"pattern": "editableframes.stitchable.ai", "custom_domain": true}]
 }

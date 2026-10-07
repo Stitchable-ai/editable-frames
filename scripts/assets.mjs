@@ -10,7 +10,7 @@ export async function pack(){
  await verify({all:true});const files={};
  async function walk(dir){for(const e of await fs.readdir(path.join(root,dir),{withFileTypes:true})){const rel=dir+'/'+e.name;if(e.isDirectory())await walk(rel);else files[rel]=new Uint8Array(await fs.readFile(path.join(root,rel)))}}
  await walk('assets/devices');await walk('assets/environments');await walk('licenses');
- const bytes=zipSync(files,{level:1}),dir=path.join(root,'dist');await fs.mkdir(dir,{recursive:true});const name='editableframe-devices-v1.zip';await fs.writeFile(path.join(dir,name),bytes);const receipt={file:name,sha256:digest(bytes),bytes:bytes.length,models:55};await fs.writeFile(path.join(dir,name+'.json'),JSON.stringify(receipt,null,2));await fs.writeFile(path.join(dir,'SHA256SUMS'),receipt.sha256+'  '+name+'\n');return receipt;
+ const bytes=zipSync(files,{level:1}),dir=path.join(root,'dist');await fs.mkdir(dir,{recursive:true});const name='editableframes-devices-v1.zip';await fs.writeFile(path.join(dir,name),bytes);const receipt={file:name,sha256:digest(bytes),bytes:bytes.length,models:55};await fs.writeFile(path.join(dir,name+'.json'),JSON.stringify(receipt,null,2));await fs.writeFile(path.join(dir,'SHA256SUMS'),receipt.sha256+'  '+name+'\n');return receipt;
 }
 export async function installPack(file){
  // Only known model paths and pinned bytes enter the checkout. Archive code is never executed.

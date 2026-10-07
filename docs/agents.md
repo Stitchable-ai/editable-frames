@@ -4,16 +4,16 @@ The common interface is a portable SKILL.md plus local CLI, not a model API. The
 
 ## Claude Code
 
-The repository is a plugin root with `.claude-plugin/plugin.json` and `skills/editableframe/SKILL.md`:
+The repository is a plugin root with `.claude-plugin/plugin.json` and `skills/editableframes/SKILL.md`:
 
 ```sh
-claude --plugin-dir /path/to/editableframe
+claude --plugin-dir /path/to/editable-frames
 ```
 
 The skill is available through the plugin's skill namespace. Alternatively install only the skill:
 
 ```sh
-node bin/editableframe.mjs install-skill claude ~/.claude/skills/editableframe
+node bin/editableframes.mjs install-skill claude ~/.claude/skills/editableframes
 ```
 
 ## Codex
@@ -21,15 +21,15 @@ node bin/editableframe.mjs install-skill claude ~/.claude/skills/editableframe
 Install the skill into a discovery directory:
 
 ```sh
-node bin/editableframe.mjs install-skill codex ~/.agents/skills/editableframe
+node bin/editableframes.mjs install-skill codex ~/.agents/skills/editableframes
 ```
 
-Then invoke `$editableframe` in Codex. The skill includes OpenAI UI metadata. This release uses the skill route, not a claimed native Codex marketplace integration.
+Then invoke `$editableframes` in Codex. The skill includes OpenAI UI metadata. This release uses the skill route, not a claimed native Codex marketplace integration.
 
 ## Grok Build
 
 ```sh
-node bin/editableframe.mjs install-skill grok ~/.grok/skills/editableframe
+node bin/editableframes.mjs install-skill grok ~/.grok/skills/editableframes
 ```
 
 Grok documents SKILL.md discovery and Claude plugin compatibility. The portable skill is the direct supported packaging route here. A consumer needs file/command execution tools; simply pasting the skill into a text-only chatbot does not grant execution.

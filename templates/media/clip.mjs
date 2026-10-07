@@ -5,7 +5,7 @@ export const template={id:'media-explainer',title:'Signals / editable media stud
 export function createRenderer(canvas){canvas.width=960;canvas.height=540;const c=canvas.getContext('2d',{alpha:true});return {async render({time,nodes,ports,host}){
  const p=nodes.find(n=>n.id==='design').props,m=nodes.find(n=>n.id==='presenter').props;c.clearRect(0,0,960,540);
  if(!p.transparent){c.fillStyle='#12252d';c.fillRect(0,0,960,540)}
- c.fillStyle='#18333fe6';c.beginPath();c.roundRect(32,32,896,476,28);c.fill();c.fillStyle=p.accent;c.font='12px sans-serif';c.fillText('EDITABLEFRAME  /  VIDEO + AUDIO + ALPHA',64, 70);c.fillStyle='#f3f7ee';c.font='bold 32px sans-serif';c.fillText(p.headline,64,124);
+ c.fillStyle='#18333fe6';c.beginPath();c.roundRect(32,32,896,476,28);c.fill();c.fillStyle=p.accent;c.font='12px sans-serif';c.fillText('EDITABLEFRAMES  /  VIDEO + AUDIO + ALPHA',64, 70);c.fillStyle='#f3f7ee';c.font='bold 32px sans-serif';c.fillText(p.headline,64,124);
  c.strokeStyle='#365461';c.lineWidth=1;for(let i=0;i<4;i++){c.beginPath();c.moveTo(64,210+i*65);c.lineTo(570,210+i*65);c.stroke()}
  c.strokeStyle=p.accent;c.lineWidth=4;c.beginPath();for(let i=0;i<110;i++){const x=64+i*4.6,y=385-i*1.6-Math.sin(i*.16-time*1.7)*28;i?c.lineTo(x,y):c.moveTo(x,y)}c.stroke();
  const frame=await host.portFrame(ports.presenter,time);if(frame){c.save();c.beginPath();c.arc(744,296,m.size,0,Math.PI*2);c.clip();c.drawImage(frame,744-m.size,296-m.size,m.size*2,m.size*2);c.restore()}

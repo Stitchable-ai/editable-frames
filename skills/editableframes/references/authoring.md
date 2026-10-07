@@ -1,6 +1,6 @@
 # Authoring contract
 
-Run the skill's `scripts/editableframe.mjs` through Node. Commands: `init DIR`, `inspect DIR`, `apply DIR proposal.json`, `undo DIR`, `redo DIR`, `preview DIR [PORT]`, `render DIR output.mp4 [frame-count]`, `studio`.
+Run the skill's `scripts/editableframes.mjs` through Node. Commands: `init DIR`, `inspect DIR`, `apply DIR proposal.json`, `undo DIR`, `redo DIR`, `preview DIR [PORT]`, `render DIR output.mp4 [frame-count]`, `studio`.
 
 `clip.mjs` exports a `template` with id, title, duration in seconds, nodes, and schemas, plus `createRenderer(canvas)`. The renderer supplies `render({time,nodes,clip,template})` and may return a promise. It can draw Canvas, composite SVG or use another rendering library. Copy pixels onto the supplied canvas for the initial PNG/MP4 exporter. A DOM-only renderer needs a separate capture adapter; it is not implicitly supported by this exporter. Keep data assets relative to the project root. The module can load in Node (metadata inspection) and browser (drawing), so defer DOM access until createRenderer/render.
 

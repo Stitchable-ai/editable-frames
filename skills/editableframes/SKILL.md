@@ -1,13 +1,13 @@
 ---
-name: editableframe
-description: Create and refine code-generated video clips with clip-specific controls, reproducible frame rendering, and reversible edit history. Use for motion graphics, explainers, product demos, device mockups, or targeted edits to an EditableFrame clip.
+name: editableframes
+description: Create and refine code-generated video clips with clip-specific controls, reproducible frame rendering, and reversible edit history. Use for motion graphics, explainers, product demos, device mockups, or targeted edits to an EditableFrames clip.
 ---
 
-# EditableFrame
+# EditableFrames
 
 Code owns the picture. Optional typed controls make details addressable; do not confine a new visual idea to the existing examples or a fixed JSON scene language.
 
-Use `node <this-skill-directory>/scripts/editableframe.mjs help` to locate the installed CLI. It needs an EditableFrame checkout with `npm ci`. There is no hosted model service or API key requirement. Execute only source code trusted for the user's task.
+Use `node <this-skill-directory>/scripts/editableframes.mjs help` to locate the installed CLI. It needs an EditableFrames checkout with `npm ci`. There is no hosted model service or API key requirement. Execute only source code trusted for the user's task.
 
 For a new clip, run `init <empty-output-folder>`. Edit its `clip.mjs` to implement the requested art and animation. Export `template` and `createRenderer(canvas)` as in the starter. Add stable anchor IDs and typed schemas for meaningful controllables such as camera, materials, typography, timing or screen content. Rendering receives explicit time; avoid wall-clock motion and unseeded randomness. Source changes invalidate the saved renderer binding: run `rebind <clip-folder>` for a compatible schema change, or `rebind <clip-folder> --reset` to use new defaults when the schema changes. Rebinding archives the prior project and snapshots the new code. Property edits do not need source regeneration.
 

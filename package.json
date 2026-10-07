@@ -1,5 +1,5 @@
 {
-  "name": "editableframe",
+  "name": "editableframes",
   "version": "0.1.0-beta.1",
   "description": "Code the motion. Keep the control. Renderer-independent editable video clips for people and agents.",
   "type": "module",
@@ -9,6 +9,7 @@
     "node": ">=22"
   },
   "bin": {
+    "editableframes": "bin/editableframes.mjs",
     "editableframe": "bin/editableframe.mjs"
   },
   "exports": {
@@ -21,7 +22,7 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
-    "dev": "node bin/editableframe.mjs studio",
+    "dev": "node bin/editableframes.mjs studio",
     "test": "node --test tests/*.test.mjs",
     "test:browser": "node tests/browser.mjs",
     "check:assets": "node scripts/assets.mjs verify",
@@ -41,7 +42,7 @@
     "type": "git",
     "url": "https://github.com/Stitchable-ai/editable-frames.git"
   },
-  "homepage": "https://editableframe.stitchable.ai",
+  "homepage": "https://editableframes.stitchable.ai",
   "bugs": {
     "url": "https://github.com/Stitchable-ai/editable-frames/issues"
   }

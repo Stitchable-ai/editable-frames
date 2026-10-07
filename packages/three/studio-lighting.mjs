@@ -2,7 +2,7 @@ import * as T from 'three';
 import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader.js';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
 
-// Optional Three.js adapter, not a restriction on EditableFrame renderers.
+// Optional Three.js adapter, not a restriction on EditableFrames renderers.
 export const revision = 'editableframe.product-lighting/1';
 export const presets = {
   studio: {preset:'studio', intensity:1, exposure:1, rotation:25, background:'#e8e7e5', corrections:true, legacy:false},

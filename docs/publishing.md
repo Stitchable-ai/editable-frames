@@ -1,4 +1,4 @@
-# Publishing EditableFrame
+# Publishing EditableFrames
 
 The public MIT repository is **[Stitchable-ai/editable-frames](https://github.com/Stitchable-ai/editable-frames)**. Its initial GitHub license commit is retained; the framework and self-contained `website/` are added on top of it. The package remains `private: true` to prevent accidental npm publication.
 
@@ -32,7 +32,7 @@ git remote -v
 git status --short
 git add .
 git diff --cached --stat
-git commit -m "Update EditableFrame"
+git commit -m "Update EditableFrames"
 git push origin main
 ```
 
@@ -43,16 +43,16 @@ Verify `origin` points to `Stitchable-ai/editable-frames` before pushing. On an 
 The founding asset checkout contains all 55 prepared GLBs. A normal Git clone contains five. In the complete checkout, run `npm run check:assets` and `npm run pack:assets`; retain the ZIP, JSON receipt and SHA256SUMS together. Upload them as release attachments, not Git history:
 
 ```sh
-git tag -a v0.1.0-beta.1 -m "EditableFrame 0.1.0-beta.1"
+git tag -a v0.1.0-beta.1 -m "EditableFrames 0.1.0-beta.1"
 git push origin v0.1.0-beta.1
-gh release create v0.1.0-beta.1   --repo Stitchable-ai/editable-frames --verify-tag --prerelease   --title "EditableFrame 0.1.0-beta.1"   --notes-file docs/release-beta.1.md   /path/to/editableframe-devices-v1.zip   /path/to/editableframe-devices-v1.zip.json   /path/to/SHA256SUMS
+gh release create v0.1.0-beta.1   --repo Stitchable-ai/editable-frames --verify-tag --prerelease   --title "EditableFrames 0.1.0-beta.1"   --notes-file docs/release-beta.1.md   /path/to/editable-framess-devices-v1.zip   /path/to/editable-framess-devices-v1.zip.json   /path/to/SHA256SUMS
 ```
 
 These founding-release commands are not repeatable update commands. Check whether the tag/release already exists first; later releases need new version names. Verify the source checks before publishing. The approximately 156 MiB ZIP carries attribution and provenance; the models retain their own licenses. After attachment verification, the public installation URL is:
 
 ```sh
-node bin/editableframe.mjs assets install-pack   https://github.com/Stitchable-ai/editable-frames/releases/download/v0.1.0-beta.1/editableframe-devices-v1.zip
-node bin/editableframe.mjs assets verify
+node bin/editableframes.mjs assets install-pack   https://github.com/Stitchable-ai/editable-frames/releases/download/v0.1.0-beta.1/editableframes-devices-v1.zip
+node bin/editableframes.mjs assets verify
 ```
 
 ## Website and repository settings

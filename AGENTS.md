@@ -1,10 +1,10 @@
-# EditableFrame
+# EditableFrames
 
 Standalone open-source framework for code-generated video clips. No Stitchable runtime, model vendor, account, cloud API or Remotion dependency is required.
 
 Golden rule: new renderers, libraries and arbitrary creative source code must remain possible. Control schemas describe editable handles; they are not the universe of drawable scenes. Add adapters instead of narrowing the core grammar to today's examples.
 
-Read README.md and docs/architecture.md. `npm ci`, `npm run build`, `npm test`, `npm run test:browser`, `npm run test:beta`. Rendering requires Playwright Chromium and FFmpeg. `node bin/editableframe.mjs help` is the agent entrypoint. The shared skill lives in skills/editableframe/SKILL.md.
+Read README.md and docs/architecture.md. `npm ci`, `npm run build`, `npm test`, `npm run test:browser`, `npm run test:beta`. Rendering requires Playwright Chromium and FFmpeg. `node bin/editableframes.mjs help` is the agent entrypoint. The shared skill lives in skills/editableframes/SKILL.md.
 
 Keep source clocks explicit and reproducible. Preserve stable anchor IDs, validate edits atomically, reject stale revisions, and keep history reversible. Saved renderer bindings must change with source dependencies. Don't claim cross-GPU pixel identity.
 

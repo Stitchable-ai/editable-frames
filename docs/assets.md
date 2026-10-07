@@ -7,8 +7,8 @@ A normal Git checkout includes five prepared starter GLBs (about 16 MB): iPhone 
 ## Use the full pack
 
 ```sh
-node bin/editableframe.mjs assets install-pack /path/to/editableframe-devices-v1.zip
-node bin/editableframe.mjs assets verify
+node bin/editableframes.mjs assets install-pack /path/to/editable-framess-devices-v1.zip
+node bin/editableframes.mjs assets verify
 ```
 
 `install-pack` also accepts an HTTPS URL. It accepts only the 55 known model paths and verifies every model's bytes against the pinned catalog before writing. Downloaded source code is never executed. Original upstream download links are included for provenance, but original compressed GLBs may differ from our prepared GLBs and are not interchangeable by hash.
@@ -22,7 +22,7 @@ npm run check:assets
 npm run pack:assets
 ```
 
-This creates `dist/editableframe-devices-v1.zip`, its JSON receipt and `dist/SHA256SUMS`. The pack contains models, credits, source/license evidence, display bindings and environment files. Keep it as a GitHub Release attachment rather than adding all binary history to the main source tree.
+This creates `dist/editableframes-devices-v1.zip`, its JSON receipt and `dist/SHA256SUMS`. The pack contains models, credits, source/license evidence, display bindings and environment files. Keep it as a GitHub Release attachment rather than adding all binary history to the main source tree.
 
 When the owner has created the public GitHub repository and a release, upload those three files through the release UI or `gh release upload`. No repository name, remote or public download URL has been invented, and no upload is performed by this scaffold. **Pushing source alone publishes the five starters and manifest; the complete pack becomes publicly downloadable only after attaching it to a release.**
 

@@ -1,6 +1,6 @@
 # Third-party notices
 
-The MIT license at the root covers original EditableFrame source, not third-party media.
+The MIT license at the root covers original EditableFrames source, not third-party media.
 
 - Three.js: MIT, installed through npm; its notice ships with the dependency.
 - esbuild: MIT. fflate: MIT. Playwright: Apache-2.0 (development/rendering tool).

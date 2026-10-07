@@ -1,4 +1,0 @@
-interface:
-  display_name: "EditableFrame"
-  short_description: "Create editable code videos with tracked changes"
-  default_prompt: "Use $editableframe to create a code-generated clip with editable controls and reversible history."

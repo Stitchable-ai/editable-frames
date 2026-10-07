@@ -1,11 +1,11 @@
 # Cloudflare setup and handoff
 
-The source repository is [Stitchable-ai/editable-frames](https://github.com/Stitchable-ai/editable-frames). Its self-contained `website/` directory builds the interactive site at **editableframe.stitchable.ai**. The framework and website have separate dependency locks. The main Stitchable website stays in `Stitchable-ai/st-site`.
+The source repository is [Stitchable-ai/editable-frames](https://github.com/Stitchable-ai/editable-frames). Its self-contained `website/` directory builds the interactive site at **editableframes.stitchable.ai**. The framework and website have separate dependency locks. The main Stitchable website stays in `Stitchable-ai/st-site`.
 
 ## What you need to create or connect
 
 1. Sign into the **Cloudflare account containing the active `stitchable.ai` DNS zone**. Confirm that zone shows Active. You do not need to create another zone for the subdomain. If another account owns the zone, use that account or grant the appropriate access before deploying.
-2. Under **Workers & Pages**, create a Worker named **`editableframe-site`**, or reuse that exact Worker if it already exists in this account. Connect its Builds settings to **`Stitchable-ai/editable-frames`**. Authorize the Cloudflare GitHub app for this organization/repository; an organization owner may need to approve it.
+2. Under **Workers & Pages**, create a Worker named **`editableframes-site`**, or reuse that exact Worker if it already exists in this account. Connect its Builds settings to **`Stitchable-ai/editable-frames`**. Authorize the Cloudflare GitHub app for this organization/repository; an organization owner may need to approve it.
 3. Enter the settings below. Use Cloudflare's managed build token when offered. No Cloudflare secret needs to be pasted into chat or stored in GitHub Actions for this setup.
 
 | Setting | Value |
@@ -36,7 +36,7 @@ GitHub Actions runs **Framework validation** and **Website validation** on pushe
 
 Initially watch all changes to avoid missing a dependency. Later you may narrow the Worker's build watch paths to `website/*`; all its runtime sources and package files are inside that folder. Keep the main site's build connection separate.
 
-Verify `/`, `/genres/device/`, `/guide/`, `/robots.txt`, `/sitemap-index.xml`, a missing-route 404, and the app embedded at `stitchable.ai`. Confirm the custom-domain Worker matches `editableframe-site`. Do not add a conflicting manual DNS record when using a Worker custom domain; Cloudflare manages its DNS/certificate. If a record already exists, resolve that conflict in the owning account first.
+Verify `/`, `/genres/device/`, `/guide/`, `/robots.txt`, `/sitemap-index.xml`, a missing-route 404, and the app embedded at `stitchable.ai`. Confirm the custom-domain Worker matches `editableframes-site`. Do not add a conflicting manual DNS record when using a Worker custom domain; Cloudflare manages its DNS/certificate. If a record already exists, resolve that conflict in the owning account first.
 
 For recovery, select a known-good version in the Worker's Deployments view, then revert the faulty source through a pull request. Preview deployments can be added later with a separate deploy command and `X-Robots-Tag: noindex`; the initial setup deliberately documents production only.
 
