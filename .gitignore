@@ -19,3 +19,5 @@ website/.wrangler/
 website/audit/
 website/.env*
 website/.dev.vars*
+
+website/.cloudflare/

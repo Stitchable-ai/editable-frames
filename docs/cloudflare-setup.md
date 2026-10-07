@@ -1,43 +1,60 @@
-# Cloudflare setup and handoff
+# Cloudflare deployment and CI/CD
 
-The source repository is [Stitchable-ai/editable-frames](https://github.com/Stitchable-ai/editable-frames). Its self-contained `website/` directory builds the interactive site at **editableframes.stitchable.ai**. The framework and website have separate dependency locks. The main Stitchable website stays in `Stitchable-ai/st-site`.
+The source is [Stitchable-ai/editable-frames](https://github.com/Stitchable-ai/editable-frames). Its self-contained `website/` directory serves **[editableframes.stitchable.ai](https://editableframes.stitchable.ai/)**. The framework and website have separate dependency locks. The main Stitchable website stays in `Stitchable-ai/st-site`.
 
-## What you need to create or connect
+## Configured deployment
 
-1. Sign into the **Cloudflare account containing the active `stitchable.ai` DNS zone**. Confirm that zone shows Active. You do not need to create another zone for the subdomain. If another account owns the zone, use that account or grant the appropriate access before deploying.
-2. Under **Workers & Pages**, create a Worker named **`editableframes-site`**, or reuse that exact Worker if it already exists in this account. Connect its Builds settings to **`Stitchable-ai/editable-frames`**. Authorize the Cloudflare GitHub app for this organization/repository; an organization owner may need to approve it.
-3. Enter the settings below. Use Cloudflare's managed build token when offered. No Cloudflare secret needs to be pasted into chat or stored in GitHub Actions for this setup.
+On 2026-10-07 the site was deployed to the account owning the active `stitchable.ai` zone. Cloudflare manages the subdomain DNS and HTTPS certificate through the `editableframes-site` Worker's custom domain. The Cloudflare GitHub connection watches `Stitchable-ai/editable-frames`.
 
 | Setting | Value |
 | --- | --- |
+| Worker | `editableframes-site` |
 | Production branch | `main` |
-| Root directory | **`website`** |
+| Root directory | `website` |
 | Build command | `npm ci && npm run ci` |
 | Deploy command | `npm run deploy` |
 | Preview/non-production builds | Disabled initially |
 | Build variable `NODE_VERSION` | `22.22.0` |
 | Build variable `SKIP_DEPENDENCY_INSTALL` | `1` |
+| Build variable `CF_SEND_TELEMETRY` | `false` |
+| Deployment credentials | Cloudflare-managed Workers Builds token |
 
-These variables configure the build, not the running site. Explicit installation uses `website/package-lock.json`. `npm run ci` checks Astro, bundles the scene runtime, builds static HTML and performs a Wrangler deployment dry run. The deploy command reads **`website/wrangler.jsonc`**, uploads `website/dist`, and attaches the declared custom domain. This is a Workers static-assets deployment, not a Pages output-directory configuration.
+No token is committed, embedded in browser code or stored in GitHub Actions. Local account access uses an explicitly supplied token or the CLI's normal sign-in. Keep credential files private and pass credentials through process environment variables without logging them.
 
-**No D1, KV, R2, database, paid AI API or backend service is required for this website.** Curated scenes and edits run in the browser. The full device pack is distributed through GitHub Releases; three phone models used by the playground ship with the website.
+**No D1, KV, R2, paid AI API or backend service is required.** Curated scenes and edits run in the browser. The full device pack is distributed through GitHub Releases; three credited phone models ship with the website.
 
-## Then let the assistant take over
+## Build and deploy with the new CF CLI
 
-After the Worker and GitHub connection exist, tell the assistant the account name and that the connection is ready. Keep that account open in your browser. If deploying locally, sign in through the normal `npx wrangler login` flow in `website/`; do not share or extract saved credentials.
+Use Node 22.22.0. From `website/`:
 
-The remaining work is to verify the configured build, trigger deployment, check the deployed commit, confirm the custom domain and HTTPS, exercise playback/phone swaps/undo/redo, verify SEO files and the main-site embedded playground, and publish the already-prepared Stitchable shortcut when its own site is ready. Access to the relevant Cloudflare dashboard or authorized Wrangler session is necessary for those actions.
+```sh
+npm ci
+npm run ci
+npm run deploy
+```
 
-The earlier upload reached a Worker but custom-domain attachment failed because the login could not access the `stitchable.ai` zone. An upload alone is not a live launch. The requested production URL should be treated as pending until DNS and HTTPS are verified.
+`npm run ci` checks Astro, bundles the scene runtime, builds static HTML, packages Cloudflare Build Output and performs a deployment dry run. `npm run deploy` runs **`cf deploy --prebuilt`** using that checked output. A dry run does not require deployment credentials; a real deployment requires access to the configured account.
+
+The pinned CLI is `cf@1.0.0-beta.13`. Astro 6+ is not supported by its direct framework builder during beta. We retain Astro 7 and use `wrangler@4.148.0` solely as the static Build Output adapter:
+
+```sh
+npm run build
+npx wrangler build --experimental-new-config --experimental-cf-build-output
+npx cf deploy --prebuilt
+```
+
+`cloudflare.config.ts` declares the account, Worker, custom domain and asset routing. `wrangler.config.ts` points the adapter at `dist/`. Generated `.cloudflare/` output is ignored. This uses Workers static assets, not Pages. Avoid invoking plain `cf build` or plain `cf deploy` until Cloudflare supports this Astro version: those commands autodetect Astro and do not run our adapter. A Docker-daemon diagnostic from the adapter's container detection does not imply this static website requires Docker; the deployment dry run validates the generated output.
 
 ## CI/CD behavior
 
-GitHub Actions runs **Framework validation**, **Rendering regression** and **Website validation** on pushes and pull requests. It needs no Cloudflare credentials. Cloudflare Builds deploys pushes to `main`, repeating the website checks before deployment. Once all three GitHub checks have run successfully, a repository owner can enable a main-branch ruleset requiring pull requests and all three checks. Cloudflare does not wait for GitHub Actions; branch rules prevent ordinary unvalidated merges, and its own build command checks the website again.
+GitHub Actions runs **Framework validation**, **Rendering regression** and **Website validation** on pushes and pull requests. It needs no Cloudflare credentials. Cloudflare Builds deploys pushes to `main`, repeating the website checks. Cloudflare does not wait for GitHub Actions; its own command validates the website, while a repository owner can additionally require all three GitHub checks in a main-branch ruleset before merges.
 
-Initially watch all changes to avoid missing a dependency. Later you may narrow the Worker's build watch paths to `website/*`; all its runtime sources and package files are inside that folder. Keep the main site's build connection separate.
+All paths are watched initially to avoid missing a dependency. Keep the main site's build connection separate. The deployment account already had the organization's GitHub app connection, so no additional installation was needed for this repository.
 
-Verify `/`, `/genres/device/`, `/guide/`, `/robots.txt`, `/sitemap-index.xml`, a missing-route 404, and the app embedded at `stitchable.ai`. Confirm the custom-domain Worker matches `editableframes-site`. Do not add a conflicting manual DNS record when using a Worker custom domain; Cloudflare manages its DNS/certificate. If a record already exists, resolve that conflict in the owning account first.
+## Verification and recovery
 
-For recovery, select a known-good version in the Worker's Deployments view, then revert the faulty source through a pull request. Preview deployments can be added later with a separate deploy command and `X-Robots-Tag: noindex`; the initial setup deliberately documents production only.
+Verify `/`, `/genres/device/`, `/guide/`, `/robots.txt`, `/sitemap-index.xml`, a missing-route 404, playback, phone swaps, edits, undo/redo and the main-site iframe. An upload alone does not confirm a launch: check the production URL over HTTPS. Do not create a conflicting manual DNS record for a Worker custom domain.
 
-Official references, checked 2026-10-07: [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), [build image variables](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/), [Worker custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/).
+Inspect build/deployment status in **Workers & Pages → editableframes-site → Builds / Deployments**. A failed build leaves the previous deployment serving. For recovery, select a known-good version in Deployments, then revert the faulty source through a pull request. To disconnect automatic deployment, disable auto builds in Builds settings; do not delete the production Worker. Preview deployments can be added later with a separate command and `X-Robots-Tag: noindex`.
+
+Official references: [CF CI usage](https://developers.cloudflare.com/cf/ci/), [CF beta framework limitations](https://developers.cloudflare.com/cf/get-started/first-worker/), [Wrangler migration](https://developers.cloudflare.com/cf/wrangler/migrate/), [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), [Builds API](https://developers.cloudflare.com/workers/ci-cd/builds/api-reference/), [custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/).

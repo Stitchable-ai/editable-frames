@@ -17,7 +17,7 @@ The default preview is http://127.0.0.1:8794. To validate a production build:
 npm run ci
 ```
 
-That command checks types, bundles the renderers, builds HTML and runs a Cloudflare dry run. `npm run deploy` publishes through the local Wrangler configuration when the correct account is authorized. Follow the [Cloudflare setup and handoff guide](../docs/cloudflare-setup.md) first; a successful upload alone does not confirm the custom domain.
+That command checks types, bundles the renderers, builds HTML and runs a Cloudflare dry run. `npm run deploy` publishes through the new Cloudflare CLI using prebuilt output when the correct account is authorized. `npm run build:cloudflare` packages the static Astro output through Wrangler’s Build Output Specification adapter; `cf deploy --prebuilt` then deploys it. This preserves Astro 7 while the CF beta’s direct Astro builder lacks support. Follow the [Cloudflare setup and handoff guide](../docs/cloudflare-setup.md) first; a successful upload alone does not confirm the custom domain.
 
 ## How it works
 
