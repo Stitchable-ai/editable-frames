@@ -1,0 +1,47 @@
+{
+  "uid": "fddc4e68cc6c498b88b19af1a05bd420",
+  "name": "CyberPunk Laptop Concept Design",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-fddc4e68cc6c498b88b19af1a05bd420",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "5ce8867c4bb4416fa849ca7a50b8c497",
+    "username": "berkgedik",
+    "displayName": "Berk Gedik",
+    "profileUrl": "https://sketchfab.com/berkgedik",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/631eea2916204d6799108cc5580b9a46",
+      "images": [
+        {
+          "size": 2407,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/631eea2916204d6799108cc5580b9a46/641782229b254602a663e1dc92f499dd.png",
+          "height": 32
+        },
+        {
+          "size": 4803,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/631eea2916204d6799108cc5580b9a46/5842d0942ee04ed4b2d32c23ed6a7f44.png",
+          "height": 48
+        },
+        {
+          "size": 14538,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/631eea2916204d6799108cc5580b9a46/c1d74ee237fb489ea41e8c5b65d8b9f5.png",
+          "height": 90
+        },
+        {
+          "size": 17526,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/631eea2916204d6799108cc5580b9a46/aea99996a0164f0494038a54c3270365.png",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/5ce8867c4bb4416fa849ca7a50b8c497"
+  },
+  "publishedAt": "2020-09-30T12:03:07.522338"
+}

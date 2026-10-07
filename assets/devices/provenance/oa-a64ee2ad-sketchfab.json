@@ -1,0 +1,47 @@
+{
+  "uid": "a64ee2ad6d664196b339972119732c23",
+  "name": "Alienware 18 Gaming Laptop",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-a64ee2ad6d664196b339972119732c23",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "83382125ae65434cab541af2ed626ac4",
+    "username": "dennish2010",
+    "displayName": "3DHaupt",
+    "profileUrl": "https://sketchfab.com/dennish2010",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/550dce884cec49bb9e90987e7353463d",
+      "images": [
+        {
+          "size": 3634,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/550dce884cec49bb9e90987e7353463d/e8a39f0af97144f4a9a2bc537d5a866d.jpeg",
+          "height": 100
+        },
+        {
+          "size": 3180,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/550dce884cec49bb9e90987e7353463d/c7c33c5b0ace4e5e9747ba3ef89544d3.jpeg",
+          "height": 90
+        },
+        {
+          "size": 1340,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/550dce884cec49bb9e90987e7353463d/063ef703f82b4c5796590f6188828449.jpeg",
+          "height": 48
+        },
+        {
+          "size": 850,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/550dce884cec49bb9e90987e7353463d/546d89ba90d341dfa0983131daf77294.jpeg",
+          "height": 32
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/83382125ae65434cab541af2ed626ac4"
+  },
+  "publishedAt": "2015-03-15T01:45:54"
+}

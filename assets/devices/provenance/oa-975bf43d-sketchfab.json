@@ -1,0 +1,47 @@
+{
+  "uid": "975bf43d39fd4440aafa511aa85c4693",
+  "name": "Laptop, notebook",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-975bf43d39fd4440aafa511aa85c4693",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "9649380746584996894bd156e2fede7b",
+    "username": "xeofox",
+    "displayName": "Mikhail Antonov",
+    "profileUrl": "https://sketchfab.com/xeofox",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/9f2c38fd39a64f3d905ef10a6f9c5a33",
+      "images": [
+        {
+          "size": 2799,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/9f2c38fd39a64f3d905ef10a6f9c5a33/30b5a425bac44a58be98eeb087b1fdc0.jpeg",
+          "height": 100
+        },
+        {
+          "size": 2461,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/9f2c38fd39a64f3d905ef10a6f9c5a33/ca332c65aa52430fa8cf21d354b02723.jpeg",
+          "height": 90
+        },
+        {
+          "size": 901,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/9f2c38fd39a64f3d905ef10a6f9c5a33/4e9447a52c674ec0b6316240ba0638b8.jpeg",
+          "height": 48
+        },
+        {
+          "size": 541,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/9f2c38fd39a64f3d905ef10a6f9c5a33/411e07b426414186b8345d8f55f7fb9d.jpeg",
+          "height": 32
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/9649380746584996894bd156e2fede7b"
+  },
+  "publishedAt": "2022-08-15T20:31:42.290076"
+}

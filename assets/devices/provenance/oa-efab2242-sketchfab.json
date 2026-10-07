@@ -1,0 +1,47 @@
+{
+  "uid": "efab224280fd4c3993c808107f7c0b38",
+  "name": "Macbook Pro 13 inch 2020",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-efab224280fd4c3993c808107f7c0b38",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "6233e8b6314e48e2a85fb02fec5c422a",
+    "username": "timblewee",
+    "displayName": "timblewee",
+    "profileUrl": "https://sketchfab.com/timblewee",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/cbec27f6ae5a49e18d69a1d148ba8fdc",
+      "images": [
+        {
+          "size": 830,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/cbec27f6ae5a49e18d69a1d148ba8fdc/e1cffd0e835f4674a08a2d47f74657df.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1341,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/cbec27f6ae5a49e18d69a1d148ba8fdc/5a87f91999264910ad61aeeaba6aac9d.jpeg",
+          "height": 48
+        },
+        {
+          "size": 3027,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/cbec27f6ae5a49e18d69a1d148ba8fdc/0a4662d7583f4c75b4794403e7101754.jpeg",
+          "height": 90
+        },
+        {
+          "size": 3382,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/cbec27f6ae5a49e18d69a1d148ba8fdc/23d2fc166678443bab00de44773e6dfc.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/6233e8b6314e48e2a85fb02fec5c422a"
+  },
+  "publishedAt": "2021-04-02T18:56:19.140505"
+}

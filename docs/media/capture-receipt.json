@@ -1,0 +1,68 @@
+{
+  "frames": 96,
+  "fps": 8,
+  "description": "Actual film editor: raise towers, remove trees, undo twice, redo. Explicit source clock; no invented controls.",
+  "states": [
+    {
+      "frame": 0,
+      "props": {
+        "stone": "#d0ba98",
+        "roof": "#5b6873",
+        "height": 1,
+        "orbit": 0.6,
+        "trees": 36
+      }
+    },
+    {
+      "frame": 1,
+      "props": {
+        "stone": "#d0ba98",
+        "roof": "#5b6873",
+        "height": 1.4,
+        "orbit": 0.6,
+        "trees": 36
+      }
+    },
+    {
+      "frame": 2,
+      "props": {
+        "stone": "#d0ba98",
+        "roof": "#5b6873",
+        "height": 1.4,
+        "orbit": 0.6,
+        "trees": 0
+      }
+    },
+    {
+      "frame": 1,
+      "props": {
+        "stone": "#d0ba98",
+        "roof": "#5b6873",
+        "height": 1.4,
+        "orbit": 0.6,
+        "trees": 36
+      }
+    },
+    {
+      "frame": 0,
+      "props": {
+        "stone": "#d0ba98",
+        "roof": "#5b6873",
+        "height": 1,
+        "orbit": 0.6,
+        "trees": 36
+      }
+    },
+    {
+      "frame": 1,
+      "props": {
+        "stone": "#d0ba98",
+        "roof": "#5b6873",
+        "height": 1.4,
+        "orbit": 0.6,
+        "trees": 36
+      }
+    }
+  ],
+  "errors": []
+}

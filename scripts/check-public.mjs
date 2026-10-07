@@ -1,0 +1,4 @@
+import fs from 'node:fs/promises';import path from 'node:path';import {root} from './build.mjs';
+const problems=[];const skip=new Set(['node_modules','.git','.astro','.wrangler','audit','dist','artifacts','models','previews']);
+async function walk(dir){for(const e of await fs.readdir(dir,{withFileTypes:true})){if(skip.has(e.name)||['bundle.js','runtime-identity.json'].includes(e.name))continue;const p=path.join(dir,e.name);if(e.isDirectory())await walk(p);else if(/\.(mjs|js|json|md|txt|html|yml|yaml)$/.test(p)){const s=await fs.readFile(p,'utf8');if(/\/Users\/|\/private\/tmp\/|sk-ant-|sk-proj-/.test(s)&&!p.endsWith('check-public.mjs'))problems.push(path.relative(root,p));}}}
+await walk(root);if(problems.length)throw Error('Private/machine-specific content: '+problems.join(', '));console.log('Public-source path and credential-pattern checks passed.');

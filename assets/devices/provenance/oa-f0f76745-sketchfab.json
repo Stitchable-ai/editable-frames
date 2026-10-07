@@ -1,0 +1,47 @@
+{
+  "uid": "f0f7674522124f3bbc2d0f898963457e",
+  "name": "Ipad Pro 12.9 (2020)",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-f0f7674522124f3bbc2d0f898963457e",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "e519c5ab00e54e3fa38ac892cdaa4b3f",
+    "username": "cgnoobmaster",
+    "displayName": "Konstantin Koretskyi",
+    "profileUrl": "https://sketchfab.com/cgnoobmaster",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/94bcf1180a384968a8bffe262cd69b9a",
+      "images": [
+        {
+          "size": 2253,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/94bcf1180a384968a8bffe262cd69b9a/6edaeeaf5d9b428da7569f6318294a87.png",
+          "height": 32
+        },
+        {
+          "size": 4588,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/94bcf1180a384968a8bffe262cd69b9a/625491160d4e4341bc0e38593630e226.png",
+          "height": 48
+        },
+        {
+          "size": 14247,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/94bcf1180a384968a8bffe262cd69b9a/14d8239be307457a9a3f9538d6edc8a1.png",
+          "height": 90
+        },
+        {
+          "size": 17170,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/94bcf1180a384968a8bffe262cd69b9a/2c0b38cb865f4ffd804ceaaeab5d1c9c.png",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/e519c5ab00e54e3fa38ac892cdaa4b3f"
+  },
+  "publishedAt": "2020-07-31T18:37:02.979834"
+}

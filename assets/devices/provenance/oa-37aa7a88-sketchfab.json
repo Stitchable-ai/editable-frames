@@ -1,0 +1,47 @@
+{
+  "uid": "37aa7a8851be4f86b0d2be6a22837d4c",
+  "name": "OnePlus 6",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-37aa7a8851be4f86b0d2be6a22837d4c",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "aa84de2fa2da4e6ab793648927e419a4",
+    "username": "Throndronis",
+    "displayName": "Throndronis",
+    "profileUrl": "https://sketchfab.com/Throndronis",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/a6cd307310104aa0a396ab0edc1e5f0f",
+      "images": [
+        {
+          "size": 2368,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/a6cd307310104aa0a396ab0edc1e5f0f/bd5aaf294b1448828d01765c99fd64a5.png",
+          "height": 32
+        },
+        {
+          "size": 4416,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/a6cd307310104aa0a396ab0edc1e5f0f/da221a152a1c4597a87579562bed2dc4.png",
+          "height": 48
+        },
+        {
+          "size": 11835,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/a6cd307310104aa0a396ab0edc1e5f0f/10c4a3ce3f2b4e8cab95cb136cba6e45.png",
+          "height": 90
+        },
+        {
+          "size": 14099,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/a6cd307310104aa0a396ab0edc1e5f0f/be8bebcdba004e25875e1f7b76a4f602.png",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/aa84de2fa2da4e6ab793648927e419a4"
+  },
+  "publishedAt": "2020-08-19T20:31:52.455847"
+}

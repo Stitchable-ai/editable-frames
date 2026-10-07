@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://editableframe.stitchable.ai/sitemap-index.xml

@@ -1,0 +1,47 @@
+{
+  "uid": "ce05a5d98b54400184ab60262dbf7232",
+  "name": "Television (Wall-mounted)",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-ce05a5d98b54400184ab60262dbf7232",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "9ce7b3319acb4f24b2c8c5b99e81d7ce",
+    "username": "AleixoAlonso",
+    "displayName": "AleixoAlonso",
+    "profileUrl": "https://sketchfab.com/AleixoAlonso",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/c88da1d37a3b43f48c652499779510fa",
+      "images": [
+        {
+          "size": 973,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/c88da1d37a3b43f48c652499779510fa/76fd1a86a37a4a61bfe8e9bc823664db.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1267,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/c88da1d37a3b43f48c652499779510fa/12dc367842d94d6598fb530cd26caa19.jpeg",
+          "height": 48
+        },
+        {
+          "size": 2429,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/c88da1d37a3b43f48c652499779510fa/7528b63ad38d4bfda73a64f54044ed9f.jpeg",
+          "height": 90
+        },
+        {
+          "size": 2732,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/c88da1d37a3b43f48c652499779510fa/67e10b38719741df83b57e7ae7a7addb.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/9ce7b3319acb4f24b2c8c5b99e81d7ce"
+  },
+  "publishedAt": "2020-06-15T13:05:53.023978"
+}

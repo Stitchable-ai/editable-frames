@@ -1,0 +1,448 @@
+DEVICE ASSET ATTRIBUTIONS — retrieved 2026-10-06
+55 catalog entries; originals and prepared copies are not counted twice.
+Use the relevant individual credits with your published work. Retain license notices on redistribution.
+Prepared GLBs were repacked; Draco/Meshopt geometry compression was decoded. Original downloads are retained.
+The original model authors retain their credit. This catalog is not an official manufacturer asset pack.
+
+MacBook Pro M3 16 inch
+Creator: jackbaeten
+Source: https://sketchfab.com/3d-models/macbook-pro-m3-16-inch-2024-8e34fc2b303144f78490007d91ff57c4
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: https://github.com/imshaikot/app-preview-craft-skill/blob/main/skills/app-preview-craft/assets/CREDITS.md
+Prepared file: runtime/craft-macbook-pro-16.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iPhone 17 Pro
+Creator: Ranguel
+Source: https://sketchfab.com/3d-models/iphone-17-pro-4541aa8a28324b33a2baaf81d263aaec
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: https://github.com/imshaikot/app-preview-craft-skill/blob/main/skills/app-preview-craft/assets/CREDITS.md
+Prepared file: runtime/craft-iphone-17-pro.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iPhone 17 Pro Max
+Creator: MajdyModels
+Source: https://sketchfab.com/3d-models/iphone-17-pro-max-87fc1df741384124a8ce0226d2b2058d
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: https://github.com/imshaikot/app-preview-craft-skill/blob/main/skills/app-preview-craft/assets/CREDITS.md
+Prepared file: runtime/craft-iphone-17-pro-max.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Samsung Galaxy S25 Ultra
+Creator: mistJS
+Source: https://github.com/blackstorm/appshots
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: https://github.com/blackstorm/appshots#credits
+Prepared file: runtime/appshots-samsung-galaxy-s25-ultra.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iMac 2021
+Creator: DatSketch (https://sketchfab.com/DatSketch)
+Source: https://sketchfab.com/3d-models/imac-2021-304cb06ffb554883a7a642b2b56754c1
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: Embedded asset.extras in original GLB
+Prepared file: runtime/datsketch-imac-2021.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Modern flat-screen TV — photographic textures
+Creator: Animimo Studios
+Source: https://animimostudios.itch.io/free-modern-tv-low-poly-4k-textures
+License: CC0-1.0 — https://creativecommons.org/publicdomain/zero/1.0/
+Evidence: https://animimostudios.itch.io/free-modern-tv-low-poly-4k-textures
+Prepared file: runtime/animimo-modern-tv.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Television (Wall-mounted)
+Creator: AleixoAlonso
+Source: https://sketchfab.com/3d-models/none-ce05a5d98b54400184ab60262dbf7232
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-ce05a5d9-sketchfab.json
+Prepared file: runtime/oa-ce05a5d9.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Monitor
+Creator: Microsoft
+Source: https://sketchfab.com/3d-models/none-d80755755dba4169a9605f591296f53e
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-d8075575-sketchfab.json
+Prepared file: runtime/oa-d8075575.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Google Pixel 6 Pro
+Creator: DatSketch
+Source: https://sketchfab.com/3d-models/none-b9b58ca40c254f8dafd8370869af74fb
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-b9b58ca4-sketchfab.json
+Prepared file: runtime/oa-b9b58ca4.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Samsung Galaxy S21 Ultra
+Creator: DatSketch
+Source: https://sketchfab.com/3d-models/samsung-galaxy-s21-ultra-cd962832be7744efb6b37fe0ee2027e7
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: https://github.com/imshaikot/app-preview-craft-skill/blob/main/skills/app-preview-craft/assets/CREDITS.md
+Prepared file: runtime/craft-galaxy-s21-ultra.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Apple iPhone 13 Pro Max
+Creator: DatSketch
+Source: https://sketchfab.com/3d-models/none-4328dea00e47497dbeac73c556121bc9
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-4328dea0-sketchfab.json
+Prepared file: runtime/oa-4328dea0.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+2021 Macbook Pro 14" (M1 Pro / M1 Max)
+Creator: akshatmittal
+Source: https://sketchfab.com/3d-models/none-f6b0b940fb6a4286b18a674ef32af2d3
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-f6b0b940-sketchfab.json
+Prepared file: runtime/oa-f6b0b940.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Apple MacBook Pro 16 inch 2021
+Creator: jc1245
+Source: https://sketchfab.com/3d-models/none-6a42b31bac064b00a91fbfebec07c852
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-6a42b31b-sketchfab.json
+Prepared file: runtime/oa-6a42b31b.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Gaming Laptop
+Creator: Vivien Deroche
+Source: https://sketchfab.com/3d-models/none-4e72a2078b3c4a75a821ab09830693fe
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-4e72a207-sketchfab.json
+Prepared file: runtime/oa-4e72a207.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Ipad Pro 12.9 (2020)
+Creator: Konstantin Koretskyi
+Source: https://sketchfab.com/3d-models/none-f0f7674522124f3bbc2d0f898963457e
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-f0f76745-sketchfab.json
+Prepared file: runtime/oa-f0f76745.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+IPad Mini 6 2021
+Creator: DatSketch
+Source: https://sketchfab.com/3d-models/none-f363c2b1c74a462588db184bd4fb024e
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-f363c2b1-sketchfab.json
+Prepared file: runtime/oa-f363c2b1.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Alienware 18 Gaming Laptop
+Creator: 3DHaupt
+Source: https://sketchfab.com/3d-models/none-a64ee2ad6d664196b339972119732c23
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-a64ee2ad-sketchfab.json
+Prepared file: runtime/oa-a64ee2ad.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Classic Laptop
+Creator: Arrangemonk
+Source: https://polyhaven.com/a/classic_laptop
+License: CC0-1.0 — https://creativecommons.org/publicdomain/zero/1.0/
+Evidence: https://polyhaven.com/license
+Prepared file: runtime/ph-classic_laptop.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+CyberPunk Laptop Concept Design
+Creator: Berk Gedik
+Source: https://sketchfab.com/3d-models/none-fddc4e68cc6c498b88b19af1a05bd420
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-fddc4e68-sketchfab.json
+Prepared file: runtime/oa-fddc4e68.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Laptop, notebook
+Creator: Mikhail Antonov
+Source: https://sketchfab.com/3d-models/none-975bf43d39fd4440aafa511aa85c4693
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-975bf43d-sketchfab.json
+Prepared file: runtime/oa-975bf43d.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+MacBook Pro (2016)
+Creator: alexreed12345
+Source: https://sketchfab.com/3d-models/none-6f8394877a31475c83b07916862d3293
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-6f839487-sketchfab.json
+Prepared file: runtime/oa-6f839487.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+MacBook Pro — Cody Bennett
+Creator: Cody Bennett
+Source: https://github.com/CodyJasonBennett/device-models
+License: MIT — https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Evidence: https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Prepared file: runtime/cody-macbook-pro.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Macbook Pro 13 inch 2020
+Creator: timblewee
+Source: https://sketchfab.com/3d-models/none-efab224280fd4c3993c808107f7c0b38
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-efab2242-sketchfab.json
+Prepared file: runtime/oa-efab2242.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Curved Monitor
+Creator: Arnau Rocher Alcayde
+Source: https://sketchfab.com/3d-models/none-5aeacd0cc5f649a4b92ce90bca6917e7
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-5aeacd0c-sketchfab.json
+Prepared file: runtime/oa-5aeacd0c.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Monitor
+Creator: re1monsen
+Source: https://sketchfab.com/3d-models/none-6a5b7472024c4920afcce24a073ed4f3
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-6a5b7472-sketchfab.json
+Prepared file: runtime/oa-6a5b7472.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Monitor VI
+Creator: re1monsen
+Source: https://sketchfab.com/3d-models/none-e3b68bc8a54d422bb25e366cd5435426
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-e3b68bc8-sketchfab.json
+Prepared file: runtime/oa-e3b68bc8.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Sci fi Monitor
+Creator: Siamak Tavakoli
+Source: https://sketchfab.com/3d-models/none-37a0fbbf74cd41bdb91c37156954d7c1
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-37a0fbbf-sketchfab.json
+Prepared file: runtime/oa-37a0fbbf.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iMac 2021
+Creator: Cody Bennett
+Source: https://github.com/CodyJasonBennett/device-models
+License: MIT — https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Evidence: https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Prepared file: runtime/cody-imac-2021.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iMac Pro
+Creator: Cody Bennett
+Source: https://github.com/CodyJasonBennett/device-models
+License: MIT — https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Evidence: https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Prepared file: runtime/cody-imac-pro.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Apple iPhone XS Max
+Creator: sriniwasj
+Source: https://sketchfab.com/3d-models/none-08e76b5bd30847f6a23d4748b85ef62b
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-08e76b5b-sketchfab.json
+Prepared file: runtime/oa-08e76b5b.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Google Pixel 5
+Creator: minhazul_ferdous
+Source: https://sketchfab.com/3d-models/none-dae8c347f87d400b82b69a6a33da9ece
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-dae8c347-sketchfab.json
+Prepared file: runtime/oa-dae8c347.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Google Pixel 6
+Creator: Cody Bennett
+Source: https://github.com/CodyJasonBennett/device-models
+License: MIT — https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Evidence: https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Prepared file: runtime/cody-pixel-6.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+IPHONE X LOWPOLY
+Creator: Fred Drabble
+Source: https://sketchfab.com/3d-models/none-3067c70fb7d14bd3b2b03e3246d6052d
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-3067c70f-sketchfab.json
+Prepared file: runtime/oa-3067c70f.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+IPhone 5s
+Creator: Eternal Realm
+Source: https://sketchfab.com/3d-models/none-2a8b3bd5333d4f1899a67d5dca6b24ab
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-2a8b3bd5-sketchfab.json
+Prepared file: runtime/oa-2a8b3bd5.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+One Plus 7 Pro
+Creator: lazercar
+Source: https://sketchfab.com/3d-models/none-6dea856656e04a4b89fef3c2572ee238
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-6dea8566-sketchfab.json
+Prepared file: runtime/oa-6dea8566.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+OnePlus 6
+Creator: Throndronis
+Source: https://sketchfab.com/3d-models/none-37aa7a8851be4f86b0d2be6a22837d4c
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-37aa7a88-sketchfab.json
+Prepared file: runtime/oa-37aa7a88.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Samsung Galaxy S21
+Creator: Waven
+Source: https://sketchfab.com/3d-models/none-62c074055bc0491aaa4752128087fd88
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-62c07405-sketchfab.json
+Prepared file: runtime/oa-62c07405.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Samsung Galaxy Z Flip 3
+Creator: DatSketch
+Source: https://sketchfab.com/3d-models/none-112947cbab7a4f708d0d01adb7d3fa3d
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-112947cb-sketchfab.json
+Prepared file: runtime/oa-112947cb.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iPhone 11
+Creator: Cody Bennett
+Source: https://github.com/CodyJasonBennett/device-models
+License: MIT — https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Evidence: https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Prepared file: runtime/cody-iphone-11.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iPhone 12
+Creator: Cody Bennett
+Source: https://github.com/CodyJasonBennett/device-models
+License: MIT — https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Evidence: https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Prepared file: runtime/cody-iphone-12.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iPhone 12 Pro
+Creator: DatSketch
+Source: https://sketchfab.com/3d-models/iphone-12-pro-05dfc991665e45c68c8b7062136c0c6e
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: https://github.com/imshaikot/app-preview-craft-skill/blob/main/skills/app-preview-craft/assets/CREDITS.md
+Prepared file: runtime/craft-iphone-12-pro.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iPhone 13
+Creator: Peter_D
+Source: https://sketchfab.com/3d-models/none-3771e91e0b6b4df5a6bcda054623c21c
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-3771e91e-sketchfab.json
+Prepared file: runtime/oa-3771e91e.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iPhone 13 Pro 2021
+Creator: SDC PERFORMANCE™️
+Source: https://sketchfab.com/3d-models/none-a35156d91cf44e70a2fdfeade54ae0b2
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-a35156d9-sketchfab.json
+Prepared file: runtime/oa-a35156d9.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iPhone 15 Pro Max — MajdyModels
+Creator: MajdyModels
+Source: https://github.com/blackstorm/appshots
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: https://github.com/blackstorm/appshots#credits
+Prepared file: runtime/appshots-iphone-15-pro-max.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iPhone 15 Pro Max — polyman
+Creator: polyman Studio
+Source: https://sketchfab.com/3d-models/apple-iphone-15-pro-max-black-df17520841214c1792fb8a44c6783ee7
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: Embedded asset.extras.license plus existing tabletop asset credits
+Prepared file: runtime/quentin-iphone-15-pro.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iphone 7
+Creator: farhad.Guli
+Source: https://sketchfab.com/3d-models/none-bd03fb7d550e4a609d8261696c25f610
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-bd03fb7d-sketchfab.json
+Prepared file: runtime/oa-bd03fb7d.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Ipad 7
+Creator: atom
+Source: https://sketchfab.com/3d-models/none-ec2b3966d0384f87bfdff55799778bf0
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-ec2b3966-sketchfab.json
+Prepared file: runtime/oa-ec2b3966.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Ipad Air4
+Creator: LitoStudio
+Source: https://sketchfab.com/3d-models/none-d8032df3d8c0455394ea527ef4ddaef5
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-d8032df3-sketchfab.json
+Prepared file: runtime/oa-d8032df3.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Sci-fi Tablet
+Creator: NoobiePie (https://sketchfab.com/NoobiePie)
+Source: https://sketchfab.com/3d-models/sci-fi-tablet-d201a35d53f745b0a967796b0f8884ab
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: Embedded asset.extras in original GLB
+Prepared file: runtime/noobiepie-scifi-tablet.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+iPad Air 3
+Creator: Cody Bennett
+Source: https://github.com/CodyJasonBennett/device-models
+License: MIT — https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Evidence: https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Prepared file: runtime/cody-ipad-air.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Flat Screen Television
+Creator: HippoStance
+Source: https://sketchfab.com/3d-models/none-f90d4fb91dd34b6791e8d66d00f96591
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-f90d4fb9-sketchfab.json
+Prepared file: runtime/oa-f90d4fb9.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Retro Television
+Creator: Tom Seddon
+Source: https://sketchfab.com/3d-models/none-e938241a182a4229ad48a1fc589e676e
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-e938241a-sketchfab.json
+Prepared file: runtime/oa-e938241a.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Television 01
+Creator: Gabriel Radić
+Source: https://polyhaven.com/a/Television_01
+License: CC0-1.0 — https://creativecommons.org/publicdomain/zero/1.0/
+Evidence: https://polyhaven.com/license
+Prepared file: runtime/ph-television_01.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Television 02
+Creator: Benny Weimer
+Source: https://polyhaven.com/a/television_02
+License: CC0-1.0 — https://creativecommons.org/publicdomain/zero/1.0/
+Evidence: https://polyhaven.com/license
+Prepared file: runtime/ph-television_02.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Wall Television
+Creator: Francesco Coldesina
+Source: https://sketchfab.com/3d-models/none-6d07c762e854492da6447505fae456f8
+License: CC-BY-4.0 — https://creativecommons.org/licenses/by/4.0/
+Evidence: provenance/oa-6d07c762-sketchfab.json
+Prepared file: runtime/oa-6d07c762.glb
+Changes: glTF repack; geometry decompression where applicable; separate preview orientation and screen-binding metadata.
+
+Archive provenance: Some CC-BY models were obtained from the public Objaverse archive, https://huggingface.co/datasets/allenai/objaverse . Individual model licenses apply. Current source metadata and embedded original credits were recorded in provenance/.
+Catalog viewer: Three.js, MIT license. Full notice: provenance/THREE-LICENSE.txt.

@@ -1,0 +1,828 @@
+[
+  {
+    "id": "reference.castle",
+    "title": "A kingdom in miniature",
+    "duration": 14,
+    "scene": "castle",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 6.72,
+    "kind": "Procedural 3D",
+    "creator": "@chaseleantj",
+    "reference": 6,
+    "description": "A code-built limestone castle with battlements, an arched gateway, tiled roofs, bridge, trees, water and moving pennants.",
+    "nodes": [
+      {
+        "id": "castle.direction",
+        "type": "castle",
+        "label": "Art direction",
+        "props": {
+          "stone": "#d0ba98",
+          "roof": "#5b6873",
+          "height": 1,
+          "orbit": 0.6,
+          "trees": 36
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "castle": {
+        "stone": {
+          "type": "color",
+          "label": "Limestone"
+        },
+        "roof": {
+          "type": "color",
+          "label": "Roof tiles"
+        },
+        "height": {
+          "type": "number",
+          "min": 0.7,
+          "max": 1.4,
+          "label": "Tower height",
+          "step": 0.05
+        },
+        "orbit": {
+          "type": "number",
+          "min": 0,
+          "max": 1.2,
+          "label": "Camera orbit",
+          "step": 0.05
+        },
+        "trees": {
+          "type": "number",
+          "min": 0,
+          "max": 60,
+          "label": "Trees",
+          "step": 1,
+          "integer": true
+        }
+      }
+    },
+    "genre": "3D worlds",
+    "hook": "Build your own little kingdom.",
+    "detail": "Raise limestone towers, recolor the roofs and make a forest appear. The camera circles a procedural castle while flags move in the breeze. Every change affects the scene itself."
+  },
+  {
+    "id": "reference.device",
+    "title": "Your product, in the spotlight",
+    "duration": 16,
+    "scene": "device",
+    "family": "reference",
+    "category": "Product demos",
+    "testTime": 6,
+    "kind": "Real-device product film",
+    "creator": "EditableFrame \u00b7 credited device artists",
+    "reference": null,
+    "description": "A fictional app launch rendered on downloaded GLB phone models with studio HDR reflections and an animated screen.",
+    "nodes": [
+      {
+        "id": "device.direction",
+        "type": "device",
+        "label": "Product direction",
+        "props": {
+          "model": "craft-iphone-17-pro",
+          "app": "Wallet",
+          "brand": "NORTH",
+          "accent": "#7ed9c4",
+          "yaw": -0.22,
+          "pitch": 0.04,
+          "orbit": 0.18,
+          "float": 0.35,
+          "exposure": 1.05
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "device": {
+        "model": {
+          "type": "enum",
+          "label": "Phone model",
+          "values": [
+            "craft-iphone-17-pro",
+            "cody-iphone-12",
+            "cody-pixel-6"
+          ],
+          "labels": {
+            "craft-iphone-17-pro": "iPhone 17 Pro",
+            "cody-iphone-12": "iPhone 12",
+            "cody-pixel-6": "Google Pixel 6"
+          }
+        },
+        "app": {
+          "type": "enum",
+          "label": "App screen",
+          "values": [
+            "Wallet",
+            "Analytics",
+            "Launch"
+          ]
+        },
+        "brand": {
+          "type": "text",
+          "label": "Product name",
+          "maxLength": 16
+        },
+        "accent": {
+          "type": "color",
+          "label": "App accent"
+        },
+        "yaw": {
+          "type": "number",
+          "label": "Device angle",
+          "min": -0.95,
+          "max": 0.95,
+          "step": 0.01
+        },
+        "pitch": {
+          "type": "number",
+          "label": "Device tilt",
+          "min": -0.4,
+          "max": 0.4,
+          "step": 0.01
+        },
+        "orbit": {
+          "type": "number",
+          "label": "Camera travel",
+          "min": 0,
+          "max": 0.65,
+          "step": 0.01
+        },
+        "float": {
+          "type": "number",
+          "label": "Floating motion",
+          "min": 0,
+          "max": 1,
+          "step": 0.05
+        },
+        "exposure": {
+          "type": "number",
+          "label": "Studio exposure",
+          "min": 0.6,
+          "max": 1.6,
+          "step": 0.05
+        }
+      }
+    },
+    "genre": "Product demos",
+    "hook": "Put your product in their hands.",
+    "detail": "Showcase an animated app on an iPhone 17 Pro, iPhone 12 or Pixel 6. Swap real 3D models, change the screen, brand and accent, and direct the camera under studio HDR lighting."
+  },
+  {
+    "id": "reference.showreel",
+    "title": "Make it move",
+    "duration": 15,
+    "scene": "showreel",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 7.199999999999999,
+    "kind": "Kinetic showreel",
+    "creator": "@shneural \u00b7 prompt study",
+    "reference": null,
+    "description": "An original response to the shared 15-second showreel brief: elastic type, radial forms, depth tunnel and a particle-resolved end card.",
+    "nodes": [
+      {
+        "id": "showreel.direction",
+        "type": "showreel",
+        "label": "Art direction",
+        "props": {
+          "accent": "#d5ff63",
+          "secondary": "#a89eff",
+          "word": "MAKE IT MOVE",
+          "energy": 1,
+          "bpm": 120
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "showreel": {
+        "accent": {
+          "type": "color",
+          "label": "Primary color"
+        },
+        "secondary": {
+          "type": "color",
+          "label": "Secondary color"
+        },
+        "word": {
+          "type": "text",
+          "label": "Final title",
+          "maxLength": 50
+        },
+        "energy": {
+          "type": "number",
+          "min": 0.4,
+          "max": 1.5,
+          "label": "Motion energy",
+          "step": 0.05
+        },
+        "bpm": {
+          "type": "number",
+          "min": 80,
+          "max": 160,
+          "label": "Beat grid \u00b7 BPM",
+          "step": 1,
+          "integer": true
+        }
+      }
+    },
+    "genre": "Motion design",
+    "hook": "Make a little noise.",
+    "detail": "Elastic typography, radial shapes and a depth tunnel lead into an editable end card. Choose your headline, palette and motion energy for this fifteen-second kinetic study."
+  },
+  {
+    "id": "reference.unet",
+    "title": "A shape inside the noise",
+    "duration": 18,
+    "scene": "unet",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 8.64,
+    "kind": "Scientific explainer",
+    "creator": "@DotCSV",
+    "reference": 1,
+    "description": "A schematic denoising pass through a U-Net: noisy input, multiscale features, skip connections and predicted noise. Illustrated output; no neural inference.",
+    "nodes": [
+      {
+        "id": "unet.direction",
+        "type": "unet",
+        "label": "Art direction",
+        "props": {
+          "accent": "#73b7ff",
+          "noise": 0.85,
+          "skip": true,
+          "pulse": 1,
+          "width": 1
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "unet": {
+        "accent": {
+          "type": "color",
+          "label": "Signal color"
+        },
+        "noise": {
+          "type": "number",
+          "min": 0.1,
+          "max": 1,
+          "label": "Input noise",
+          "step": 0.05
+        },
+        "skip": {
+          "type": "boolean",
+          "label": "Show skip connections"
+        },
+        "pulse": {
+          "type": "number",
+          "min": 0.4,
+          "max": 1.8,
+          "label": "Signal travel speed",
+          "step": 0.05
+        },
+        "width": {
+          "type": "number",
+          "min": 0.65,
+          "max": 1.4,
+          "label": "Feature-stack depth",
+          "step": 0.05
+        }
+      }
+    },
+    "genre": "Explainers",
+    "hook": "Make a complex idea visible.",
+    "detail": "Follow a signal through an illustrated U-Net. Change the signal color, noisy input and skip connections to explore the visual explanation. This is a teaching schematic, not neural inference."
+  },
+  {
+    "id": "reference.paper",
+    "title": "A small act of care",
+    "duration": 16,
+    "scene": "paper",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 7.68,
+    "kind": "Paper stop motion",
+    "creator": "@devteamdrew",
+    "reference": 3,
+    "description": "An original paper robot discovers a seed, waters it and shelters its first leaf. Pose holds, paper shadows and a page turn.",
+    "nodes": [
+      {
+        "id": "paper.direction",
+        "type": "paper",
+        "label": "Art direction",
+        "props": {
+          "body": "#d77847",
+          "leaf": "#648963",
+          "bounce": 1,
+          "fps": 12,
+          "grain": 0.2
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "paper": {
+        "body": {
+          "type": "color",
+          "label": "Character paper"
+        },
+        "leaf": {
+          "type": "color",
+          "label": "Leaf paper"
+        },
+        "bounce": {
+          "type": "number",
+          "min": 0.4,
+          "max": 1.5,
+          "label": "Acting amplitude",
+          "step": 0.05
+        },
+        "fps": {
+          "type": "number",
+          "min": 6,
+          "max": 24,
+          "label": "Pose frames per second",
+          "step": 1,
+          "integer": true
+        },
+        "grain": {
+          "type": "number",
+          "min": 0,
+          "max": 0.65,
+          "label": "Paper texture",
+          "step": 0.05
+        }
+      }
+    },
+    "genre": "Illustration",
+    "hook": "A small story, made of paper.",
+    "detail": "A little paper character finds a seed and helps it grow. Adjust the paper colors, texture and held-pose frame rate to change the character of this stop-motion-inspired scene."
+  },
+  {
+    "id": "reference.underwater",
+    "title": "The last blue train",
+    "duration": 18,
+    "scene": "underwater",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 8.64,
+    "kind": "Cinematic 3D",
+    "creator": "@aniketjart",
+    "reference": 8,
+    "description": "An original brass observation train moves along an elevated underwater railway. Coral, fish, bubbles, fog and light shafts create depth.",
+    "nodes": [
+      {
+        "id": "underwater.direction",
+        "type": "underwater",
+        "label": "Art direction",
+        "props": {
+          "water": "#075f77",
+          "brass": "#c69a52",
+          "speed": 1,
+          "fish": 28,
+          "orbit": 0.45
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "underwater": {
+        "water": {
+          "type": "color",
+          "label": "Water"
+        },
+        "brass": {
+          "type": "color",
+          "label": "Train brass"
+        },
+        "speed": {
+          "type": "number",
+          "min": 0.3,
+          "max": 1.6,
+          "label": "Train speed",
+          "step": 0.05
+        },
+        "fish": {
+          "type": "number",
+          "min": 0,
+          "max": 60,
+          "label": "Fish count",
+          "step": 1,
+          "integer": true
+        },
+        "orbit": {
+          "type": "number",
+          "min": 0,
+          "max": 1,
+          "label": "Camera travel",
+          "step": 0.05
+        }
+      }
+    },
+    "genre": "3D worlds",
+    "hook": "Take the scenic route.",
+    "detail": "Send a brass observation train through a miniature underwater world. Change the water color, train speed and number of fish while following the camera through coral and light."
+  },
+  {
+    "id": "reference.grain",
+    "title": "Somewhere, slowly",
+    "duration": 16,
+    "scene": "grain",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 7.68,
+    "kind": "Textured film",
+    "creator": "@jurlycat",
+    "reference": 0,
+    "description": "A moving landscape inside a film window: field parallax, sunset, overhead wires and deterministic animated grain.",
+    "nodes": [
+      {
+        "id": "grain.direction",
+        "type": "grain",
+        "label": "Art direction",
+        "props": {
+          "sun": "#ef9d47",
+          "fields": "#60734d",
+          "grain": 0.36,
+          "speed": 1,
+          "window": 1
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "grain": {
+        "sun": {
+          "type": "color",
+          "label": "Sunset"
+        },
+        "fields": {
+          "type": "color",
+          "label": "Fields"
+        },
+        "grain": {
+          "type": "number",
+          "min": 0,
+          "max": 0.8,
+          "label": "Film grain",
+          "step": 0.05
+        },
+        "speed": {
+          "type": "number",
+          "min": 0.3,
+          "max": 1.8,
+          "label": "Landscape speed",
+          "step": 0.05
+        },
+        "window": {
+          "type": "number",
+          "min": 0.75,
+          "max": 1.2,
+          "label": "Window framing",
+          "step": 0.05
+        }
+      }
+    },
+    "genre": "Illustration",
+    "hook": "Find a slower kind of motion.",
+    "detail": "Watch fields, power lines and distant hills pass a film window. Choose sunset and field colors, adjust the animated grain and change the speed of the landscape."
+  },
+  {
+    "id": "reference.warehouse",
+    "title": "One parcel, many handoffs",
+    "duration": 16,
+    "scene": "warehouse",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 7.68,
+    "kind": "Isometric system",
+    "creator": "@_iyart_",
+    "reference": 7,
+    "description": "A parcel crosses a conveyor, scanner and gantry before joining dispatch. Every object is drawn in code using a shared isometric projection.",
+    "nodes": [
+      {
+        "id": "warehouse.direction",
+        "type": "warehouse",
+        "label": "Art direction",
+        "props": {
+          "parcel": "#bcf06b",
+          "belt": 1,
+          "crane": 1,
+          "packages": 8,
+          "zoom": 1
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "warehouse": {
+        "parcel": {
+          "type": "color",
+          "label": "Tracked parcel"
+        },
+        "belt": {
+          "type": "number",
+          "min": 0.4,
+          "max": 1.5,
+          "label": "Conveyor speed",
+          "step": 0.05
+        },
+        "crane": {
+          "type": "number",
+          "min": 0.3,
+          "max": 1.4,
+          "label": "Gantry travel",
+          "step": 0.05
+        },
+        "packages": {
+          "type": "number",
+          "min": 3,
+          "max": 14,
+          "label": "Background parcels",
+          "step": 1,
+          "integer": true
+        },
+        "zoom": {
+          "type": "number",
+          "min": 0.8,
+          "max": 1.2,
+          "label": "Camera framing",
+          "step": 0.05
+        }
+      }
+    },
+    "genre": "Explainers",
+    "hook": "Follow one parcel through a system.",
+    "detail": "An isometric conveyor, scanner and gantry turn a logistics process into a moving explanation. Follow the highlighted parcel and adjust the surrounding motion without rebuilding the scene."
+  },
+  {
+    "id": "reference.storybook",
+    "title": "The light next door",
+    "duration": 16,
+    "scene": "storybook",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 7.68,
+    "kind": "Cut-paper collage",
+    "creator": "@kevin_ngo",
+    "reference": 4,
+    "description": "An original night-time picture-book scene: paper windows, crayon stars, a child, a flying note and a distant light answering.",
+    "nodes": [
+      {
+        "id": "storybook.direction",
+        "type": "storybook",
+        "label": "Art direction",
+        "props": {
+          "sky": "#182b59",
+          "light": "#f4c777",
+          "stars": 42,
+          "wind": 1,
+          "grain": 0.22
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "storybook": {
+        "sky": {
+          "type": "color",
+          "label": "Night paper"
+        },
+        "light": {
+          "type": "color",
+          "label": "Window glow"
+        },
+        "stars": {
+          "type": "number",
+          "min": 10,
+          "max": 100,
+          "label": "Stars",
+          "step": 1,
+          "integer": true
+        },
+        "wind": {
+          "type": "number",
+          "min": 0.3,
+          "max": 1.8,
+          "label": "Paper motion",
+          "step": 0.05
+        },
+        "grain": {
+          "type": "number",
+          "min": 0,
+          "max": 0.65,
+          "label": "Crayon texture",
+          "step": 0.05
+        }
+      }
+    },
+    "genre": "Illustration",
+    "hook": "Leave a light on.",
+    "detail": "A paper window, crayon stars and a flying note tell a small story across the night. Change the sky, warm window glow and paper motion to make the scene your own."
+  },
+  {
+    "id": "reference.dragon",
+    "title": "The fossil takes flight",
+    "duration": 14,
+    "scene": "dragon",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 6.72,
+    "kind": "Procedural 3D",
+    "creator": "@Stefan_3D_AI",
+    "reference": 2,
+    "description": "Original skeletal creature: articulated ribs, spine, jaw, wing fingers, talons and a segmented tail, with a slow specimen orbit.",
+    "nodes": [
+      {
+        "id": "dragon.direction",
+        "type": "dragon",
+        "label": "Art direction",
+        "props": {
+          "bone": "#d9c29c",
+          "wings": 1,
+          "jaw": 0.35,
+          "speed": 1,
+          "orbit": 0.4,
+          "explode": 0
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "dragon": {
+        "bone": {
+          "type": "color",
+          "label": "Bone material"
+        },
+        "wings": {
+          "type": "number",
+          "min": 0.55,
+          "max": 1.35,
+          "label": "Wing span",
+          "step": 0.05
+        },
+        "jaw": {
+          "type": "number",
+          "min": 0,
+          "max": 1,
+          "label": "Jaw opening",
+          "step": 0.05
+        },
+        "speed": {
+          "type": "number",
+          "min": 0.3,
+          "max": 1.8,
+          "label": "Flight speed",
+          "step": 0.05
+        },
+        "orbit": {
+          "type": "number",
+          "min": 0,
+          "max": 1.2,
+          "label": "Camera orbit",
+          "step": 0.05
+        },
+        "explode": {
+          "type": "number",
+          "min": 0,
+          "max": 0.8,
+          "label": "Skeleton separation",
+          "step": 0.05
+        }
+      }
+    },
+    "genre": "3D worlds",
+    "hook": "Give a fossil its wings.",
+    "detail": "Study a creature assembled from code: ribs, wing fingers, jaw and articulated spine. Change the bone material, open the jaw or separate the skeleton to explore its construction."
+  },
+  {
+    "id": "reference.ink",
+    "title": "From mark to message",
+    "duration": 16,
+    "scene": "ink",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 7.68,
+    "kind": "Ink animation",
+    "creator": "@shfred0",
+    "reference": 5,
+    "description": "An original visual metaphor: a drawn mark grows into a network, then a terminal and a message. Not a factual model biography.",
+    "nodes": [
+      {
+        "id": "ink.direction",
+        "type": "ink",
+        "label": "Art direction",
+        "props": {
+          "ink": "#f0e8d7",
+          "paper": "#151611",
+          "roughness": 0.65,
+          "tempo": 1,
+          "stroke": 2.2
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "ink": {
+        "ink": {
+          "type": "color",
+          "label": "Ink"
+        },
+        "paper": {
+          "type": "color",
+          "label": "Paper"
+        },
+        "roughness": {
+          "type": "number",
+          "min": 0,
+          "max": 1.5,
+          "label": "Line boil",
+          "step": 0.05
+        },
+        "tempo": {
+          "type": "number",
+          "min": 0.4,
+          "max": 1.5,
+          "label": "Story pace",
+          "step": 0.05
+        },
+        "stroke": {
+          "type": "number",
+          "min": 1,
+          "max": 5,
+          "label": "Pen width",
+          "step": 0.05
+        }
+      }
+    },
+    "genre": "Illustration",
+    "hook": "Let one mark become a story.",
+    "detail": "Watch an ink mark grow into a network and a message. Change the paper, ink, pen width and line movement to explore how a drawn style changes the same sequence."
+  },
+  {
+    "id": "reference.evolution",
+    "title": "An idea learns to move",
+    "duration": 15,
+    "scene": "evolution",
+    "family": "reference",
+    "category": "Reference studies",
+    "testTime": 7.199999999999999,
+    "kind": "Evolution promo",
+    "creator": "@AniSri016 \u00b7 brief only",
+    "reference": null,
+    "description": "A fictional product evolves from a single mark into a connected system and a spatial interface. Based on the requested brief; that account\u2019s original clip is not verified.",
+    "nodes": [
+      {
+        "id": "evolution.direction",
+        "type": "evolution",
+        "label": "Art direction",
+        "props": {
+          "brand": "PARALLAX",
+          "accent": "#fa8255",
+          "ink": "#ece9df",
+          "pace": 1,
+          "spread": 1
+        },
+        "keys": {}
+      }
+    ],
+    "schemas": {
+      "evolution": {
+        "brand": {
+          "type": "text",
+          "label": "Fictional brand",
+          "maxLength": 50
+        },
+        "accent": {
+          "type": "color",
+          "label": "Brand accent"
+        },
+        "ink": {
+          "type": "color",
+          "label": "Lettering"
+        },
+        "pace": {
+          "type": "number",
+          "min": 0.6,
+          "max": 1.3,
+          "label": "Reveal pace",
+          "step": 0.05
+        },
+        "spread": {
+          "type": "number",
+          "min": 0.6,
+          "max": 1.4,
+          "label": "Network spread",
+          "step": 0.05
+        }
+      }
+    },
+    "genre": "Motion design",
+    "hook": "From one idea to a whole system.",
+    "detail": "A fictional product evolves from a single mark into a connected interface. Try a different brand name, accent and reveal pace while retaining the underlying animation."
+  }
+]

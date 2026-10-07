@@ -1,0 +1,47 @@
+{
+  "uid": "5aeacd0cc5f649a4b92ce90bca6917e7",
+  "name": "Curved Monitor",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-5aeacd0cc5f649a4b92ce90bca6917e7",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "e0d141bd799c491ea4b46990780a1398",
+    "username": "ArnauRocherAlcayde",
+    "displayName": "Arnau Rocher Alcayde",
+    "profileUrl": "https://sketchfab.com/ArnauRocherAlcayde",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/6338cd8491da46e1a46a4e1e30927350",
+      "images": [
+        {
+          "size": 758,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/6338cd8491da46e1a46a4e1e30927350/67998bea48024637b7daeee05f2aa4ee.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1243,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/6338cd8491da46e1a46a4e1e30927350/f1283493fc7346d491ddbc664cc0c3a6.jpeg",
+          "height": 48
+        },
+        {
+          "size": 3223,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/6338cd8491da46e1a46a4e1e30927350/29f24f5ff09549e58a2fc7eccb677a43.jpeg",
+          "height": 90
+        },
+        {
+          "size": 3802,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/6338cd8491da46e1a46a4e1e30927350/61b4d868fd0941f29701c33125117e4c.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/e0d141bd799c491ea4b46990780a1398"
+  },
+  "publishedAt": "2021-09-12T21:51:21.517674"
+}

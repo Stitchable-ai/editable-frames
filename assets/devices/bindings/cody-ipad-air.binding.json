@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "modelId": "cody-ipad-air",
+  "modelSha256": "00e0ad734bcea80b5e74d08e09bdcb5c1d89d6bb1f21a623a8d677754e9d9b99",
+  "runtimeFile": "../runtime/cody-ipad-air.glb",
+  "mesh": "Screen",
+  "meshIndex": 2,
+  "sourceNode": "Screen",
+  "sourceMaterial": null,
+  "hideMaterials": [],
+  "flipU": false,
+  "flipV": false,
+  "fitUV": false,
+  "repeatUV": false,
+  "rotationDegrees": 0,
+  "uvOrder": "normalize optional UV bounds to 0..1; rotate clockwise about center; flip U/V; apply wrap mode",
+  "modelRotation": [
+    0,
+    0,
+    0
+  ],
+  "physicalScale": "unverified; viewer normalizes longest source axis to 3.3 units",
+  "status": "upright test pattern visually verified; validate aspect ratio and framing with your content"
+}

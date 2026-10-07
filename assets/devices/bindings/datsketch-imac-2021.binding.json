@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "modelId": "datsketch-imac-2021",
+  "modelSha256": "f6918328ba600248a960542eaad42f99145716479c6c80cc591ec74c29d5cb48",
+  "runtimeFile": "../runtime/datsketch-imac-2021.glb",
+  "mesh": "Screen_Screen_0",
+  "meshIndex": 7,
+  "sourceNode": "Screen_Screen_0",
+  "sourceMaterial": null,
+  "hideMaterials": [],
+  "flipU": false,
+  "flipV": true,
+  "fitUV": true,
+  "repeatUV": false,
+  "rotationDegrees": 0,
+  "uvOrder": "normalize optional UV bounds to 0..1; rotate clockwise about center; flip U/V; apply wrap mode",
+  "modelRotation": [
+    0,
+    -1.5707963267948966,
+    0
+  ],
+  "physicalScale": "unverified; viewer normalizes longest source axis to 3.3 units",
+  "status": "upright test pattern visually verified; validate aspect ratio and framing with your content"
+}

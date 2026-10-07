@@ -1,0 +1,47 @@
+{
+  "uid": "6d07c762e854492da6447505fae456f8",
+  "name": "Wall Television",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-6d07c762e854492da6447505fae456f8",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "1e2427c49a3147deac52a75e4a3a2d3b",
+    "username": "topfrank2013",
+    "displayName": "Francesco Coldesina",
+    "profileUrl": "https://sketchfab.com/topfrank2013",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/9eb831de60644c7da6e73b469e909653",
+      "images": [
+        {
+          "size": 3410,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/9eb831de60644c7da6e73b469e909653/991dd12230a14cb0a48123375f9ba85e.jpeg",
+          "height": 100
+        },
+        {
+          "size": 2897,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/9eb831de60644c7da6e73b469e909653/77759c5952d64178b0066e0040e2b48c.jpeg",
+          "height": 90
+        },
+        {
+          "size": 747,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/9eb831de60644c7da6e73b469e909653/e536819951524f2c9d18ba9960ca40d3.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1170,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/9eb831de60644c7da6e73b469e909653/57a8c4de50a74069a7077668651d4f59.jpeg",
+          "height": 48
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/1e2427c49a3147deac52a75e4a3a2d3b"
+  },
+  "publishedAt": "2017-10-12T11:52:40.358841"
+}

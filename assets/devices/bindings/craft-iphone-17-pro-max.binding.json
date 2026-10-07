@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "modelId": "craft-iphone-17-pro-max",
+  "modelSha256": "07d6bc658e18eb1d094892b08c204f3e4fb9069254bef230799bc880377c99ee",
+  "runtimeFile": "../runtime/craft-iphone-17-pro-max.glb",
+  "mesh": "Cube010_screen001_0",
+  "meshIndex": 5,
+  "sourceNode": "Cube.010_screen.001_0",
+  "sourceMaterial": "screen.001",
+  "hideMaterials": [],
+  "flipU": true,
+  "flipV": true,
+  "fitUV": false,
+  "repeatUV": true,
+  "rotationDegrees": 0,
+  "uvOrder": "normalize optional UV bounds to 0..1; rotate clockwise about center; flip U/V; apply wrap mode",
+  "modelRotation": [
+    0,
+    1.5707963267948966,
+    0
+  ],
+  "physicalScale": "unverified; viewer normalizes longest source axis to 3.3 units",
+  "status": "upright test pattern visually verified; validate aspect ratio and framing with your content"
+}

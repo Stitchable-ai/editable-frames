@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "modelId": "appshots-samsung-galaxy-s25-ultra",
+  "modelSha256": "9f52a093a481b0c9e0cf852a779f50157b6fa20c4a3a86d63835c08a1346922f",
+  "runtimeFile": "../runtime/appshots-samsung-galaxy-s25-ultra.glb",
+  "mesh": "Object_19",
+  "meshIndex": 25,
+  "sourceNode": "Object_19",
+  "sourceMaterial": "display",
+  "hideMaterials": [],
+  "flipU": false,
+  "flipV": false,
+  "fitUV": false,
+  "repeatUV": false,
+  "rotationDegrees": 0,
+  "uvOrder": "normalize optional UV bounds to 0..1; rotate clockwise about center; flip U/V; apply wrap mode",
+  "modelRotation": [
+    0,
+    0,
+    0
+  ],
+  "physicalScale": "unverified; viewer normalizes longest source axis to 3.3 units",
+  "status": "upright test pattern visually verified; validate aspect ratio and framing with your content"
+}

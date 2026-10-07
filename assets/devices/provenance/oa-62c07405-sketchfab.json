@@ -1,0 +1,47 @@
+{
+  "uid": "62c074055bc0491aaa4752128087fd88",
+  "name": "Samsung Galaxy S21",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-62c074055bc0491aaa4752128087fd88",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "5220453d2b0940d2b165a7756db306dd",
+    "username": "wavenquack24",
+    "displayName": "Waven",
+    "profileUrl": "https://sketchfab.com/wavenquack24",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/b992aa838a624fc28c3968299e02f1bb",
+      "images": [
+        {
+          "size": 1209,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/b992aa838a624fc28c3968299e02f1bb/5b853161132b461788486e03fbb63e14.png",
+          "height": 32
+        },
+        {
+          "size": 2063,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/b992aa838a624fc28c3968299e02f1bb/cd0f026b9cb946409b97c5f6e650fb41.png",
+          "height": 48
+        },
+        {
+          "size": 4759,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/b992aa838a624fc28c3968299e02f1bb/f11c0432840a427d9c09ef480c44080e.png",
+          "height": 90
+        },
+        {
+          "size": 5482,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/b992aa838a624fc28c3968299e02f1bb/cae0465385b1413fa2b3fe1627b67d03.png",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/5220453d2b0940d2b165a7756db306dd"
+  },
+  "publishedAt": "2021-06-30T17:31:29.668757"
+}

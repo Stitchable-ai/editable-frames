@@ -1,0 +1,47 @@
+{
+  "uid": "f90d4fb91dd34b6791e8d66d00f96591",
+  "name": "Flat Screen Television",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-f90d4fb91dd34b6791e8d66d00f96591",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "98d1698168894c40ab20ffe90d0628de",
+    "username": "hippostance",
+    "displayName": "HippoStance",
+    "profileUrl": "https://sketchfab.com/hippostance",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/8be953b252844efe88cee6490b911782",
+      "images": [
+        {
+          "size": 640,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/8be953b252844efe88cee6490b911782/573b3708bc82479bb69b7c3e670fac30.jpeg",
+          "height": 32
+        },
+        {
+          "size": 876,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/8be953b252844efe88cee6490b911782/6161fc547212432c8962fdcd4482ff51.jpeg",
+          "height": 48
+        },
+        {
+          "size": 1712,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/8be953b252844efe88cee6490b911782/91f31c4f280544c9b9ce6e9505c6d4ea.jpeg",
+          "height": 90
+        },
+        {
+          "size": 1947,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/8be953b252844efe88cee6490b911782/daec4b8a249a43e09858f07dc35d1245.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/98d1698168894c40ab20ffe90d0628de"
+  },
+  "publishedAt": "2020-05-06T01:18:57.280785"
+}

@@ -1,0 +1,47 @@
+{
+  "uid": "3771e91e0b6b4df5a6bcda054623c21c",
+  "name": "iPhone 13",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-3771e91e0b6b4df5a6bcda054623c21c",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "23ad5771873647afad1e2cc935180213",
+    "username": "better_peter",
+    "displayName": "Peter_D",
+    "profileUrl": "https://sketchfab.com/better_peter",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/930f41af31824387b4d4b7b70016e35b",
+      "images": [
+        {
+          "size": 1180,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/930f41af31824387b4d4b7b70016e35b/d121e07b7d0143848439c1342d6dec27.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1601,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/930f41af31824387b4d4b7b70016e35b/69b6ec2a1a4241fb927d7e4d8681ee05.jpeg",
+          "height": 48
+        },
+        {
+          "size": 3317,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/930f41af31824387b4d4b7b70016e35b/e6b09b7f67804928ab907235be20b92f.jpeg",
+          "height": 90
+        },
+        {
+          "size": 3734,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/930f41af31824387b4d4b7b70016e35b/1585fb16522c43be8da47faedecbcc7e.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/23ad5771873647afad1e2cc935180213"
+  },
+  "publishedAt": "2021-10-12T11:08:28.154056"
+}

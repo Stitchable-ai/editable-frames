@@ -1,0 +1,47 @@
+{
+  "uid": "d8032df3d8c0455394ea527ef4ddaef5",
+  "name": "Ipad Air4",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-d8032df3d8c0455394ea527ef4ddaef5",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "7022c4fb2a234c1890dc179d59128d5b",
+    "username": "ChillLitoStudio",
+    "displayName": "LitoStudio",
+    "profileUrl": "https://sketchfab.com/ChillLitoStudio",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/557c0959826f4fada090fd6056c88e14",
+      "images": [
+        {
+          "size": 2444,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/557c0959826f4fada090fd6056c88e14/6418c583c7854a648e33c9727c8e712f.png",
+          "height": 32
+        },
+        {
+          "size": 4016,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/557c0959826f4fada090fd6056c88e14/e28cdae061164dcfa432ec95d6a9f471.png",
+          "height": 48
+        },
+        {
+          "size": 8550,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/557c0959826f4fada090fd6056c88e14/025d78d0ff6745118bb26b5e88bde5b6.png",
+          "height": 90
+        },
+        {
+          "size": 9798,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/557c0959826f4fada090fd6056c88e14/1dc913f5525f4e6dba2c4a81394a30c4.png",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/7022c4fb2a234c1890dc179d59128d5b"
+  },
+  "publishedAt": "2022-07-11T11:38:12.088158"
+}

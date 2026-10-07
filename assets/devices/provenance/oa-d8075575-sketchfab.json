@@ -1,0 +1,47 @@
+{
+  "uid": "d80755755dba4169a9605f591296f53e",
+  "name": "Monitor",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-d80755755dba4169a9605f591296f53e",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "58ae83aaf996484998a4f1caee3b722f",
+    "username": "microsoft",
+    "displayName": "Microsoft",
+    "profileUrl": "https://sketchfab.com/microsoft",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/8f5cefd5d96b491889c9cfe20bad4781",
+      "images": [
+        {
+          "size": 4616,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/8f5cefd5d96b491889c9cfe20bad4781/b744e281376e40359f2a6ed5d627af27.jpeg",
+          "height": 32
+        },
+        {
+          "size": 5300,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/8f5cefd5d96b491889c9cfe20bad4781/a460996ccdaa44108947f289de871705.jpeg",
+          "height": 48
+        },
+        {
+          "size": 5663,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/8f5cefd5d96b491889c9cfe20bad4781/e8969854ceb04b9eaa3306045d08b9fa.jpeg",
+          "height": 90
+        },
+        {
+          "size": 6214,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/8f5cefd5d96b491889c9cfe20bad4781/fc645522f4fa45d29249cd7aba54d2b0.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/58ae83aaf996484998a4f1caee3b722f"
+  },
+  "publishedAt": "2015-04-27T23:46:05"
+}

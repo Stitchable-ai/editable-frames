@@ -1,0 +1,47 @@
+{
+  "uid": "2a8b3bd5333d4f1899a67d5dca6b24ab",
+  "name": "IPhone 5s",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-2a8b3bd5333d4f1899a67d5dca6b24ab",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "4304697fcdab409db34c7bf9981392b6",
+    "username": "EternalRealm",
+    "displayName": "Eternal Realm",
+    "profileUrl": "https://sketchfab.com/EternalRealm",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/2985cfa7ba5b4d8dbda4e0db1302dc8d",
+      "images": [
+        {
+          "size": 900,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/2985cfa7ba5b4d8dbda4e0db1302dc8d/4ef96db7a27447a296d599ffc5d875f7.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1428,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/2985cfa7ba5b4d8dbda4e0db1302dc8d/ab1b7a2770f344eb8b982dd7bd5b8ef2.jpeg",
+          "height": 48
+        },
+        {
+          "size": 3416,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/2985cfa7ba5b4d8dbda4e0db1302dc8d/64dc4c1a409e40419930ba5c235771b6.jpeg",
+          "height": 90
+        },
+        {
+          "size": 3985,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/2985cfa7ba5b4d8dbda4e0db1302dc8d/154ecd8eb30c4af7a9d4c827490bd905.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/4304697fcdab409db34c7bf9981392b6"
+  },
+  "publishedAt": "2017-03-17T22:29:24.250587"
+}

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "modelId": "cody-imac-2021",
+  "modelSha256": "bb943d83c170c59fe22093153efcf874a9368b84c1caa7630ecfd46b5f2d70a1",
+  "runtimeFile": "../runtime/cody-imac-2021.glb",
+  "mesh": "Screen",
+  "meshIndex": 2,
+  "sourceNode": "Screen",
+  "sourceMaterial": null,
+  "hideMaterials": [],
+  "flipU": false,
+  "flipV": false,
+  "fitUV": false,
+  "repeatUV": false,
+  "rotationDegrees": 0,
+  "uvOrder": "normalize optional UV bounds to 0..1; rotate clockwise about center; flip U/V; apply wrap mode",
+  "modelRotation": [
+    0,
+    0,
+    0
+  ],
+  "physicalScale": "unverified; viewer normalizes longest source axis to 3.3 units",
+  "status": "upright test pattern visually verified; validate aspect ratio and framing with your content"
+}

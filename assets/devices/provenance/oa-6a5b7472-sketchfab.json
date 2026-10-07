@@ -1,0 +1,47 @@
+{
+  "uid": "6a5b7472024c4920afcce24a073ed4f3",
+  "name": "Monitor",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-6a5b7472024c4920afcce24a073ed4f3",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "0c4b99c0925b420199d7e1c164aeb827",
+    "username": "re1monsen",
+    "displayName": "re1monsen",
+    "profileUrl": "https://sketchfab.com/re1monsen",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/2042907b535c461a8cb354842fee307e",
+      "images": [
+        {
+          "size": 957,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/2042907b535c461a8cb354842fee307e/7a5085cf273349fe99b318a0c549eccd.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1133,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/2042907b535c461a8cb354842fee307e/19d370889f834e0a84052d2052c18bc8.jpeg",
+          "height": 48
+        },
+        {
+          "size": 1946,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/2042907b535c461a8cb354842fee307e/6204850b235d4ed193b7736ec4aedd9b.jpeg",
+          "height": 90
+        },
+        {
+          "size": 2096,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/2042907b535c461a8cb354842fee307e/9cf698461e9c49019758eeecc0077896.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/0c4b99c0925b420199d7e1c164aeb827"
+  },
+  "publishedAt": "2021-12-09T09:08:20.075326"
+}

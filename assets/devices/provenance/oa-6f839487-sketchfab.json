@@ -1,0 +1,47 @@
+{
+  "uid": "6f8394877a31475c83b07916862d3293",
+  "name": "MacBook Pro (2016)",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-6f8394877a31475c83b07916862d3293",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "a72dec5352184cfa9eef3f414cf655e9",
+    "username": "alexreed12345",
+    "displayName": "alexreed12345",
+    "profileUrl": "https://sketchfab.com/alexreed12345",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/2dc21dac13dc452883de06b515e767d1",
+      "images": [
+        {
+          "size": 1086,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/2dc21dac13dc452883de06b515e767d1/9df27a9b065d48ae9440f4ca696f926c.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1512,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/2dc21dac13dc452883de06b515e767d1/3cbf1363aec942dda31fe3d8818a0ff0.jpeg",
+          "height": 48
+        },
+        {
+          "size": 2995,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/2dc21dac13dc452883de06b515e767d1/65d64432f4704cb386a3dee22cfb9b5e.jpeg",
+          "height": 90
+        },
+        {
+          "size": 3341,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/2dc21dac13dc452883de06b515e767d1/df0d49fb86384c56a4236f5832d527a4.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/a72dec5352184cfa9eef3f414cf655e9"
+  },
+  "publishedAt": "2017-07-10T01:13:06.003842"
+}

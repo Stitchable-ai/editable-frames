@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "modelId": "oa-ce05a5d9",
+  "modelSha256": "5ffbe3037c77739c86346f307cf2898891c8408983f906c5d34a9e9136628d25",
+  "runtimeFile": "../runtime/oa-ce05a5d9.glb",
+  "mesh": "Object_5",
+  "meshIndex": 1,
+  "sourceNode": "Object_5",
+  "sourceMaterial": "TVS0001_Screen",
+  "hideMaterials": [],
+  "flipU": true,
+  "flipV": false,
+  "fitUV": true,
+  "repeatUV": false,
+  "rotationDegrees": 90,
+  "uvOrder": "normalize optional UV bounds to 0..1; rotate clockwise about center; flip U/V; apply wrap mode",
+  "modelRotation": [
+    0,
+    0,
+    0
+  ],
+  "physicalScale": "unverified; viewer normalizes longest source axis to 3.3 units",
+  "status": "upright test pattern visually verified; validate aspect ratio and framing with your content"
+}

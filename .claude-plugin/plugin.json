@@ -1,0 +1,9 @@
+{
+  "name": "editableframe",
+  "version": "0.1.0-beta.1",
+  "description": "Create editable code-generated video clips with history, previews and rendering.",
+  "author": {
+    "name": "EditableFrame contributors"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Content-Security-Policy: frame-ancestors 'self' https://stitchable.ai https://www.stitchable.ai
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+/runtime/*
+  Cache-Control: public, max-age=0, must-revalidate
+/demos/*
+  Cache-Control: public, max-age=86400
+/devices/*
+  Cache-Control: public, max-age=86400

@@ -1,0 +1,30 @@
+{
+  "craft-iphone-17-pro": {
+    "modelSha256": "3c3a66ea8af2050bf04819f6f814afc70e0b25978fa27768507d60b6fa0f4bb2",
+    "reason": "Source Anodized_aluminum has metalness 0.23047, roughness 0, specular intensity 0. This is an optional physically plausible aluminum approximation, not a measured Apple finish. Base color and normal textures remain authored.",
+    "materials": {
+      "Anodized_aluminum": {
+        "values": {
+          "metalness": 1,
+          "roughness": 0.3,
+          "specularIntensity": 1,
+          "specularIntensityMap": null
+        }
+      }
+    }
+  },
+  "craft-iphone-17-pro-max": {
+    "modelSha256": "07d6bc658e18eb1d094892b08c204f3e4fb9069254bef230799bc880377c99ee",
+    "reason": "Source Anodized_aluminum has metalness 0.23047, roughness 0, specular intensity 0. This is an optional physically plausible aluminum approximation, not a measured Apple finish. Base color and normal textures remain authored.",
+    "materials": {
+      "Anodized_aluminum": {
+        "values": {
+          "metalness": 1,
+          "roughness": 0.3,
+          "specularIntensity": 1,
+          "specularIntensityMap": null
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "modelId": "craft-iphone-17-pro",
+  "modelSha256": "3c3a66ea8af2050bf04819f6f814afc70e0b25978fa27768507d60b6fa0f4bb2",
+  "runtimeFile": "../runtime/craft-iphone-17-pro.glb",
+  "mesh": "Object_23",
+  "meshIndex": 18,
+  "sourceNode": "Object_23",
+  "sourceMaterial": "OLED",
+  "hideMaterials": [
+    "Glass"
+  ],
+  "flipU": true,
+  "flipV": false,
+  "fitUV": false,
+  "repeatUV": false,
+  "rotationDegrees": 0,
+  "uvOrder": "normalize optional UV bounds to 0..1; rotate clockwise about center; flip U/V; apply wrap mode",
+  "modelRotation": [
+    0,
+    3.141592653589793,
+    0
+  ],
+  "physicalScale": "unverified; viewer normalizes longest source axis to 3.3 units",
+  "status": "upright test pattern visually verified; validate aspect ratio and framing with your content"
+}

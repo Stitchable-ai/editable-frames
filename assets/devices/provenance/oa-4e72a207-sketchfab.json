@@ -1,0 +1,47 @@
+{
+  "uid": "4e72a2078b3c4a75a821ab09830693fe",
+  "name": "Gaming Laptop",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-4e72a2078b3c4a75a821ab09830693fe",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "9aa1fdb702324f87913c87ea171feeee",
+    "username": "blue-odym",
+    "displayName": "Vivien Deroche",
+    "profileUrl": "https://sketchfab.com/blue-odym",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/9ad727e659464968b7146d5e6e611bee",
+      "images": [
+        {
+          "size": 2147,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/9ad727e659464968b7146d5e6e611bee/29b919686abd446a9e8e8b403bd730a3.png",
+          "height": 32
+        },
+        {
+          "size": 4196,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/9ad727e659464968b7146d5e6e611bee/44ce0f9c0f654b5da2c9ea43607bebab.png",
+          "height": 48
+        },
+        {
+          "size": 11907,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/9ad727e659464968b7146d5e6e611bee/78d7daed410e4038a2cb3b51c6a30386.png",
+          "height": 90
+        },
+        {
+          "size": 14391,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/9ad727e659464968b7146d5e6e611bee/ba6267c4f6094ea2b3d84f241860d24f.png",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/9aa1fdb702324f87913c87ea171feeee"
+  },
+  "publishedAt": "2020-05-06T17:25:41.412414"
+}

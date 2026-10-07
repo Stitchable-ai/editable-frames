@@ -1,0 +1,47 @@
+{
+  "uid": "e938241a182a4229ad48a1fc589e676e",
+  "name": "Retro Television",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-e938241a182a4229ad48a1fc589e676e",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "20ef88bc68cc4069aa1708e305ebf830",
+    "username": "bloodmeat08",
+    "displayName": "Tom Seddon",
+    "profileUrl": "https://sketchfab.com/bloodmeat08",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/37ecf7d61e874743805fe3588e4a0fbc",
+      "images": [
+        {
+          "size": 801,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/37ecf7d61e874743805fe3588e4a0fbc/2eff194198b74f4da33afe63a5153c60.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1324,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/37ecf7d61e874743805fe3588e4a0fbc/7a31c9c5d52f4512abd977eb45a4054d.jpeg",
+          "height": 48
+        },
+        {
+          "size": 3655,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/37ecf7d61e874743805fe3588e4a0fbc/1c435c4f5df14136b325c3bbe5b2dbf2.jpeg",
+          "height": 90
+        },
+        {
+          "size": 4266,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/37ecf7d61e874743805fe3588e4a0fbc/d1ed0f22019c4e6d97edfa98c275d09e.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/20ef88bc68cc4069aa1708e305ebf830"
+  },
+  "publishedAt": "2021-09-02T15:01:54.091990"
+}

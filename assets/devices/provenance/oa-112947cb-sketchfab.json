@@ -1,0 +1,47 @@
+{
+  "uid": "112947cbab7a4f708d0d01adb7d3fa3d",
+  "name": "Samsung Galaxy Z Flip 3",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-112947cbab7a4f708d0d01adb7d3fa3d",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "6d1c5f783f80458a9b0951db79c604ce",
+    "username": "DatSketch",
+    "displayName": "DatSketch",
+    "profileUrl": "https://sketchfab.com/DatSketch",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/e7683239fd254634bb4959b8b4cf5514",
+      "images": [
+        {
+          "size": 1196,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/e7683239fd254634bb4959b8b4cf5514/7c74370176d04e3aa32251bcfc9797ad.png",
+          "height": 32
+        },
+        {
+          "size": 1979,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/e7683239fd254634bb4959b8b4cf5514/6261895b7d3941889683f9ce458c0462.png",
+          "height": 48
+        },
+        {
+          "size": 4694,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/e7683239fd254634bb4959b8b4cf5514/bfdc410555264e86946da2a084238f47.png",
+          "height": 90
+        },
+        {
+          "size": 5425,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/e7683239fd254634bb4959b8b4cf5514/0c8f760804194e31bafb68d2d755e10e.png",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/6d1c5f783f80458a9b0951db79c604ce"
+  },
+  "publishedAt": "2021-09-06T05:06:55.810763"
+}

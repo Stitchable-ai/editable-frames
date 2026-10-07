@@ -1,0 +1,47 @@
+{
+  "uid": "08e76b5bd30847f6a23d4748b85ef62b",
+  "name": "Apple iPhone XS Max",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-08e76b5bd30847f6a23d4748b85ef62b",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "f9147e3045f6441eb66b5f9b4bf88c33",
+    "username": "sriniwasj",
+    "displayName": "sriniwasj",
+    "profileUrl": "https://sketchfab.com/sriniwasj",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/4e4e2dd95f1245beb94002ac4bcf1713",
+      "images": [
+        {
+          "size": 684,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/4e4e2dd95f1245beb94002ac4bcf1713/b8c0e223160947b0881659a8a5542aa8.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1133,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/4e4e2dd95f1245beb94002ac4bcf1713/a4f1c1b8d5ec4781853388cd54f44697.jpeg",
+          "height": 48
+        },
+        {
+          "size": 3248,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/4e4e2dd95f1245beb94002ac4bcf1713/ff5f5370bc1449489a5acc49c0dd1bf6.jpeg",
+          "height": 90
+        },
+        {
+          "size": 3874,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/4e4e2dd95f1245beb94002ac4bcf1713/eb612a482f1d4a2ba0e0773dd9e7e506.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/f9147e3045f6441eb66b5f9b4bf88c33"
+  },
+  "publishedAt": "2019-01-18T07:56:00.825782"
+}

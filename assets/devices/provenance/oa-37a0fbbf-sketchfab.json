@@ -1,0 +1,47 @@
+{
+  "uid": "37a0fbbf74cd41bdb91c37156954d7c1",
+  "name": "Sci fi Monitor",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-37a0fbbf74cd41bdb91c37156954d7c1",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "488e4c20018048e1952c59d8097ba823",
+    "username": "payamtavakoli",
+    "displayName": "Siamak Tavakoli",
+    "profileUrl": "https://sketchfab.com/payamtavakoli",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/9faecce92c574c4f9241a6d47e4ab890",
+      "images": [
+        {
+          "size": 2218,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/9faecce92c574c4f9241a6d47e4ab890/bdf22c237ba24f928f4aaa5f8fa60dc1.png",
+          "height": 32
+        },
+        {
+          "size": 4452,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/9faecce92c574c4f9241a6d47e4ab890/edf12b1eae2445a999f6d5dd6216ce53.png",
+          "height": 48
+        },
+        {
+          "size": 13176,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/9faecce92c574c4f9241a6d47e4ab890/16685c1632f843f594952cd5afc767b8.png",
+          "height": 90
+        },
+        {
+          "size": 15866,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/9faecce92c574c4f9241a6d47e4ab890/c703493a8ede4d6e9c9dea4ccbf810a8.png",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/488e4c20018048e1952c59d8097ba823"
+  },
+  "publishedAt": "2020-04-07T13:05:45.412064"
+}

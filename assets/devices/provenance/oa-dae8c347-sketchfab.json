@@ -1,0 +1,47 @@
+{
+  "uid": "dae8c347f87d400b82b69a6a33da9ece",
+  "name": "Google Pixel 5",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-dae8c347f87d400b82b69a6a33da9ece",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "e1e43a9f24864955a8bf1a3203173fee",
+    "username": "minhazul_ferdous",
+    "displayName": "minhazul_ferdous",
+    "profileUrl": "https://sketchfab.com/minhazul_ferdous",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/3a1492eebe4141828903f119d1b89fd9",
+      "images": [
+        {
+          "size": 787,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/3a1492eebe4141828903f119d1b89fd9/1044636a9a2a42468e8d2afe5f9932cd.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1311,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/3a1492eebe4141828903f119d1b89fd9/e1ba8025b85a451a9504b2671a246b3f.jpeg",
+          "height": 48
+        },
+        {
+          "size": 3619,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/3a1492eebe4141828903f119d1b89fd9/6d6c84fb6927463a89b602c7927f98e0.jpeg",
+          "height": 90
+        },
+        {
+          "size": 4343,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/3a1492eebe4141828903f119d1b89fd9/f2dc99954ddc405392b138626178d48f.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/e1e43a9f24864955a8bf1a3203173fee"
+  },
+  "publishedAt": "2021-03-20T17:19:42.083712"
+}

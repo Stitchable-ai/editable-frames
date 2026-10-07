@@ -1,0 +1,47 @@
+{
+  "uid": "3067c70fb7d14bd3b2b03e3246d6052d",
+  "name": "IPHONE X LOWPOLY",
+  "viewerUrl": "https://sketchfab.com/3d-models/none-3067c70fb7d14bd3b2b03e3246d6052d",
+  "license": {
+    "uid": "322a749bcfa841b29dff1e8a1bb74b0b",
+    "label": "CC Attribution"
+  },
+  "user": {
+    "uid": "6b1029cb7d284dbbb95df7c7ccd53746",
+    "username": "FredDrabble",
+    "displayName": "Fred Drabble",
+    "profileUrl": "https://sketchfab.com/FredDrabble",
+    "account": "basic",
+    "avatar": {
+      "uri": "https://api.sketchfab.com/v3/avatars/e5a355fdbfa447069bc02d490f110974",
+      "images": [
+        {
+          "size": 972,
+          "width": 32,
+          "url": "https://media.sketchfab.com/avatars/e5a355fdbfa447069bc02d490f110974/ec585d46105f4b9997e34c5253c0d841.jpeg",
+          "height": 32
+        },
+        {
+          "size": 1313,
+          "width": 48,
+          "url": "https://media.sketchfab.com/avatars/e5a355fdbfa447069bc02d490f110974/d02fffa920c9406abf5529aa02e8b785.jpeg",
+          "height": 48
+        },
+        {
+          "size": 2815,
+          "width": 90,
+          "url": "https://media.sketchfab.com/avatars/e5a355fdbfa447069bc02d490f110974/d0baa968594c47728b5c2053026da7ee.jpeg",
+          "height": 90
+        },
+        {
+          "size": 3142,
+          "width": 100,
+          "url": "https://media.sketchfab.com/avatars/e5a355fdbfa447069bc02d490f110974/8dd2a9c0c7394d719f03e04b06d47388.jpeg",
+          "height": 100
+        }
+      ]
+    },
+    "uri": "https://api.sketchfab.com/v3/users/6b1029cb7d284dbbb95df7c7ccd53746"
+  },
+  "publishedAt": "2018-07-01T12:19:42.789333"
+}

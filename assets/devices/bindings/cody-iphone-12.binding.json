@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "modelId": "cody-iphone-12",
+  "modelSha256": "bfcf73e83b413470bb19924caa9a027718386ad51d5cfc8ea98bb874fe434af7",
+  "runtimeFile": "../runtime/cody-iphone-12.glb",
+  "mesh": "Screen",
+  "meshIndex": 2,
+  "sourceNode": "Screen",
+  "sourceMaterial": null,
+  "hideMaterials": [],
+  "flipU": false,
+  "flipV": false,
+  "fitUV": false,
+  "repeatUV": false,
+  "rotationDegrees": 0,
+  "uvOrder": "normalize optional UV bounds to 0..1; rotate clockwise about center; flip U/V; apply wrap mode",
+  "modelRotation": [
+    0,
+    0,
+    0
+  ],
+  "physicalScale": "unverified; viewer normalizes longest source axis to 3.3 units",
+  "status": "upright test pattern visually verified; validate aspect ratio and framing with your content"
+}

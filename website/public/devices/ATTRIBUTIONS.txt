@@ -1,0 +1,21 @@
+iPhone 17 Pro — Ranguel
+CC-BY-4.0
+Source: https://sketchfab.com/3d-models/iphone-17-pro-4541aa8a28324b33a2baaf81d263aaec
+License evidence: https://github.com/imshaikot/app-preview-craft-skill/blob/main/skills/app-preview-craft/assets/CREDITS.md
+Runtime file decoded from the downloaded pack. Source geometry retained; screen material is replaced with an animated fictional app. iPhone 17 Pro aluminum uses an optional PBR material approximation. No manufacturer endorsement.
+
+iPhone 12 — Cody Bennett
+MIT
+Source: https://github.com/CodyJasonBennett/device-models
+License evidence: https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Runtime file decoded from the downloaded pack. Source geometry retained; screen material is replaced with an animated fictional app. iPhone 17 Pro aluminum uses an optional PBR material approximation. No manufacturer endorsement.
+
+Google Pixel 6 — Cody Bennett
+MIT
+Source: https://github.com/CodyJasonBennett/device-models
+License evidence: https://github.com/CodyJasonBennett/device-models/blob/master/LICENSE
+Runtime file decoded from the downloaded pack. Source geometry retained; screen material is replaced with an animated fictional app. iPhone 17 Pro aluminum uses an optional PBR material approximation. No manufacturer endorsement.
+
+Studio Small 09 HDRI — Sergej Majboroda / Poly Haven
+CC0 https://polyhaven.com/license
+https://polyhaven.com/a/studio_small_09
