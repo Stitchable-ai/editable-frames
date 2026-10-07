@@ -86,11 +86,13 @@
           "app": "Wallet",
           "brand": "NORTH",
           "accent": "#7ed9c4",
-          "yaw": -0.22,
+          "yaw": -0.65,
           "pitch": 0.04,
           "orbit": 0.18,
           "float": 0.35,
-          "exposure": 1.05
+          "exposure": 1,
+          "finish": "aluminium",
+          "reflections": 110
         },
         "keys": {}
       }
@@ -163,6 +165,25 @@
           "min": 0.6,
           "max": 1.6,
           "step": 0.05
+        },
+        "finish": {
+          "type": "enum",
+          "label": "Body finish",
+          "values": [
+            "aluminium",
+            "authored"
+          ],
+          "labels": {
+            "aluminium": "Satin aluminium",
+            "authored": "Original model materials"
+          }
+        },
+        "reflections": {
+          "type": "number",
+          "label": "Reflection angle",
+          "min": -180,
+          "max": 180,
+          "step": 5
         }
       }
     },

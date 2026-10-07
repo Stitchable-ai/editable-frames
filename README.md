@@ -87,7 +87,7 @@ Open the local URL printed by the command (default `http://127.0.0.1:8790`). The
 
 - **24 scoped browser effects** and six composed looks: glow, distortion, grading, wipes, mattes and source-time effects.
 - **11 creative studies**: scientific U-Net schematic, grain film, paper animation, ink, isometric logistics, castle, skeletal dragon, underwater train and kinetic promos.
-- **55-device catalog** with five included GLBs, HDR product lighting, camera controls and screen calibration. Install the separate complete pack to load all 55.
+- **55-device catalog** with five included GLBs, shared HDR product lighting, default satin aluminium chassis, camera controls and screen calibration. Install the separate complete pack to load all 55.
 
 ## Interactive website
 

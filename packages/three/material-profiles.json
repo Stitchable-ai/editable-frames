@@ -26,5 +26,19 @@
         }
       }
     }
+  },
+  "cody-iphone-12": {
+    "modelSha256": "bfcf73e83b413470bb19924caa9a027718386ad51d5cfc8ea98bb874fe434af7",
+    "reason": "Reviewed chassis material role; displays and other materials retain authored values.",
+    "roles": {
+      "Frame": "body"
+    }
+  },
+  "cody-pixel-6": {
+    "modelSha256": "892f752149e8cb4542a240b47e22ffc45d4cf28f659882a5389e2ecd86342426",
+    "reason": "Reviewed chassis material role; displays and other materials retain authored values.",
+    "roles": {
+      "default.001": "body"
+    }
   }
 }

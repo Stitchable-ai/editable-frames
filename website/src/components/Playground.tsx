@@ -1,6 +1,7 @@
 import {useState,useRef,useEffect} from 'react';
 import studies from '../data/studies.json';
 import runtime from '../data/runtime.json';
+import {migrateDeviceSession} from '../../vendor/migrate-device.mjs';
 const templates=Object.fromEntries(studies.map(s=>[s.id,s]));
 const storageKey='editableframe-playground-v1-'+runtime.binding.slice(0,12);
 export default function Playground({initial='castle'}:{initial?:string}) {
@@ -19,7 +20,7 @@ export default function Playground({initial='castle'}:{initial?:string}) {
    const [r,c]=await Promise.all([load('scenes'),load('core')]);
    if(!alive.current)return;
    engine.current=r.createRenderer(canvas.current);let saved;
-   try{saved=localStorage.getItem(storageKey);if(saved)studio.current=c.Studio.restore(saved,templates,runtime.binding)}catch{setMessage('A saved session could not be opened. Starting a fresh study.')}
+   try{saved=localStorage.getItem(storageKey);if(saved)studio.current=c.Studio.restore(migrateDeviceSession(saved),templates,runtime.binding)}catch{setMessage('A saved session could not be opened. Starting a fresh study.')}
    if(!studio.current){const s=new c.Studio(templates,{binding:runtime.binding});s.doc.clips=studies.map(t=>s.make(t.id));s.check(s.doc);s.base=c.clone(s.doc);studio.current=s;}
    for(const template of studies){if(!studio.current.doc.clips.some((c:any)=>c.template===template.id)){const extra=studio.current.make(template.id);studio.current.doc.clips.push(extra);studio.current.base.clips.push(c.clone(extra));}}studio.current.check(studio.current.doc);
    setReady(true);setMessage(saved?'Your saved edits are ready.':'Ready. Pick a control and make it yours.');await draw();

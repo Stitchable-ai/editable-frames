@@ -3,12 +3,13 @@ import {RGBELoader} from 'three/examples/jsm/loaders/RGBELoader.js';
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 // Optional Three.js adapter, not a restriction on EditableFrames renderers.
-export const revision = 'editableframe.product-lighting/1';
+export const revision = 'editableframe.product-lighting/2';
+export {prepareMaterials, createDeviceMaterial, deviceFinishes} from './device-materials.mjs';
 export const presets = {
-  studio: {preset:'studio', intensity:1, exposure:1, rotation:25, background:'#e8e7e5', corrections:true, legacy:false},
+  studio: {preset:'studio', intensity:.85, exposure:1, rotation:110, background:'#e8e7e5', corrections:true, legacy:false},
   contrast: {preset:'contrast', intensity:.72, exposure:1, rotation:110, background:'#24272c', corrections:true, legacy:false},
 };
-export async function createProductLighting(renderer, scene, {hdrURL, hdrSha256}) {
+export async function createProductLighting(renderer, scene, {hdrURL, hdrSha256, ground=true}) {
   renderer.outputColorSpace=T.SRGBColorSpace;
   renderer.shadowMap.enabled=true;
   renderer.shadowMap.type=T.VSMShadowMap;
@@ -42,23 +43,8 @@ export async function createProductLighting(renderer, scene, {hdrURL, hdrSha256}
     scene.environmentRotation.set(0,c.legacy?0:T.MathUtils.degToRad(c.rotation),0);
     scene.background=new T.Color(c.legacy?'#dde3ea':c.background);
     ambient.intensity=c.legacy?2:0;key.intensity=c.legacy?3:(c.preset==='contrast'?.3:.6);
-    key.castShadow=!c.legacy;floor.visible=!c.legacy;current=c;
+    key.castShadow=!c.legacy;floor.visible=ground&&!c.legacy;current=c;
   }
   apply();
   return {apply, groundAt:y=>{floor.position.y=y-.012},inspect:()=>({revision,threeRevision:T.REVISION,hdrSha256:digest,hdrSize:[hdr.width,hdr.height],toneMapping:current.legacy?'ACESFilmic':'Khronos PBR Neutral',output:'sRGB',...current}),dispose(){target.dispose();old.dispose();floor.geometry.dispose();floor.material.dispose();scene.remove(ambient,key,floor)}};
-}
-
-export function prepareMaterials(root, renderer, asset, profiles) {
-  const originals=new Map(),profile=profiles[asset.id];
-  const compatible=profile?.modelSha256===asset.runtimeSha256;
-  const patched=[];
-  root.traverse(n=>{if(!n.isMesh)return;n.castShadow=n.receiveShadow=true;
-    n.material=Array.isArray(n.material)?n.material.map(m=>m.clone()):n.material.clone();
-    for(const m of [n.material].flat()) {
-      for(const t of Object.values(m))if(t?.isTexture)t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
-      originals.set(m,{metalness:m.metalness,roughness:m.roughness,specularIntensity:m.specularIntensity,specularIntensityMap:m.specularIntensityMap});
-      const correction=compatible?profile.materials[m.name]:null;if(correction)patched.push({m,correction});
-    }
-  });
-  return {apply(enabled){for(const [m,v]of originals)Object.assign(m,v);if(enabled)for(const {m,correction}of patched){Object.assign(m,correction.values);m.needsUpdate=true}},inspect:()=>({matched:patched.length,profile:compatible?profile:null,warning:profile&&!compatible?'Material profile skipped: different GLB hash':null})};
 }

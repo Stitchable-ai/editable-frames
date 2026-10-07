@@ -1,6 +1,8 @@
 import * as T from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {RGBELoader} from 'three/addons/loaders/RGBELoader.js';
+import {createProductLighting,prepareMaterials} from '../../../packages/three/studio-lighting.mjs';
+import materialProfiles from '../../../packages/three/material-profiles.json';
+import environmentMeta from '../../../assets/environments/studio.json';
 import models from './devices.json';
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const ease=x=>{x=clamp(x);return x*x*(3-2*x)};
@@ -31,15 +33,14 @@ function appScreen(canvas,t,p){
 export class DeviceScene{
  constructor(){
   this.renderer=new T.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});this.renderer.setSize(1280,720);this.renderer.setPixelRatio(1);this.renderer.outputColorSpace=T.SRGBColorSpace;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFSoftShadowMap;
-  this.scene=new T.Scene();this.scene.background=new T.Color('#eceae4');this.scene.fog=new T.Fog('#eceae4',7,21);this.camera=new T.PerspectiveCamera(34,1280/720,.1,100);this.camera.position.set(0,.8,8.4);this.camera.lookAt(0,0,0);
+  this.scene=new T.Scene();this.scene.background=new T.Color('#eceae4');this.camera=new T.PerspectiveCamera(34,1280/720,.1,100);this.camera.position.set(0,.8,8.4);this.camera.lookAt(0,0,0);
   this.pivot=new T.Group();this.scene.add(this.pivot);this.cache=new Map();this.loading=new Map();this.disposed=false;
-  const floor=new T.Mesh(new T.PlaneGeometry(200,200),new T.MeshStandardMaterial({color:'#e8e5df',roughness:.82}));floor.rotation.x=-Math.PI/2;floor.position.y=-2.1;floor.receiveShadow=true;this.scene.add(floor);
+  const floor=new T.Mesh(new T.PlaneGeometry(200,200),new T.ShadowMaterial({color:'#28312f',opacity:.12}));floor.rotation.x=-Math.PI/2;floor.position.y=-2.1;floor.receiveShadow=true;this.scene.add(floor);
   const plinth=new T.Mesh(new T.CylinderGeometry(1.12,1.2,.19,96),new T.MeshStandardMaterial({color:'#d4d6d0',roughness:.4,metalness:.12}));plinth.position.set(1.3,-1.98,0);plinth.receiveShadow=true;plinth.castShadow=true;this.scene.add(plinth);
-  const key=new T.DirectionalLight('#fff5e8',2.4);key.position.set(-3,7,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.camera.left=-5;key.shadow.camera.right=5;key.shadow.camera.top=5;key.shadow.camera.bottom=-5;key.shadow.bias=-.0003;key.shadow.radius=4;this.scene.add(key);this.scene.add(new T.HemisphereLight('#eaf1ff','#9b9080',.25));
   this.screen=document.createElement('canvas');this.screen.width=480;this.screen.height=1040;
  }
  async environment(){
-  if(!this.envPromise)this.envPromise=(async()=>{const raw=await new RGBELoader().loadAsync('/devices/studio_small_09_2k.hdr');if(this.disposed){raw.dispose();return;}const pmrem=new T.PMREMGenerator(this.renderer);this.env=pmrem.fromEquirectangular(raw);this.scene.environment=this.env.texture;this.scene.environmentIntensity=.9;raw.dispose();pmrem.dispose();})().catch(e=>{this.envPromise=null;throw e});
+  if(!this.envPromise)this.envPromise=createProductLighting(this.renderer,this.scene,{hdrURL:'/devices/studio_small_09_2k.hdr',hdrSha256:environmentMeta.sha256,ground:false}).then(rig=>{if(this.disposed){rig.dispose();return;}this.lighting=rig;rig.apply({background:'#eceae4'});}).catch(e=>{this.envPromise=null;throw e});
   return this.envPromise;
  }
  async prepare(p){
@@ -52,25 +53,26 @@ export class DeviceScene{
  async load(id){
   const spec=models.find(m=>m.id===id);if(!spec)throw Error('Unknown phone model');
   const gltf=await new GLTFLoader().loadAsync(spec.url);const root=gltf.scene;const b=spec.binding;
+  const materials=prepareMaterials(root,this.renderer,spec,materialProfiles,{roles:{[b.mesh]:'authored'}});
   const display=new T.CanvasTexture(this.screen);display.colorSpace=T.SRGBColorSpace;display.flipY=false;display.anisotropy=this.renderer.capabilities.getMaxAnisotropy();if(b.flipU){display.repeat.x=-1;display.offset.x=1}if(b.flipV){display.repeat.y=-1;display.offset.y=1}
   let screens=0;
   root.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;
    if(o.name===b.mesh){o.material=new T.MeshBasicMaterial({map:display,toneMapped:false,side:T.DoubleSide});screens++;}
    else {const materials=Array.isArray(o.material)?o.material:[o.material];for(const m of materials){
     if(b.hideMaterials.includes(m.name)){m.visible=false;}
-    // Preserve source colors/textures. The pack documents this aluminum-only correction.
-    if(id==='craft-iphone-17-pro'&&m.name==='Anodized_aluminum'){m.metalness=1;m.roughness=.3;m.specularIntensity=1;m.specularIntensityMap=null;}
    }}
   });if(!screens)throw Error('Screen binding missing');
   root.rotation.set(...b.modelRotation);root.updateMatrixWorld(true);let box=new T.Box3().setFromObject(root),size=box.getSize(new T.Vector3());root.scale.setScalar(3.35/Math.max(size.x,size.y,size.z));root.updateMatrixWorld(true);box=new T.Box3().setFromObject(root);root.position.sub(box.getCenter(new T.Vector3()));
-  const group=new T.Group();group.add(root);group.visible=false;this.pivot.add(group);const item={group,display};this.cache.set(id,item);if(this.disposed)this.release(item);
+  const group=new T.Group();group.add(root);group.visible=false;this.pivot.add(group);const item={group,display,materials,hidden:b.hideMaterials};this.cache.set(id,item);if(this.disposed)this.release(item);
  }
  draw(t,p){
   const item=this.cache.get(p.model);if(!item)throw Error('Phone has not loaded');for(const [id,m]of this.cache)m.group.visible=id===p.model;
-  appScreen(this.screen,t,p);item.display.needsUpdate=true;this.renderer.toneMappingExposure=p.exposure;
+  item.materials.apply(p.finish??'aluminium');
+  item.group.traverse(o=>{if(o.isMesh)for(const m of [o.material].flat())if(item.hidden.includes(m.name))m.visible=false;});
+  appScreen(this.screen,t,p);item.display.needsUpdate=true;this.lighting.apply({exposure:p.exposure,rotation:p.reflections??110,background:'#eceae4'});
   this.pivot.position.set(1.3,.02+Math.sin(t*.85)*.1*p.float,0);this.pivot.rotation.set(p.pitch+Math.sin(t*.45)*.015*p.float,p.yaw+Math.sin(t*.5)*p.orbit,Math.sin(t*.6)*.025*p.float);
   this.camera.position.set(Math.sin(t*.3)*p.orbit*.3,.72,8.4);this.camera.lookAt(0,0,0);this.renderer.render(this.scene,this.camera);return this.renderer.domElement;
  }
- release(item){const textures=new Set();item.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material]){for(const v of Object.values(m))if(v?.isTexture)textures.add(v);m.dispose()}}});textures.forEach(t=>t.dispose());item.display.dispose();this.pivot.remove(item.group);}
- dispose(){this.disposed=true;for(const item of this.cache.values())this.release(item);this.cache.clear();this.env?.dispose();this.scene.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose?.()});this.renderer.dispose();this.renderer.forceContextLoss();}
+ release(item){item.materials.dispose();const textures=new Set();item.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material]){for(const v of Object.values(m))if(v?.isTexture)textures.add(v);m.dispose()}}});textures.forEach(t=>t.dispose());item.display.dispose();this.pivot.remove(item.group);}
+ dispose(){this.disposed=true;for(const item of this.cache.values())this.release(item);this.cache.clear();this.lighting?.dispose();this.scene.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose?.()});this.renderer.dispose();this.renderer.forceContextLoss();}
 }
