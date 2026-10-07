@@ -16,3 +16,5 @@ This first beta includes:
 Read the README for setup and demos. Browser rendering requires Playwright Chromium and FFmpeg. Use the attached checksum and pack receipt to verify the full device pack; original asset licenses and credits travel with the pack.
 
 Beta scope: trusted local code, provisional APIs, bounded local media decoding and static audio controls. This release does not include the Stitchable app migration, an untrusted-code sandbox, or production-scale streaming decode. The creative studies and device viewer are not all unified CLI export templates yet. See `docs/beta.md` and `NOTICE.md` in the source.
+
+Validation: the framework, website and rendering regression checks passed on Ubuntu 24.04 in [GitHub Actions](https://github.com/Stitchable-ai/editable-frames/actions/runs/37670908538). The repeated grain-frame regression produced identical pixels in all three passes.

@@ -156,7 +156,7 @@ Read [agent installation](docs/agents.md). The canonical [SKILL.md](skills/edita
 
 ## Open devices
 
-The complete 55-model pack is prepared separately from the source checkout. See [assets and licensing](docs/assets.md) for sources, starter models, attribution, integrity checks and release instructions. Models retain their own CC BY, CC0 or MIT licenses; they are not relicensed under the framework's license.
+Download the complete **55-model device pack** from the [beta 1 release](https://github.com/Stitchable-ai/editable-frames/releases/tag/v0.1.0-beta.1), with its receipt and SHA-256 checksum. The source checkout includes five starters. See [assets and licensing](docs/assets.md) for sources, starter models, attribution, integrity checks and release instructions. Models retain their own CC BY, CC0 or MIT licenses; they are not relicensed under the framework's license.
 
 ## What is implemented
 
@@ -173,6 +173,7 @@ npm run build
 npm test
 npm run test:beta
 npm run test:browser
+npm run test:render
 npm run check:assets
 npm run check:public
 ```

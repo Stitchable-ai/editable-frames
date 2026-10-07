@@ -4,10 +4,13 @@ The catalog has **55 device models**: phones, laptops, desktops/monitors, tablet
 
 A normal Git checkout includes five prepared starter GLBs (about 16 MB): iPhone 17 Pro Max, MacBook Pro M3 16 inch, iMac 2021, modern TV and iPad Air. The remaining prepared GLBs are ignored by Git and belong in the separate device pack. The complete local collection is approximately 275 MB before packing. Previews, attribution, hashes, bindings, provenance and the CC0 HDR are in the source repository.
 
+The complete pack is publicly downloadable from the [EditableFrames beta 1 release](https://github.com/Stitchable-ai/editable-frames/releases/tag/v0.1.0-beta.1), together with its SHA-256 checksum and JSON receipt. The uploaded ZIP digest was verified against the prepared pack.
+
 ## Use the full pack
 
 ```sh
-node bin/editableframes.mjs assets install-pack /path/to/editable-framess-devices-v1.zip
+node bin/editableframes.mjs assets install-pack \
+  https://github.com/Stitchable-ai/editable-frames/releases/download/v0.1.0-beta.1/editableframes-devices-v1.zip
 node bin/editableframes.mjs assets verify
 ```
 
@@ -24,7 +27,7 @@ npm run pack:assets
 
 This creates `dist/editableframes-devices-v1.zip`, its JSON receipt and `dist/SHA256SUMS`. The pack contains models, credits, source/license evidence, display bindings and environment files. Keep it as a GitHub Release attachment rather than adding all binary history to the main source tree.
 
-When the owner has created the public GitHub repository and a release, upload those three files through the release UI or `gh release upload`. No repository name, remote or public download URL has been invented, and no upload is performed by this scaffold. **Pushing source alone publishes the five starters and manifest; the complete pack becomes publicly downloadable only after attaching it to a release.**
+The beta 1 attachments have been uploaded to `Stitchable-ai/editable-frames`. For future versions, upload a new pack and its receipt/checksums together after validation. Source Git history contains five starters; release attachments distribute the complete collection.
 
 ## Credits and modifications
 
