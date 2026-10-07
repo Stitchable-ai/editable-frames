@@ -32,7 +32,7 @@ The earlier upload reached a Worker but custom-domain attachment failed because 
 
 ## CI/CD behavior
 
-GitHub Actions runs **Framework validation** and **Website validation** on pushes and pull requests. It needs no Cloudflare credentials. Cloudflare Builds deploys pushes to `main`, repeating the website checks before deployment. Once both GitHub checks have run successfully, a repository owner can enable a main-branch ruleset requiring pull requests and both checks. Cloudflare does not wait for GitHub Actions; branch rules prevent ordinary unvalidated merges, and its own build command checks the website again.
+GitHub Actions runs **Framework validation**, **Rendering regression** and **Website validation** on pushes and pull requests. It needs no Cloudflare credentials. Cloudflare Builds deploys pushes to `main`, repeating the website checks before deployment. Once all three GitHub checks have run successfully, a repository owner can enable a main-branch ruleset requiring pull requests and all three checks. Cloudflare does not wait for GitHub Actions; branch rules prevent ordinary unvalidated merges, and its own build command checks the website again.
 
 Initially watch all changes to avoid missing a dependency. Later you may narrow the Worker's build watch paths to `website/*`; all its runtime sources and package files are inside that folder. Keep the main site's build connection separate.
 
