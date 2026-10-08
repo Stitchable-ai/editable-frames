@@ -27,3 +27,5 @@
 @media(max-width:1000px){.site-header nav{gap:15px}.agent-panel{gap:25px}.agent-instructions h3{font-size:26px}.agent-docs{display:block;margin-left:0}.site-footer>div{flex-wrap:wrap;gap:15px}}
 @media(max-width:700px){.site-header nav{flex-wrap:wrap;justify-content:flex-start;gap:12px 17px}.agent-tabs{grid-template-columns:repeat(2,1fr);gap:8px;padding:12px}.agent-tabs button{font-size:15px;min-height:53px}.agent-brief{padding:22px 20px 0}.agent-brief textarea{font-size:14px}.agent-panel{grid-template-columns:1fr;padding:25px 20px}.agent-docs{display:inline-block;margin-left:16px}.agent-prompt textarea{height:290px;font-size:10px}.agent-copy-status{padding:0 20px 20px}.agent-source{align-items:flex-start;flex-direction:column;gap:17px}.agent-source a{white-space:normal}}
 .agent-copy-buttons{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.agent-copy-buttons [data-agent-select]{background:transparent;font-weight:400}.agent-prompt-heading{flex-wrap:wrap}
+
+@media(max-width:1000px){.site-header{flex-wrap:wrap}.site-header nav{flex-wrap:wrap}}
