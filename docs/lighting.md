@@ -20,6 +20,8 @@ materials.apply('authored'); // restore original values, colors and maps
 materials.apply('aluminium'); // return to the default
 ```
 
+The iPhone 12 source merges its front bezel/notch and chassis into one material. Its digest-bound `surfaceRegions` profile assigns the front triangles a dark glass finish and keeps the sides aluminium. Positions, UVs and screen bindings are unchanged; selecting authored materials restores the source appearance.
+
 For generated geometry, use `createDeviceMaterial` on every chassis, and use separate glass/display/keyboard materials. Custom renderer code remains unrestricted. Explicit roles (`mesh.name`, then `material.name`, or `userData.deviceRole`) override automatic recognition. `finish: 'authored'` opts out when preparing a model. The legacy boolean `apply(true/false)` remains compatible. Dispose the rig's retained material snapshots with `materials.dispose()` when releasing the model.
 
 The website exposes **Body finish** and **Reflection angle** through its normal editable schema and undo/redo. The library viewer's **Satin aluminium bodies** toggle is saved with its existing appearance history. Screen content uses a separate unlit material so exposure does not alter interface colors. Look profiles record device, camera, HDR identity and material policy.

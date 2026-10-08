@@ -50,3 +50,27 @@ test('an explicit authored role also takes priority over a reviewed correction',
  prepareMaterials(root,renderer,{id:'phone',runtimeSha256:'good'},profiles,{roles:{Housing:'authored'}});
  assert.equal(body.material.metalness,0);
 });
+
+test('iPhone 12 separates the merged front bezel while preserving screen geometry and authored override',async()=>{
+ const {readFile}=await import('node:fs/promises');const {createHash}=await import('node:crypto');
+ const bytes=await readFile(new URL('../website/public/devices/cody-iphone-12.glb',import.meta.url));
+ const length=bytes.readUInt32LE(12),gltf=JSON.parse(bytes.subarray(20,20+length));
+ function attribute(id){
+  const a=gltf.accessors[id],v=gltf.bufferViews[a.bufferView];const size=a.type==='VEC3'?3:1;
+  const out=a.componentType===5126?new Float32Array(a.count*size):new Uint32Array(a.count*size);
+  const start=28+length+(v.byteOffset??0)+(a.byteOffset??0),stride=v.byteStride??size*4;
+  for(let i=0;i<a.count;i++)for(let k=0;k<size;k++)out[i*size+k]=a.componentType===5126?bytes.readFloatLE(start+i*stride+k*4):bytes.readUInt32LE(start+i*stride+k*4);
+  return new T.BufferAttribute(out,size);
+ }
+ const geometry=new T.BufferGeometry();geometry.setAttribute('position',attribute(3));geometry.setIndex(attribute(0));
+ const root=new T.Group(),frame=new T.Mesh(geometry,new T.MeshStandardMaterial({color:'white',metalness:0,roughness:.7}));frame.name='Frame';frame.material.name='Frame';root.add(frame);
+ const profiles=JSON.parse(await readFile(new URL('../packages/three/material-profiles.json',import.meta.url),'utf8'));
+ const rig=prepareMaterials(root,renderer,{id:'cody-iphone-12',runtimeSha256:createHash('sha256').update(bytes).digest('hex')},profiles);
+ assert.equal(frame.geometry.index.count,geometry.index.count);assert.deepEqual(frame.geometry.attributes.position.array,geometry.attributes.position.array);
+ assert.equal(frame.geometry.groups.length,2);assert.ok(frame.geometry.groups[1].count>10000);
+ assert.equal(frame.material[0].metalness,1);assert.equal(frame.material[1].metalness,0);assert.equal(frame.material[1].color.getHexString(),'090c10');
+ rig.apply('authored');assert.equal(frame.material[1].color.getHexString(),'ffffff');assert.equal(frame.material[0].metalness,0);
+ rig.apply('aluminium');assert.equal(frame.material[1].color.getHexString(),'090c10');
+ const untouched=new T.Mesh(geometry,new T.MeshStandardMaterial());untouched.name='Frame';
+ prepareMaterials(untouched,renderer,{id:'cody-iphone-12',runtimeSha256:'wrong'},profiles);assert.equal(untouched.geometry,geometry);assert.ok(!Array.isArray(untouched.material));
+});
