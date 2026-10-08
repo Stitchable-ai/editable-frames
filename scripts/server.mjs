@@ -1,5 +1,5 @@
 import http from 'node:http';import fs from 'node:fs/promises';import {createReadStream} from 'node:fs';import path from 'node:path';
-const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.glb':'model/gltf-binary','.hdr':'application/octet-stream','.png':'image/png','.jpg':'image/jpeg','.md':'text/plain; charset=utf-8','.txt':'text/plain; charset=utf-8','.mp4':'video/mp4','.wav':'audio/wav','.mov':'video/quicktime'};
+const mime={'.svg':'image/svg+xml','.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.json':'application/json','.css':'text/css','.glb':'model/gltf-binary','.hdr':'application/octet-stream','.png':'image/png','.jpg':'image/jpeg','.md':'text/plain; charset=utf-8','.txt':'text/plain; charset=utf-8','.mp4':'video/mp4','.wav':'audio/wav','.mov':'video/quicktime'};
 export async function sendFile(req,res,file){
  const stat=await fs.stat(file);if(!stat.isFile())throw Error('Not a file');let start=0,end=stat.size-1,status=200;
  if(req.headers.range){const m=/^bytes=(\d*)-(\d*)$/.exec(req.headers.range);if(!m||(!m[1]&&!m[2])){res.writeHead(416,{'Content-Range':`bytes */${stat.size}`});res.end();return}
