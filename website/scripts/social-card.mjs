@@ -13,7 +13,7 @@ const svg=`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.or
 <rect width="1200" height="630" fill="#f5f3ea"/>
 <g font-family="Arial,sans-serif" fill="#192f2a">
 <g transform="translate(60 54) scale(1.09375)" color="#192f2a">${mark}</g>
-<text x="107" y="80" font-size="25" font-weight="700">EditableFrames</text>
+<text x="107" y="80" font-size="25" font-weight="700">EditableFrames<tspan dx="2" dy="-11" font-size="11">™</tspan></text>
 <text x="60" y="176" font-size="69" font-weight="700" letter-spacing="-4">Code the motion.</text>
 <text x="60" y="246" font-size="69" font-weight="700" letter-spacing="-4" fill="#284cd7">Keep the control.</text>
 <text x="60" y="296" font-family="monospace" font-size="11" letter-spacing="2" fill="#59685c">EDITABLE CODE-GENERATED VIDEO · BY STITCHABLE</text>
