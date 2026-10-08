@@ -51,7 +51,13 @@ import { AGENT_GUIDES, DEFAULT_BRIEF, buildAgentPrompt, REPOSITORY } from '../da
       const panel=button.closest<HTMLElement>('[data-agent-panel]')!;
       const field=panel.querySelector<HTMLTextAreaElement>(button.dataset.agentCopy==='prompt'?'[data-agent-prompt]':'[data-agent-setup]')!;
       try {
-        await navigator.clipboard.writeText(field.value);
+        // Native selection copying reaches the OS pasteboard in embedded
+        // WebViews whose Clipboard API may only update an internal clipboard.
+        field.focus({preventScroll:true});field.select();
+        let copied=false;
+        try { copied=document.execCommand('copy'); } catch {}
+        if(!copied)await navigator.clipboard.writeText(field.value);
+        field.setSelectionRange(0,0);button.focus({preventScroll:true});
         button.textContent='Copied ✓';
         status.textContent=button.dataset.agentCopy==='prompt'?'Prompt copied. Open your tool and paste it into a new conversation.':'Setup commands copied. Run them in a new local folder.';
       } catch {
