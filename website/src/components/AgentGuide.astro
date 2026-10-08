@@ -10,7 +10,7 @@ import { AGENT_GUIDES, DEFAULT_BRIEF, buildAgentPrompt, REPOSITORY } from '../da
     <div class="agent-tabs" role="tablist" aria-label="Choose your AI tool">
       {AGENT_GUIDES.map((guide,i)=><button type="button" role="tab" id={`agent-tab-${guide.id}`} aria-controls={`agent-panel-${guide.id}`} aria-selected={i===0?'true':'false'} tabindex={i===0?0:-1} data-agent-tab={guide.id}><img src={`/tool-logos/${guide.logo}.svg`} width="27" height="27" alt=""/>{guide.name}</button>)}
     </div>
-    <div class="agent-brief"><label for="agent-creative-brief">01 / YOUR CREATIVE BRIEF</label><textarea id="agent-creative-brief" rows="3" maxlength="2500" data-agent-brief>{DEFAULT_BRIEF}</textarea><p>Make this yours. The prompt updates as you type.</p></div>
+    <div class="agent-brief"><label for="agent-creative-brief">01 / YOUR CREATIVE BRIEF</label><textarea id="agent-creative-brief" rows="3" maxlength="2500" placeholder={DEFAULT_BRIEF} data-agent-brief>{DEFAULT_BRIEF}</textarea><p>Make this yours. The prompt updates as you type.</p></div>
     {AGENT_GUIDES.map((guide,i)=><div class="agent-panel" id={`agent-panel-${guide.id}`} role="tabpanel" aria-labelledby={`agent-tab-${guide.id}`} hidden={i!==0} tabindex="0" data-agent-panel={guide.id}>
       <div class="agent-instructions"><span class="eyebrow">{guide.context}</span><h3>{guide.title}</h3><p>{guide.description}</p><ol>{guide.steps.map(step=><li>{step}</li>)}</ol><a class="agent-open" href={guide.url} target="_blank" rel="noopener">{guide.action} <span aria-hidden="true">↗</span></a><a class="text-link agent-docs" href={guide.docs} target="_blank" rel="noopener">Tool setup docs ↗</a></div>
       <div class="agent-prompt"><div class="agent-prompt-heading"><span class="mono">02 / COPY & PASTE</span><div class="agent-copy-buttons"><button type="button" data-agent-select aria-label={`Select ${guide.name} prompt text`}>Select text</button><button type="button" data-agent-copy="prompt" aria-label={`Copy ${guide.name} prompt`}>Copy prompt <span aria-hidden="true">⧉</span></button></div></div><label class="sr-only" for={`agent-prompt-${guide.id}`}>{guide.name} prompt</label><textarea id={`agent-prompt-${guide.id}`} readonly rows="14" spellcheck="false" data-agent-prompt>{buildAgentPrompt(guide.id)}</textarea><p class="agent-paste-note">Copy first, then paste into your tool. If your browser blocks clipboard sharing, use Select text and your keyboard’s Copy command. Opening the tool does not send your prompt.</p></div>
@@ -23,6 +23,7 @@ import { AGENT_GUIDES, DEFAULT_BRIEF, buildAgentPrompt, REPOSITORY } from '../da
 </section>
 <script>
   import { buildAgentPrompt } from '../data/agent-guides';
+  import { buildStudyBrief } from '../data/study-briefs';
   for (const root of document.querySelectorAll<HTMLElement>('[data-agent-guide]')) {
     const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-agent-tab]'));
     const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-agent-panel]'));
@@ -42,11 +43,22 @@ import { AGENT_GUIDES, DEFAULT_BRIEF, buildAgentPrompt, REPOSITORY } from '../da
         if(next!==null){event.preventDefault();selectTab(next,true);}
       });
     });
-    brief.addEventListener('input',() => {
+    function updatePrompts() {
       panels.forEach(panel => { panel.querySelector<HTMLTextAreaElement>('[data-agent-prompt]')!.value=buildAgentPrompt(panel.dataset.agentPanel!,brief.value); });
       root.querySelectorAll<HTMLButtonElement>('[data-agent-copy="prompt"]').forEach(button => { button.textContent='Copy prompt ⧉'; });
       status.textContent='Your creative brief is included in each tool’s prompt.';
-    });
+    }
+    brief.addEventListener('input',updatePrompts);
+    document.querySelectorAll<HTMLAnchorElement>('[data-study-brief]').forEach(link=>link.addEventListener('click',event=>{
+      // Keep modified clicks as normal links; never submit the brief to a tool.
+      if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+      const selected=buildStudyBrief(link.dataset.studyBrief!);if(!selected)return;
+      event.preventDefault();brief.value=selected;brief.placeholder=selected;updatePrompts();
+      document.dispatchEvent(new Event('editableframes:brief-selected'));
+      root.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+      brief.focus({preventScroll:true});
+      status.textContent='This collection study is ready in every tool’s prompt. Refine the brief, then copy it to your agent.';
+    }));
     root.querySelectorAll<HTMLButtonElement>('[data-agent-select]').forEach(button => button.addEventListener('click',() => {
       const field=button.closest<HTMLElement>('[data-agent-panel]')!.querySelector<HTMLTextAreaElement>('[data-agent-prompt]')!;
       field.focus({preventScroll:true});field.select();
