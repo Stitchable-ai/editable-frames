@@ -1,0 +1,63 @@
+---
+import { AGENT_GUIDES, DEFAULT_BRIEF, buildAgentPrompt, REPOSITORY } from '../data/agent-guides';
+---
+<section class="agent-guide section" id="use-with-ai" aria-labelledby="agent-guide-heading" data-agent-guide>
+  <div class="section-heading">
+    <div><span class="eyebrow">YOUR IDEA + YOUR AI TOOL</span><h2 id="agent-guide-heading">Bring your agent.<br/><em>Make your next frame.</em></h2></div>
+    <p>Choose your tool. Copy a brief. Keep the details editable.<br/>The same open framework, with a workflow for each.</p>
+  </div>
+  <div class="agent-workbench">
+    <div class="agent-tabs" role="tablist" aria-label="Choose your AI tool">
+      {AGENT_GUIDES.map((guide,i)=><button type="button" role="tab" id={`agent-tab-${guide.id}`} aria-controls={`agent-panel-${guide.id}`} aria-selected={i===0?'true':'false'} tabindex={i===0?0:-1} data-agent-tab={guide.id}><img src={`/tool-logos/${guide.logo}.svg`} width="27" height="27" alt=""/>{guide.name}</button>)}
+    </div>
+    <div class="agent-brief"><label for="agent-creative-brief">01 / YOUR CREATIVE BRIEF</label><textarea id="agent-creative-brief" rows="3" maxlength="2500" data-agent-brief>{DEFAULT_BRIEF}</textarea><p>Make this yours. The prompt updates as you type.</p></div>
+    {AGENT_GUIDES.map((guide,i)=><div class="agent-panel" id={`agent-panel-${guide.id}`} role="tabpanel" aria-labelledby={`agent-tab-${guide.id}`} hidden={i!==0} tabindex="0" data-agent-panel={guide.id}>
+      <div class="agent-instructions"><span class="eyebrow">{guide.context}</span><h3>{guide.title}</h3><p>{guide.description}</p><ol>{guide.steps.map(step=><li>{step}</li>)}</ol><a class="agent-open" href={guide.url} target="_blank" rel="noopener">{guide.action} <span aria-hidden="true">↗</span></a><a class="text-link agent-docs" href={guide.docs} target="_blank" rel="noopener">Tool setup docs ↗</a></div>
+      <div class="agent-prompt"><div class="agent-prompt-heading"><span class="mono">02 / COPY & PASTE</span><button type="button" data-agent-copy="prompt" aria-label={`Copy ${guide.name} prompt`}>Copy prompt <span aria-hidden="true">⧉</span></button></div><label class="sr-only" for={`agent-prompt-${guide.id}`}>{guide.name} prompt</label><textarea id={`agent-prompt-${guide.id}`} readonly rows="14" spellcheck="false" data-agent-prompt>{buildAgentPrompt(guide.id)}</textarea><p class="agent-paste-note">Copy first, then paste into your tool. Opening the tool does not send your prompt.</p></div>
+      <details class="agent-setup"><summary>Optional: set up the local SDK{guide.id==='chatgpt'?'':' and skill'}</summary><p>{guide.setupNote}</p><label class="sr-only" for={`agent-setup-${guide.id}`}>{guide.name} setup commands</label><textarea id={`agent-setup-${guide.id}`} readonly rows="4" spellcheck="false" data-agent-setup>{guide.setup}</textarea><button type="button" data-agent-copy="setup" aria-label={`Copy ${guide.name} setup commands`}>Copy setup commands ⧉</button></details>
+    </div>)}
+    <p class="agent-copy-status" role="status" aria-live="polite" aria-atomic="true" data-agent-status>Nothing is sent from this page. You choose where to paste.</p>
+    <noscript><p class="no-script">Read the <a href={`${REPOSITORY}/blob/main/docs/agents.md`}>agent setup guide</a> for all tools. You can select and copy the Claude prompt above.</p></noscript>
+  </div>
+  <div class="agent-source"><p>Open-source, model-neutral, and ready for new creative libraries.<br/>Local execution needs Node.js; video export also needs Chromium and FFmpeg.</p><a href={REPOSITORY} target="_blank" rel="noopener"><img src="/tool-logos/github.svg" width="23" height="23" alt=""/> Explore the MIT source <span aria-hidden="true">↗</span></a></div>
+</section>
+<script>
+  import { buildAgentPrompt } from '../data/agent-guides';
+  for (const root of document.querySelectorAll<HTMLElement>('[data-agent-guide]')) {
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-agent-tab]'));
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-agent-panel]'));
+    const brief = root.querySelector<HTMLTextAreaElement>('[data-agent-brief]')!;
+    const status = root.querySelector<HTMLElement>('[data-agent-status]')!;
+    function selectTab(index: number, focus = false) {
+      tabs.forEach((tab,i) => { tab.setAttribute('aria-selected',String(i===index)); tab.tabIndex=i===index?0:-1; });
+      panels.forEach(panel => { panel.hidden=panel.dataset.agentPanel!==tabs[index].dataset.agentTab; });
+      root.querySelectorAll<HTMLButtonElement>('[data-agent-copy]').forEach(button => { button.textContent=button.dataset.agentCopy==='prompt'?'Copy prompt ⧉':'Copy setup commands ⧉'; });
+      status.textContent='Nothing is sent from this page. You choose where to paste.';
+      if(focus)tabs[index].focus();
+    }
+    tabs.forEach((tab,i) => {
+      tab.addEventListener('click',() => selectTab(i));
+      tab.addEventListener('keydown',event => {
+        const next=event.key==='ArrowRight'?(i+1)%tabs.length:event.key==='ArrowLeft'?(i+tabs.length-1)%tabs.length:event.key==='Home'?0:event.key==='End'?tabs.length-1:null;
+        if(next!==null){event.preventDefault();selectTab(next,true);}
+      });
+    });
+    brief.addEventListener('input',() => {
+      panels.forEach(panel => { panel.querySelector<HTMLTextAreaElement>('[data-agent-prompt]')!.value=buildAgentPrompt(panel.dataset.agentPanel!,brief.value); });
+      root.querySelectorAll<HTMLButtonElement>('[data-agent-copy="prompt"]').forEach(button => { button.textContent='Copy prompt ⧉'; });
+      status.textContent='Your creative brief is included in each tool’s prompt.';
+    });
+    root.querySelectorAll<HTMLButtonElement>('[data-agent-copy]').forEach(button => button.addEventListener('click',async () => {
+      const panel=button.closest<HTMLElement>('[data-agent-panel]')!;
+      const field=panel.querySelector<HTMLTextAreaElement>(button.dataset.agentCopy==='prompt'?'[data-agent-prompt]':'[data-agent-setup]')!;
+      try {
+        await navigator.clipboard.writeText(field.value);
+        button.textContent='Copied ✓';
+        status.textContent=button.dataset.agentCopy==='prompt'?'Prompt copied. Open your tool and paste it into a new conversation.':'Setup commands copied. Run them in a new local folder.';
+      } catch {
+        field.focus();field.select();
+        status.textContent='Clipboard access is unavailable. The text is selected; use your browser’s Copy command.';
+      }
+    }));
+  }
+</script>

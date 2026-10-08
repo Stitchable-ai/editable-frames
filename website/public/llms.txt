@@ -6,8 +6,12 @@ The independent browser playground has 12 curated studies using Canvas and Three
 
 The framework is model-neutral and needs no Stitchable account or model API key. Its CLI and shared SKILL.md can be used by tool-capable agents; host-specific integration needs independent testing. The beta runs trusted local JavaScript, not arbitrary untrusted code. Control schemas do not restrict future renderers or creative source code.
 
+The homepage includes a Q&A and tool-specific starter prompts for Claude, ChatGPT, Grok Build and Codex. Prompts are copied locally, not submitted to a model by this website. Local SDK execution requires a tool-capable workspace.
+
 ## Authoritative pages
 - [Playground and collection](https://editableframes.stitchable.ai/): 12 interactive code-generated scenes.
+- [Use with AI](https://editableframes.stitchable.ai/#use-with-ai): Copyable creative briefs, SDK setup, and shared skill workflows.
+- [Q&A](https://editableframes.stitchable.ai/#faq): Exports, accounts, editable controls, commercial licensing and agent usage.
 - [Browser guide](https://editableframes.stitchable.ai/guide/): Playback, controls, history and saved settings.
 - [Framework reference](https://editableframes.stitchable.ai/reference/): Controls, agent setup, export scope and current limits.
 - [Credits](https://editableframes.stitchable.ai/credits/): Framework, library, device and HDR licenses.
