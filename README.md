@@ -104,12 +104,14 @@ The canonical package, CLI and agent skill use `editableframes`. The original `e
 ## Make your own clip
 
 ```sh
-node bin/editableframes.mjs init /path/to/my-clip
+node bin/editableframes.mjs init /path/to/my-clip --renderer
 node bin/editableframes.mjs inspect /path/to/my-clip
 node bin/editableframes.mjs preview /path/to/my-clip
 ```
 
-Edit `clip.mjs` to define the visual. `template.nodes` and `template.schemas` expose optional editable anchors. The initial starter exports a Canvas renderer. After editing source, run `node bin/editableframes.mjs rebind /path/to/my-clip`; add `--reset` when adopting a changed schema. Prior project and source snapshots are retained under `.editableframe/`. Other libraries can draw or composite into that canvas; new host adapters can support other output surfaces.
+Edit `clip.mjs` to define the visual. The renderer starter exports `defineRenderer` from `editableframes/renderer`: arbitrary DOM, Canvas, SVG or WebGL code renders into its own root at explicit source time. Optional controls expose editable props; scenes with no controls work too. Read the [portable renderer contract](docs/renderer-contract.md) for a complete example and the exact host services. The original `init` Canvas-template starter and `--media` remain supported.
+
+After editing source, run `node bin/editableframes.mjs rebind /path/to/my-clip` to retain compatible edits. Use `--reset` only when deliberately replacing the schema and starting from defaults. Prior project and source snapshots are retained under `.editableframe/`; source rebind is separate from property undo/redo.
 
 Use the exact IDs and revision from `inspect` in a proposal:
 
@@ -119,8 +121,8 @@ Use the exact IDs and revision from `inspect` in a proposal:
   "command": {
     "type": "set",
     "clip": "clip-id-from-inspect",
-    "anchor": "hero",
-    "property": "accent",
+    "anchor": "orb",
+    "property": "color",
     "value": "#ff8866",
     "label": "Warm coral palette"
   }
@@ -168,12 +170,17 @@ The device viewer currently has its own look history/profile. It is not yet unif
 
 **Golden rule:** new libraries and more sophisticated generated code must remain possible. The control schema is an editing interface, not a fixed visual language.
 
+## Motion desk study
+
+Try per-object animation tracks with a real 3D phone and a Canvas explainer: `npm run dev:motion`. Edit keyframe diamonds and temporal Bezier curves, swap phones, and undo people/agent edits through the same history engine. This standalone proof is **not yet native Stitchable timeline integration**. Read the [scope and test guide](docs/ae-controls-poc.md) and [generation prompt](docs/ae-controls-generation-prompt.txt).
+
 ## Develop
 
 ```sh
 npm run build
 npm test
 npm run test:beta
+npm run test:renderer
 npm run test:browser
 npm run test:render
 npm run check:assets

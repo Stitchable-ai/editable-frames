@@ -24,8 +24,10 @@ export async function render(dir,output,{fps,frames,format,background='#101922',
   const frameDir=path.join(temp,'frames');await fs.mkdir(frameDir);
   for(let frame=0;frame<count;frame++){
    signal?.throwIfAborted();if(errors.length)throw Error(errors.join('\n'));
-   const png=await page.evaluate(async t=>{await window.editableframe.seek(t,{timeline:true});return window.editableframe.png()},frame*rate.den/rate.num);
-   await fs.writeFile(path.join(frameDir,String(frame+1).padStart(6,'0')+'.png'),Buffer.from(png.split(',')[1],'base64'));
+   let bytes;
+   if(d.kind==='renderer'){await page.evaluate(t=>window.editableframe.seek(t,{timeline:true}),frame*rate.den/rate.num);bytes=await page.locator('#screen').screenshot({omitBackground:true,timeout:30000});}
+   else{const png=await page.evaluate(async t=>{await window.editableframe.seek(t,{timeline:true});return window.editableframe.png()},frame*rate.den/rate.num);bytes=Buffer.from(png.split(',')[1],'base64');}
+   await fs.writeFile(path.join(frameDir,String(frame+1).padStart(6,'0')+'.png'),bytes);
    onProgress({phase:'frames',frame:frame+1,total:count,progress:(frame+1)/count});
   }
   const actualDuration=count*rate.den/rate.num,audioPath=path.join(temp,'audio.wav');const audio=await mixAudio({...d,assets:host.media.assets},host.media.catalog,audioPath,actualDuration,{signal});

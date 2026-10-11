@@ -18,7 +18,12 @@
     "./three": "./packages/three/studio-lighting.mjs",
     "./effects": "./packages/effects/catalog.mjs",
     "./media": "./packages/media/ports.mjs",
-    "./compositor": "./packages/runtime/compositor.mjs"
+    "./compositor": "./packages/runtime/compositor.mjs",
+    "./animation": "./packages/core/animation.mjs",
+    "./renderer": "./packages/core/renderer.mjs",
+    "./controls": "./packages/core/controls.mjs",
+    "./renderer-host": "./packages/runtime/renderer-host.mjs",
+    "./interaction": "./packages/core/interaction.mjs"
   },
   "scripts": {
     "build": "node scripts/build.mjs",
@@ -29,7 +34,10 @@
     "pack:assets": "node scripts/assets.mjs pack",
     "check:public": "node scripts/check-public.mjs",
     "test:beta": "node tests/beta-integration.mjs",
-    "test:render": "node tests/render-regression.mjs"
+    "test:render": "node tests/render-regression.mjs",
+    "build:motion": "node examples/ae-controls/build.mjs",
+    "dev:motion": "node examples/ae-controls/serve.mjs",
+    "test:renderer": "node tests/renderer-integration.mjs"
   },
   "dependencies": {
     "esbuild": "0.25.10",

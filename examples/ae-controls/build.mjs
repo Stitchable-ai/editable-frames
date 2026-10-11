@@ -1,0 +1,17 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+import {build} from 'esbuild';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
+const dir=path.join(root,'examples/ae-controls');
+await fs.writeFile(path.join(dir,'binding.mjs'),"export const binding='build-probe';\n");
+const options={absWorkingDir:root,entryPoints:['examples/ae-controls/app.mjs'],outfile:'examples/ae-controls/bundle.js',bundle:true,format:'esm',target:'es2022',minify:true,metafile:true,nodePaths:[process.env.EDITABLEFRAMES_DEPS||path.join(root,'node_modules')]};
+const probe=await build({...options,write:false});
+const hashes={};
+for(const file of Object.keys(probe.metafile.inputs).filter(p=>!p.endsWith('/binding.mjs')).sort()) hashes[file.includes('node_modules/')?'node_modules/'+file.split('node_modules/').at(-1):file]=createHash('sha256').update(await fs.readFile(path.resolve(root,file))).digest('hex');
+for(const file of ['examples/ae-controls/index.html','examples/ae-controls/style.css'])hashes[file]=createHash('sha256').update(await fs.readFile(path.join(root,file))).digest('hex');
+const binding=createHash('sha256').update(JSON.stringify(hashes)).digest('hex');
+await fs.writeFile(path.join(dir,'binding.mjs'),`export const binding=${JSON.stringify(binding)};\n`);
+await build(options);
+console.log('Motion study source binding: '+binding);

@@ -20,6 +20,7 @@ jobs:
       - run: npm run check:public
       - run: npx playwright install --with-deps chromium
       - run: npm run test:beta
+      - run: npm run test:renderer
       - run: npm run test:browser
   website:
     name: Website validation

@@ -17,7 +17,7 @@ flowchart TD
 
 ## Boundaries
 
-`packages/core` knows authoring values and clocks; it does not draw scenes. A template exposes stable anchors with typed properties. A renderer receives sampled values and explicit source time. A new library does not need to fit an existing set of scene primitives.
+`packages/core` knows authoring values and clocks; it does not draw scenes. A scene optionally exposes controls bound to arbitrary props. `definition.mjs` maps these handles into stable Studio anchors without restricting source code. Legacy templates expose anchors directly. A renderer receives sampled values and explicit source time. A new library does not need to fit an existing set of scene primitives.
 
 `Studio` validates candidate edits before committing them and records before/after patches. Batches are atomic. History can compact to a base snapshot within its byte budget. The authoring core still copies whole documents for edits; it is a reference implementation, not proof of large-timeline scalability. Persistent maps, segment checkpoints, indexed dependencies and worker scheduling are future work.
 
@@ -27,6 +27,15 @@ Source/dependency bindings protect saved projects against silently changed code.
 
 ## Renderer and host extension points
 
+The portable `defineRenderer` entrypoint is accepted by the CLI as a default or
+named scene export. `renderer-host.mjs` maintains stable props, explicit clocks,
+readiness and disposal. `renderer-compositor.mjs` composes clip DOM roots and the
+exporter captures those roots, including Canvas/SVG/WebGL content. Legacy
+`template`/`createRenderer` modules keep the image-surface compositor. The generic
+host supplies declared asset and prepared frame URLs only when available; it does
+not imply depth, layer, simulation, device or audio-automation services. See the
+[renderer contract](renderer-contract.md) for controls, imports and capture limits.
+
 `AdapterRegistry` supports versioned adapters with `create(context)` returning `render(frame)`. An adapter can declare required host services. `createEffectHost` supplies only real implementations; missing services produce an explicit error. The initial demos include direct rendering paths as well as this optional registry. They do not yet all route through a single scheduler.
 
 The beta media host supplies `frameAt` and editable `portFrame`. General `layerAt`, `audioAt`, `maskAt`, `depthAt`, and `simulationAt` services remain extension work. Frame identity must include source revision, time, quality, color and effect order. Temporal effects must define whether they sample original source or upstream composition. Do not fake frame history by repeatedly drawing the same current frame.
@@ -35,7 +44,7 @@ The beta media host supplies `frameAt` and editable `portFrame`. General `layerA
 
 Implemented: authoring core, disk-backed panel editor, revision-checked agent proposals, procedural Canvas/Three/WebGL2 studies, floating-point effects, device lighting, shared clip compositor, PTS-indexed local media frames, static audio-port mixing, rational frame exports and RGBA/ProRes transparency. See beta.md for the exact supported contract.
 
-Proposed: streaming/hardware media decode, depth/ID sources, audio automation, untrusted-code sandboxing, distributed scheduling, EffectCraft/WASM bridge, richer DOM capture, device-profile unification and explicit schema migration maps.
+Proposed: streaming/hardware media decode, depth/ID sources, audio automation, untrusted-code sandboxing, distributed scheduling, EffectCraft/WASM bridge, broader DOM/media conformance, device-profile unification and explicit schema migration maps.
 
 New custom code remains supported even when it exposes no editable controls. Unknown capabilities must not be discarded or converted to a smaller primitive vocabulary. In this beta, unknown template adapters prevent loading rather than mutating the saved document.
 

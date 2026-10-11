@@ -7,7 +7,7 @@
 - The editor saves each validated edit atomically to `project.json`. Its file revision is shared with the CLI; stale browser/agent proposals fail. Reload, undo and redo retain history. Download snapshot remains available.
 - A media manifest pins source bytes with SHA-256. Preview/export copy and verify inputs into an immutable render snapshot. Decoded PNG frames are indexed by source PTS, including variable frame durations. Frame caches are bounded and disposed.
 - Video/image/audio ports expose asset, in point, delay, speed, volume, mute and end policy through ordinary clip anchors. Shapes and presentation remain arbitrary source code.
-- A shared compositor evaluates source time, clip layering, transforms and opacity for selected-clip or whole-project preview and export. A `capture()` adapter can supply an image surface from another renderer. The default starter remains Canvas; this beta does not implement general HTML-to-pixel capture.
+- A shared compositor evaluates source time, clip layering, transforms and opacity for selected-clip or whole-project preview and export. A `capture()` adapter can supply an image surface from another renderer. The default starter remains the legacy Canvas template. `init --renderer` uses the portable descriptor path, which captures an explicit-time DOM root including Canvas, SVG and WebGL descendants; see [renderer contract](renderer-contract.md).
 - Offline audio mixing uses source offsets, clip trims/splits, combined rates, volume and 48 kHz sample delays. A media port contributes audio once. Preview audio follows the same track planner and uses decoded PCM, avoiding a browser AAC-codec dependency.
 - H.264 MP4 flattens over an explicit background. MOV uses ProRes 4444 with alpha. PNG sequences preserve RGBA and include `audio.wav` when there is audio. Rational output rates such as `30000/1001` are retained.
 - Exports use a frozen source/project/media snapshot, progress/cancellation, temporary output, no-overwrite publication and an integrity receipt.
@@ -46,7 +46,7 @@ Audio planning uses static media-port controls. Keyframed parameters on an audib
 
 Projects are executable trusted JavaScript. Metadata inspection evaluates the bundled module in Node. This beta is **not an untrusted-code execution sandbox**. Loopback access controls protect accidental HTTP access and writes, not against malicious clip code running with the user's permission. Untrusted-code Tauri hosting requires an additional isolated renderer/compiler and asset grants.
 
-Preparation decodes local sources to temporary PNGs. Defaults limit sources to 4,096 pixels per dimension, 18,000 frames each and an aggregate eight GiB raw-pixel equivalent. Browser cache is 96 MiB. This favors reproducible short clips over long-form decode throughput; it is not evidence of production 4K/long-timeline performance. Resource limits are host policy, not the scene vocabulary. General demux/decode streaming, hardware acceleration and production DOM capture remain extensible follow-ups.
+Preparation decodes local sources to temporary PNGs. Defaults limit sources to 4,096 pixels per dimension, 18,000 frames each and an aggregate eight GiB raw-pixel equivalent. Browser cache is 96 MiB. This favors reproducible short clips over long-form decode throughput; it is not evidence of production 4K/long-timeline performance. Resource limits are host policy, not the scene vocabulary. General demux/decode streaming, hardware acceleration and broader DOM/media conformance remain extensible follow-ups.
 
 Native webview parity, all 55 screen calibrations, automatic arbitrary-source migration, full EffectCraft services, global source-version rollback, animated audio automation and the complete Stitchable export matrix are not beta-1 claims. Standalone asset lighting and film/effect studies remain available; not every study is a reusable generic clip package yet.
 
@@ -56,6 +56,7 @@ Native webview parity, all 55 screen calibrations, automatic arbitrary-source mi
 npm run build
 npm test
 npm run test:beta
+npm run test:renderer
 npm run test:browser
 npm run check:assets
 npm run check:public
