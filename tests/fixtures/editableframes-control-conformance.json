@@ -1,0 +1,176 @@
+[
+  {
+    "name": "spatial",
+    "valid": true,
+    "panel": {
+      "version": 1,
+      "fields": [
+        {
+          "key": "position",
+          "type": "vec3",
+          "role": "position",
+          "anchor": "phone",
+          "animatable": true,
+          "coordinateSpace": "canvas",
+          "unit": "px",
+          "default": [
+            12,
+            15,
+            0
+          ]
+        },
+        {
+          "key": "scale",
+          "type": "number",
+          "role": "scale",
+          "anchor": "phone",
+          "animatable": true,
+          "default": 1
+        }
+      ],
+      "objects": [
+        {
+          "id": "phone",
+          "pivot": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "bool discrete default",
+    "valid": true,
+    "panel": {
+      "version": 1,
+      "fields": [
+        {
+          "key": "visible",
+          "type": "bool",
+          "animatable": true
+        }
+      ]
+    }
+  },
+  {
+    "name": "position needs units",
+    "valid": false,
+    "panel": {
+      "version": 1,
+      "fields": [
+        {
+          "key": "position",
+          "type": "vec3",
+          "role": "position",
+          "anchor": "phone",
+          "animatable": true,
+          "coordinateSpace": "canvas",
+          "default": [
+            12,
+            15,
+            0
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "duplicate roles",
+    "valid": false,
+    "panel": {
+      "version": 1,
+      "fields": [
+        {
+          "key": "position",
+          "type": "vec3",
+          "role": "position",
+          "anchor": "phone",
+          "animatable": true,
+          "coordinateSpace": "canvas",
+          "unit": "px",
+          "default": [
+            12,
+            15,
+            0
+          ]
+        },
+        {
+          "key": "second",
+          "type": "vec3",
+          "role": "position",
+          "anchor": "phone",
+          "animatable": true,
+          "coordinateSpace": "canvas",
+          "unit": "px",
+          "default": [
+            12,
+            15,
+            0
+          ],
+          "path": "/other",
+          "property": "other"
+        }
+      ]
+    }
+  },
+  {
+    "name": "scale positive",
+    "valid": false,
+    "panel": {
+      "version": 1,
+      "fields": [
+        {
+          "key": "scale",
+          "type": "number",
+          "role": "scale",
+          "anchor": "phone",
+          "animatable": true,
+          "default": 0
+        }
+      ]
+    }
+  },
+  {
+    "name": "bounded vector",
+    "valid": false,
+    "panel": {
+      "version": 1,
+      "fields": [
+        {
+          "key": "position",
+          "type": "vec3",
+          "role": "position",
+          "anchor": "phone",
+          "animatable": true,
+          "coordinateSpace": "canvas",
+          "unit": "px",
+          "default": [
+            12,
+            15,
+            0
+          ],
+          "max": 10
+        }
+      ]
+    }
+  },
+  {
+    "name": "invalid pivot",
+    "valid": false,
+    "panel": {
+      "version": 1,
+      "fields": [],
+      "objects": [
+        {
+          "id": "phone",
+          "pivot": [
+            0,
+            1
+          ]
+        }
+      ]
+    }
+  }
+]

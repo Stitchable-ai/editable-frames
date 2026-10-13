@@ -44,6 +44,15 @@ export function canvasRenderer({id,width,height,fps,durationInFrames,defaultProp
     const canvas=context.root.ownerDocument.createElement('canvas');canvas.width=width;canvas.height=height;canvas.style.cssText='width:100%;height:100%;display:block';context.root.append(canvas);
     let instance;try{instance=await createRenderer(canvas,context);}catch(error){canvas.remove();throw error;}
     if(typeof instance?.render!=='function'){canvas.remove();throw Error('Canvas adapter must return render(clock, props)');}
-    return {render:clock=>instance.render(clock,context.props),pick:instance.pick?async point=>selectionResult(await instance.pick(point)):undefined,gesture:instance.gesture?event=>instance.gesture(event):undefined,async dispose(){try{await instance.dispose?.();}finally{canvas.remove();}}};
+    return {
+      render:clock=>instance.render(clock,context.props),
+      pick:instance.pick?async point=>selectionResult(await instance.pick(point)):undefined,
+      // Header hover has a semantic anchor, not a pointer position. Keep the
+      // authored measurement adapter available to every embedding host.
+      getObjectBounds:instance.getObjectBounds?object=>instance.getObjectBounds(object):undefined,
+      manipulationCapabilities:instance.manipulationCapabilities?object=>instance.manipulationCapabilities(object):undefined,
+      gesture:instance.gesture?event=>instance.gesture(event):undefined,
+      async dispose(){try{await instance.dispose?.();}finally{canvas.remove();}},
+    };
   }});
 }

@@ -31,7 +31,7 @@ export function rendererTemplate(scene) {
     {title:'Presets',fields:controls.presets.map(p=>({id:`preset:${p.id}`,kind:'preset',label:p.label??p.id,operations:Object.entries(p.values).map(([key,value])=>{const f=controls.fields.find(f=>f.key===key);return {anchor:f.anchor,property:f.property,value};})}))},
   ]} : null;
   return {id:scene.id,title:scene.title??scene.id,width:scene.width,height:scene.height,duration:scene.durationInFrames/scene.fps,
-    nodes,schemas,panel,payload:{rendererProtocol:1,controlsIdentity:identity,props:{}},
+    frameRate:rendererFrameRate(scene),nodes,schemas,panel,payload:{rendererProtocol:1,controlsIdentity:identity,props:{}},
     validatePayload(payload){if(!payload || payload.rendererProtocol!==1 || payload.controlsIdentity!==identity || !payload.props || typeof payload.props!=='object' || Array.isArray(payload.props))throw Error('Renderer controls changed incompatibly; rebind with an explicit reset or migration');
       if(payload.resetControls!==undefined&&(!Array.isArray(payload.resetControls)||payload.resetControls.length>controls.fields.length||new Set(payload.resetControls).size!==payload.resetControls.length||payload.resetControls.some(key=>!controls.fields.some(field=>field.key===key))))throw Error('Invalid reset control identity');},
     controls,

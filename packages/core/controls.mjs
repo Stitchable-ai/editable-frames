@@ -1,3 +1,4 @@
+import {keyFrameRate} from './key-timing.mjs';
 import {normalizeObjectHierarchy} from './objects.mjs';
 import {mergeRendererProps as mergeProps} from './renderer.mjs';
 export {mergeProps};
@@ -40,7 +41,7 @@ export function validateControlValue(field, value, {reset = false} = {}) {
   if (reset && value === null) return;
   const finite = n => Number.isFinite(n) && (field.min === undefined || n >= field.min) && (field.max === undefined || n <= field.max);
   const validators = {
-    number: () => typeof value === 'number' && finite(value),
+    number: () => typeof value === 'number' && finite(value) && (field.role !== 'scale' || value > 0),
     vec3: () => Array.isArray(value) && value.length === 3 && value.every(finite),
     color: () => typeof value === 'string' && /^#[\da-f]{6}([\da-f]{2})?$/iu.test(value),
     string: () => typeof value === 'string', bool: () => typeof value === 'boolean',
@@ -53,7 +54,8 @@ export function validateControlValue(field, value, {reset = false} = {}) {
 export function normalizeControls(controls) {
   if (controls == null) return {version: 1, fields: [], presets: []};
   if (controls.version !== 1 || !Array.isArray(controls.fields) || controls.fields.length > 200) throw Error('Invalid controls v1 declaration');
-  const keys = new Set(), bindings = new Set(), paths = [];
+  if(controls.frameRate)keyFrameRate(controls.frameRate);
+  const keys = new Set(), bindings = new Set(), paths = [], roles = new Set();
   const fields = controls.fields.map(raw => {
     const key = id(raw.key, 'control key'), anchor = id(raw.anchor ?? 'root', 'anchor'), property = id(raw.property ?? key, 'property');
     if (keys.has(key) || bindings.has(JSON.stringify([anchor, property]))) throw Error('Duplicate control identity');
@@ -70,6 +72,10 @@ export function normalizeControls(controls) {
     const interpolation = raw.interpolation ?? (['number','vec3'].includes(raw.type) ? 'continuous' : 'discrete');
     if (!['continuous','discrete'].includes(interpolation) || interpolation === 'continuous' && !['number','vec3'].includes(raw.type)) throw Error('Invalid control interpolation');
     if (raw.type === 'enum' && (!Array.isArray(raw.options) || !raw.options.length || raw.options.some(v => typeof v !== 'string'))) throw Error('Enum needs string options');
+    if(raw.role!==undefined){
+      if(!['position','scale'].includes(raw.role)||!raw.animatable||raw.role==='position'&&(raw.type!=='vec3'||!['local','world','canvas'].includes(raw.coordinateSpace)||typeof raw.unit!=='string'||!raw.unit)||raw.role==='scale'&&raw.type!=='number'||roles.has(`${anchor}:${raw.role}`))throw Error('Invalid or duplicate spatial role');
+      roles.add(`${anchor}:${raw.role}`);
+    }
     const field = {...copy(raw),key,anchor,property,path,animatable:raw.animatable ?? false,interpolation};
     if (own(field, 'default')) validateControlValue(field, field.default);
     return field;
@@ -87,11 +93,11 @@ export function normalizeControls(controls) {
     return copy(preset);
   });
   normalizeObjectHierarchy(controls.objects??[],fields.map(field=>field.anchor));
-  return {version:1,fields,presets,...(controls.objects!==undefined?{objects:copy(controls.objects)}:{})};
+  return {version:1,fields,presets,...(controls.frameRate?{frameRate:structuredClone(controls.frameRate)}:{}),...(controls.objects!==undefined?{objects:copy(controls.objects)}:{})};
 }
 export function controlsIdentity(controls) {
-  return JSON.stringify(controls.fields.map(({key,anchor,property,path,type,unit,animatable,interpolation}) =>
-    ({key,anchor,property,path,type,unit:unit ?? null,animatable,interpolation})).sort((a,b) => a.key.localeCompare(b.key)));
+  return JSON.stringify(controls.fields.map(({key,anchor,property,path,type,unit,coordinateSpace,role,animatable,interpolation}) =>
+    ({key,anchor,property,path,type,unit:unit ?? null,coordinateSpace:coordinateSpace??null,role:role??null,animatable,interpolation})).sort((a,b) => a.key.localeCompare(b.key)));
 }
 /** Unexposed props remain ordinary authored data; null means reset, not a value. */
 export function projectControlProps(defaultProps, instanceProps, controls, nodes, {resetControls=[]}={}) {

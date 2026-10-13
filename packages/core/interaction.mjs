@@ -1,3 +1,4 @@
+import {upsertControlKey,secondsToTick} from './key-timing.mjs';
 import {normalizeControls,validateControlValue} from './controls.mjs';
 import {normalizeObjectHierarchy,selectableObject} from './objects.mjs';
 export {normalizeObjectHierarchy,selectableObject,parentObjectId,resolveObjectSelection} from './objects.mjs';
@@ -18,7 +19,7 @@ export function gestureEvent(value) {
   if(value.property!==undefined&&(typeof value.property!=='string'||!value.property||value.property.length>128))throw Error('Invalid gesture property');
   const point=p=>{if(!p||![p.x,p.y].every(Number.isFinite))throw Error('Invalid gesture point');return {x:p.x,y:p.y};};
   if(!value.clock||!Number.isFinite(value.clock.frame)||value.clock.frame<0||!Number.isFinite(value.clock.fps)||value.clock.fps<=0)throw Error('Invalid gesture source clock');
-  return freeze({phase:value.phase,id:value.id,anchor:value.anchor,...(value.property!==undefined?{property:value.property}:{}),start:point(value.start),point:point(value.point),clock:copy(value.clock)});
+  return freeze({phase:value.phase,id:value.id,anchor:value.anchor,...(value.property!==undefined?{property:value.property}:{}),start:point(value.start),point:point(value.point),clock:copy(value.clock),operation:value.operation==='resize'?'resize':'move'});
 }
 export function gestureResult(value) {
   if(value==null)return null;
@@ -48,7 +49,7 @@ export function createGestureSession({controls,readIdentity,now=()=>Date.now(),l
   function checked(input) {
     if(!active||input?.id!==active.id)throw Error('Gesture is no longer active');
     try {
-      const tick=now();if(!Number.isFinite(tick)||tick<active.started||tick-active.started>budget.durationMs)throw Error('Gesture expired');
+      const tick=now();if(!Number.isFinite(tick)||tick<active.started||tick-active.renewed>budget.durationMs)throw Error('Gesture expired');
       if(JSON.stringify(identity(input.identity))!==JSON.stringify(active.identity)||JSON.stringify(identity(readIdentity()))!==JSON.stringify(active.identity))throw Error('Stale gesture identity');
     } catch(error){active=null;throw error;}
     return active;
@@ -60,8 +61,9 @@ export function createGestureSession({controls,readIdentity,now=()=>Date.now(),l
       const expected=identity(observed);if(JSON.stringify(expected)!==JSON.stringify(identity(readIdentity())))throw Error('Stale gesture identity');
       if(!selectableObject(objects,anchor)||!schema.fields.some(f=>f.anchor===anchor))throw Error('Object has no editable gesture controls');
       const started=now();if(!Number.isFinite(started))throw Error('Invalid gesture clock');
-      active={id:`${scope}:${++sequence}`,identity:expected,anchor,values:{},updates:0,started};return snapshot();
+      active={id:`${scope}:${++sequence}`,identity:expected,anchor,values:{},updates:0,started,renewed:started,windowStart:started};return snapshot();
     },
+    renew(input) {const current=checked(input);current.renewed=now();return snapshot();},
     update(input) {
       const current=checked(input),values=gestureResult({values:input.values})?.values;
       if(!values||typeof values!=='object'||Array.isArray(values))throw Error('Gesture values must be a sparse object');
@@ -70,6 +72,7 @@ export function createGestureSession({controls,readIdentity,now=()=>Date.now(),l
         const field=schema.fields.find(f=>f.key===key&&f.anchor===current.anchor);if(!field)throw Error('Gesture key is not bound to the selected object');
         validateControlValue(field,value,{reset:true});Object.defineProperty(next,key,{value:copy(value),enumerable:true,writable:true,configurable:true});
       }
+      if(now()-current.windowStart>=1000){current.windowStart=now();current.updates=0;}
       if(current.updates+1>budget.updates||Object.keys(next).length>budget.keys||new TextEncoder().encode(JSON.stringify(next)).length>budget.bytes){active=null;throw Error('Gesture budget exceeded');}
       current.values=next;current.updates++;return snapshot();
     },
@@ -78,14 +81,21 @@ export function createGestureSession({controls,readIdentity,now=()=>Date.now(),l
   });
 }
 /** Optional standalone Studio consumer: one atomic batch, zero writes on update. */
-export function createStudioGestureSession(studio,clipId,{seekGeneration=()=>0,now,limits}={}) {
+export function createStudioGestureSession(studio,clipId,{seekGeneration=()=>0,now,limits,sourceSeconds=()=>0,autoKey=()=>false,easing=()=> 'smooth'}={}) {
   const clip=studio.clip(clipId),declared=studio.templates[clip.template].controls;
   if(!declared)throw Error('This template has no portable controls');
   const controls=normalizeControls(declared);
   const readIdentity=()=>{studio.clip(clipId);return {clipId,sourceRevision:studio.binding,revision:studio.revision,seekGeneration:seekGeneration()};};
   const session=createGestureSession({controls,readIdentity,now,limits});
-  return Object.freeze({get state(){return session.state;},identity:readIdentity,begin:input=>session.begin(input),update:input=>session.update(input),cancel:input=>session.cancel(input),
-    commit(input){const proposal=session.commit(input),commands=Object.entries(proposal.values).map(([key,value])=>{const f=controls.fields.find(f=>f.key===key);return {type:'set',clip:clipId,anchor:f.anchor,property:f.property,value};});
+  let at=0,startValues=[],keyOn=false;
+  return Object.freeze({get state(){return session.state;},identity:readIdentity,begin:input=>{at=sourceSeconds();const rate=studio.templates[clip.template].frameRate??studio.doc.fps;secondsToTick(at,rate);startValues=studio.values(clip,clip.start+(at*120000-clip.sourceIn)/clip.rate);keyOn=autoKey();return session.begin(input);},renew:input=>session.renew(input),update:input=>session.update(input),cancel:input=>session.cancel(input),
+    commit(input){const proposal=session.commit(input),commands=[];
+      for(const [key,value] of Object.entries(proposal.values)){
+        const f=controls.fields.find(f=>f.key===key),node=studio.node(studio.clip(clipId),f.anchor),initial=startValues.find(n=>n.id===f.anchor)?.props[f.property];
+        if(JSON.stringify(initial)===JSON.stringify(value))continue;
+        if(f.animatable&&(keyOn||node.keys?.[f.property]?.length))commands.push({type:'keyframes',clip:clipId,anchor:f.anchor,property:f.property,keys:upsertControlKey(node.keys?.[f.property]??[],at,value,easing(),studio.templates[clip.template].frameRate??studio.doc.fps)});
+        else commands.push({type:'set',clip:clipId,anchor:f.anchor,property:f.property,value});
+      }
       const receipt=commands.length?studio.execute({type:'batch',label:'Object gesture',commands},proposal.identity.revision):{noOp:true};return {proposal,receipt};},
   });
 }

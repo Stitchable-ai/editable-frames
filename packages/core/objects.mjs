@@ -8,7 +8,8 @@ export function normalizeObjectHierarchy(objects = [], anchors = []) {
     if (object.parentId !== undefined && !safeId(object.parentId)) throw Error('Invalid parentId');
     if (object.label !== undefined && (typeof object.label !== 'string' || !object.label.trim() || new TextEncoder().encode(object.label).length > 100)) throw Error('Invalid object label');
     for (const flag of ['hidden','locked']) if (object[flag] !== undefined && typeof object[flag] !== 'boolean') throw Error('Invalid object policy');
-    records.set(object.id, {id:object.id,label:object.label ?? object.id,...(object.parentId ? {parentId:object.parentId} : {}),hidden:object.hidden ?? false,locked:object.locked ?? false});
+    if(object.pivot!==undefined&&(!Array.isArray(object.pivot)||object.pivot.length!==3||!object.pivot.every(Number.isFinite)))throw Error('Invalid object pivot');
+    records.set(object.id, {...(object.pivot?{pivot:[...object.pivot]}:{}),id:object.id,label:object.label ?? object.id,...(object.parentId ? {parentId:object.parentId} : {}),hidden:object.hidden ?? false,locked:object.locked ?? false});
   }
   for (const object of records.values()) if(object.parentId&&!records.has(object.parentId))throw Error('Object parent must be explicitly declared');
   for (const id of anchors) {if (!safeId(id)) throw Error('Invalid anchor ID');if (!records.has(id)) records.set(id,{id,label:id,hidden:false,locked:false});}

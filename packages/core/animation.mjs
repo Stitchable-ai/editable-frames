@@ -1,3 +1,4 @@
+import {upsertControlKey,moveControlKey,removeControlKey} from './key-timing.mjs';
 // Serializable temporal curves. Scene code, geometry and renderers stay unrestricted.
 export function validateEasing(easing = 'linear') {
   if (['linear', 'smooth', 'hold', 'ease', 'ease_in_out', 'ease_in', 'ease_out'].includes(easing)) return;
@@ -24,30 +25,24 @@ export function easeProgress(progress, easing = 'linear') {
   return cubic((lo+hi)/2,y1,y2);
 }
 export function frameSeconds(frame, fps={num:30,den:1}) {
-  if (!Number.isSafeInteger(frame) || frame<0 || !Number.isSafeInteger(fps.num) || fps.num<1 || !Number.isSafeInteger(fps.den) || fps.den<1) throw Error('Invalid frame clock');
+  if (!Number.isFinite(frame) || frame<0 || !Number.isSafeInteger(fps.num) || fps.num<1 || !Number.isSafeInteger(fps.den) || fps.den<1) throw Error('Invalid frame clock');
   return frame*fps.den/fps.num;
 }
 // Helpers return ordinary Studio commands. Hosts use execute(command, baseRevision, actor).
 // Times are clip SOURCE seconds, independent of the enclosing timeline's trim/rate.
-export function editKeyframe(studio,{clip,anchor,property,frame,value,easing,fps=studio.doc.fps}) {
+export function editKeyframe(studio,{clip,anchor,property,frame,value,easing,preserveEasing=true,fps=studio.doc.fps}) {
   const c=studio.clip(clip), n=studio.node(c,anchor);
-  const time=frameSeconds(frame,fps), keys=structuredClone(n.keys?.[property]??[]);
-  const index=keys.findIndex(k=>Math.abs(k.time-time)<1e-9), old=keys[index];
-  const next={time,value,easing:easing??old?.easing??'smooth'};
-  if(index<0)keys.push(next);else keys[index]=next;
-  keys.sort((a,b)=>a.time-b.time);
+  const rate=studio.templates[c.template].frameRate??fps;
+  const keys=upsertControlKey(n.keys?.[property]??[],frameSeconds(frame,fps),value,easing,rate,{preserveEasing});
   return {type:'keyframes',clip,anchor,property,keys,label:`Keyframe ${anchor}.${property}`};
 }
 export function moveKeyframe(studio,{clip,anchor,property,fromTime,frame,fps=studio.doc.fps}) {
-  const keys=structuredClone(studio.node(studio.clip(clip),anchor).keys?.[property]??[]);
-  const key=keys.find(k=>Math.abs(k.time-fromTime)<1e-9), time=frameSeconds(frame,fps);
-  if(!key)throw Error('Keyframe no longer exists');
-  if(keys.some(k=>k!==key&&Math.abs(k.time-time)<1e-9))throw Error('Another keyframe already occupies this frame');
-  key.time=time;keys.sort((a,b)=>a.time-b.time);
+  const c=studio.clip(clip),rate=studio.templates[c.template].frameRate??fps;
+  const keys=moveControlKey(studio.node(c,anchor).keys?.[property]??[],fromTime,frameSeconds(frame,fps),rate);
   return {type:'keyframes',clip,anchor,property,keys,label:`Move ${anchor}.${property} keyframe`};
 }
 export function removeKeyframe(studio,{clip,anchor,property,time}) {
-  const keys=structuredClone(studio.node(studio.clip(clip),anchor).keys?.[property]??[]);
-  if(!keys.some(k=>Math.abs(k.time-time)<1e-9))throw Error('Keyframe no longer exists');
-  return {type:'keyframes',clip,anchor,property,keys:keys.filter(k=>Math.abs(k.time-time)>=1e-9),label:`Delete ${anchor}.${property} keyframe`};
+  const c=studio.clip(clip),rate=studio.templates[c.template].frameRate??studio.doc.fps;
+  const keys=removeControlKey(studio.node(c,anchor).keys?.[property]??[],time,rate);
+  return {type:'keyframes',clip,anchor,property,keys,label:`Delete ${anchor}.${property} keyframe`};
 }

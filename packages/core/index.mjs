@@ -1,3 +1,4 @@
+import {keySeconds,canonicalTrack} from './key-timing.mjs';
 import {normalizeObjectHierarchy} from './objects.mjs';
 import {easeProgress, validateEasing} from './animation.mjs';
 // Renderer-independent authoring, source clocks, and reversible structural commands.
@@ -10,7 +11,7 @@ const safe=k=>typeof k==='string'&&k.length>0&&k.length<180&&!['__proto__','cons
 // Applications can register new typed values and interpolation without changing this core.
 const valueTypes=new Map();
 export function registerValueType(name,spec){if(!safe(name)||valueTypes.has(name)||typeof spec.validate!=='function')fail('Invalid or duplicate value type');valueTypes.set(name,spec);}
-registerValueType('number',{validate:(v,s)=>Number.isFinite(v)&&(s.min===undefined||v>=s.min)&&(s.max===undefined||v<=s.max)&&(!s.integer||Number.isInteger(v)),interpolate:(a,b,u)=>a+(b-a)*u});
+registerValueType('number',{validate:(v,s)=>Number.isFinite(v)&&(s.role!=='scale'||v>0)&&(s.min===undefined||v>=s.min)&&(s.max===undefined||v<=s.max)&&(!s.integer||Number.isInteger(v)),interpolate:(a,b,u)=>a+(b-a)*u});
 registerValueType('vec3',{validate:(v,s)=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&(s.min===undefined||n>=s.min)&&(s.max===undefined||n<=s.max)),interpolate:(a,b,u)=>a.map((v,i)=>v+(b[i]-v)*u)});
 registerValueType('color',{validate:v=>typeof v==='string'&&/^#[\da-f]{6}([\da-f]{2})?$/i.test(v)});
 registerValueType('text',{validate:(v,s)=>typeof v==='string'&&v.length<=(s.maxLength??160)});
@@ -20,8 +21,8 @@ registerValueType('json',{validate:v=>v!==undefined&&JSON.stringify(v)!==undefin
 export function validate(v,s){if(s?.resettable&&v===null)return;if(!s)fail('Unknown capability');const type=valueTypes.get(s.type);if(!type)fail('Missing value-type plugin: '+s.type);if(!type.validate(v,s))fail('Value outside declared capability: '+s.type);}
 export const overlaySchema={text:{type:'text',maxLength:90,label:'Text'},x:{type:'number',min:0,max:1920,unit:'px',label:'Horizontal position'},y:{type:'number',min:0,max:1080,unit:'px',label:'Vertical position'},size:{type:'number',min:14,max:240,unit:'px',label:'Type size'},color:{type:'color',label:'Text color'},background:{type:'color',label:'Card color'},opacity:{type:'number',min:0,max:1,label:'Opacity'},visible:{type:'boolean',label:'Visible'},start:{type:'number',min:0,max:120,unit:'s',label:'Appears at'},end:{type:'number',min:0,max:120,unit:'s',label:'Disappears at'},style:{type:'enum',values:['card','plain','pill'],label:'Treatment'}};
 export function descriptor(s,key){return {...s,label:s.label??key,unit:s.unit??(/angle|pitch|yaw|roll|bearing|azimuth|elevation/i.test(key)?'°':''),keyframe:s.keyframe??(!!valueTypes.get(s.type)?.interpolate&&!s.integer),impact:s.impact??['source'],owner:'scene'};}
-export function sampleKeys(keys,t,base,schema={type:'number'}){if(!keys?.length)return base;if(t<=keys[0].time)return keys[0].value;for(let i=1;i<keys.length;i++){const a=keys[i-1],b=keys[i];if(t===b.time)return b.value;if(t<b.time){const u=easeProgress((t-a.time)/(b.time-a.time),a.easing);const blend=schema.interpolation==='discrete'?null:valueTypes.get(schema.type)?.interpolate;return blend?blend(a.value,b.value,u):a.value;}}return keys.at(-1).value;}
-export function sourceTime(clip,projectTick){return Math.max(0,Math.min(clip.sourceDuration-1,clip.sourceIn+Math.round((projectTick-clip.start)*clip.rate)));}
+export function sampleKeys(keys,t,base,schema={type:'number'}){if(!keys?.length)return base;keys=keys.map(key=>({...key,time:keySeconds(key)}));if(t<=keys[0].time)return keys[0].value;for(let i=1;i<keys.length;i++){const a=keys[i-1],b=keys[i];if(t===b.time)return b.value;if(t<b.time){const u=easeProgress((t-a.time)/(b.time-a.time),a.easing);const blend=schema.interpolation==='discrete'?null:valueTypes.get(schema.type)?.interpolate;return blend?blend(a.value,b.value,u):a.value;}}return keys.at(-1).value;}
+export function sourceTime(clip,projectTick){return Math.max(0,Math.min(clip.sourceDuration-1,clip.sourceIn+(projectTick-clip.start)*clip.rate));}
 export const frameTime=(frame,fps={num:30,den:1})=>Math.round(frame*HZ*fps.den/fps.num);
 export class Studio {
  constructor(templates,{document,binding='studio-v1',limit=8*1024*1024,budgets={}}={}){this.budgets={clips:1000,anchors:500,keys:1000,panelFields:200,panelGroups:20,commands:100,...budgets};this.templates=templates;this.binding=binding;this.limit=limit;this.seq=0;this.sid=uid();this.history=[];this.cursor=0;this.bytes=0;this.doc=document??{version:1,clips:[],fps:{num:30,den:1},width:1920,height:1080};this.check(this.doc);this.base=clone(this.doc);}
@@ -29,7 +30,7 @@ export class Studio {
  clip(id,doc=this.doc){return doc.clips.find(c=>c.id===id)??fail('Unknown clip')}
  schema(clip,node){return node.overlay?overlaySchema:this.templates[clip.template].schemas[node.type]}
  node(clip,id){return clip.nodes.find(n=>n.id===id)??fail('Unknown anchor')}
- values(clip,t){const local=sourceTime(clip,t)/HZ;return clip.nodes.map(n=>({...n,props:Object.fromEntries(Object.entries(n.props).map(([k,v])=>[k,sampleKeys(n.keys?.[k],local,v,this.schema(clip,n)[k])]))}));}
+ values(clip,t){const local=sourceTime(clip,t)/HZ;return clip.nodes.map(n=>({...n,props:Object.fromEntries(Object.entries(n.props).map(([k,v])=>[k,sampleKeys(n.keys?.[k],local,this.controlValue(clip,n,k),this.schema(clip,n)[k])]))}));}
  controlValue(clip,node,property){const value=node.props[property],schema=this.schema(clip,node)[property];if(value!==null||!schema.resettable)return value;const resolved=this.templates[clip.template].resolveDefault?.(clip,node,property);return resolved===undefined?schema.default:resolved;}
  capabilities(id){const c=this.clip(id);return {binding:this.binding,baseRevision:this.revision,clip:id,...(this.templates[c.template].controls?{objects:normalizeObjectHierarchy(this.templates[c.template].controls.objects??[],c.nodes.map(n=>n.id))}:{}),anchors:c.nodes.map(n=>({id:n.id,label:n.label,properties:Object.fromEntries(Object.entries(this.schema(c,n)).map(([k,s])=>[k,descriptor(s,k)])),values:Object.fromEntries(Object.entries(n.props).map(([key,value])=>[key,this.controlValue(c,n,key)])),keyframes:clone(n.keys??{})})),panel:c.panel};}
  make(template,start=0){const t=this.templates[template];if(!t)fail('Unknown template');return {id:uid(),template,name:t.title,start,duration:ticks(t.duration),sourceDuration:ticks(t.duration),sourceIn:0,rate:1,transform:{x:0,y:0,scale:1,opacity:1},nodes:clone(t.nodes),panel:clone(t.panel??null),html:clone(t.html??null),payload:clone(t.payload??null)};}
@@ -41,7 +42,7 @@ export class Studio {
  case 'set':{const j=c.nodes.findIndex(n=>n.id===cmd.anchor);if(j<0)fail('Unknown anchor');const schema=this.schema(c,c.nodes[j])[cmd.property];validate(cmd.value,schema);
   const reset=this.templates[c.template].resetOverride;if(cmd.value===null&&schema.resettable&&reset)write(['clips',i,'payload'],reset(c,c.nodes[j],cmd.property));
   write(['clips',i,'nodes',j,'props',cmd.property],cmd.value);break;}
- case 'keyframes':{const j=c.nodes.findIndex(n=>n.id===cmd.anchor);if(j<0)fail('Unknown anchor');write(['clips',i,'nodes',j,'keys'],{...c.nodes[j].keys,[cmd.property]:cmd.keys});break;}
+ case 'keyframes':{const j=c.nodes.findIndex(n=>n.id===cmd.anchor);if(j<0)fail('Unknown anchor');write(['clips',i,'nodes',j,'keys'],{...c.nodes[j].keys,[cmd.property]:canonicalTrack(cmd.keys,this.templates[c.template].frameRate??candidate.fps)});break;}
  case 'addObject':{const n={id:cmd.id??'object.'+uid(),type:'overlay',overlay:true,label:cmd.label??'Caption card',props:{text:'A new idea',x:110,y:820,size:46,color:'#ffffff',background:'#183c41',opacity:1,visible:true,start:0,end:c.sourceDuration/HZ,style:'card',...cmd.props},keys:{}};write(['clips',i,'nodes'],[...c.nodes,n]);break;}
  case 'duplicateObject':{const n=this.node(c,cmd.anchor);if(!n.overlay)fail('Duplicate complete clips or added scene objects');const copy={...clone(n),id:cmd.id??'object.'+uid(),label:n.label+' copy'};copy.props.y=Math.min(1080,copy.props.y+70);write(['clips',i,'nodes'],[...c.nodes,copy]);break;}
  case 'deleteObject':{const n=this.node(c,cmd.anchor);if(!n.overlay)fail('Renderer anchors are required; use their visibility controls');write(['clips',i,'nodes'],c.nodes.filter(n=>n.id!==cmd.anchor));if(c.panel)write(['clips',i,'panel'],null);break;}

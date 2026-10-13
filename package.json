@@ -23,7 +23,10 @@
     "./renderer": "./packages/core/renderer.mjs",
     "./controls": "./packages/core/controls.mjs",
     "./renderer-host": "./packages/runtime/renderer-host.mjs",
-    "./interaction": "./packages/core/interaction.mjs"
+    "./interaction": "./packages/core/interaction.mjs",
+    "./manipulation": "./packages/core/manipulation.mjs",
+    "./three-manipulation": "./packages/three/manipulation.mjs",
+    "./key-timing": "./packages/core/key-timing.mjs"
   },
   "scripts": {
     "build": "node scripts/build.mjs",
