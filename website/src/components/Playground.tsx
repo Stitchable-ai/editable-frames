@@ -1,15 +1,16 @@
 import {useState,useRef,useEffect} from 'react';
 import studies from '../data/studies.json';
 import runtime from '../data/runtime.json';
+import type {StudyPosters} from '../data/posters';
 import {migrateDeviceSession} from '../../vendor/migrate-device.mjs';
 const templates=Object.fromEntries(studies.map(s=>[s.id,s]));
 // Two frames let React commit and the browser paint before expensive GPU setup.
 const paintLoading=()=>new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
 const storageKey='editableframe-playground-v1-'+runtime.binding.slice(0,12);
-export default function Playground({initial='castle',autoTour=false}:{initial?:string;autoTour?:boolean}) {
- const [touring,setTouring]=useState(autoTour),[onScreen,setOnScreen]=useState(false);
+export default function Playground({initial='castle',autoTour=false,posters={}}:{initial?:string;autoTour?:boolean;posters?:StudyPosters}) {
+ const [touring,setTouring]=useState(false),[onScreen,setOnScreen]=useState(false);
  const [slug,setSlug]=useState(initial),[ready,setReady]=useState(false),[busy,setBusy]=useState(false),[playing,setPlaying]=useState(false),[time,setTime]=useState(3),[version,refresh]=useState(0),[message,setMessage]=useState('Your ideas. Your browser. No account needed.');
- const tabs=useRef<HTMLDivElement>(null),stage=useRef<HTMLDivElement>(null),tour=useRef(autoTour),visible=useRef(false),framePending=useRef(false);
+ const tabs=useRef<HTMLDivElement>(null),stage=useRef<HTMLDivElement>(null),tour=useRef(false),visible=useRef(false),framePending=useRef(false);
  const canvas=useRef<HTMLCanvasElement>(null),engine=useRef<any>(null),studio=useRef<any>(null),pending=useRef<Promise<void>|null>(null),clock=useRef(3),current=useRef(initial),alive=useRef(true),drawVersion=useRef(0),loadVersion=useRef(0);
  const study=studies.find(s=>s.scene===slug)??studies[0];
  const clip=()=>studio.current?.doc.clips.find((c:any)=>c.template===studies.find(s=>s.scene===current.current)?.id);
@@ -49,11 +50,15 @@ export default function Playground({initial='castle',autoTour=false}:{initial?:s
   const observer=new IntersectionObserver(([entry])=>{inView=entry.isIntersecting;syncVisibility()},{threshold:.12});
   if(stage.current)observer.observe(stage.current);
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const respectMotion=()=>{if(reduced.matches)pauseTour()};respectMotion();reduced.addEventListener('change',respectMotion);
+  const compact=window.matchMedia('(max-width: 700px)');
+  const saveData=(navigator as Navigator&{connection?:{saveData?:boolean}}).connection?.saveData;
+  // Keep mobile discovery light; an explicit Play or Start tour still loads the full editor.
+  if(autoTour&&!reduced.matches&&!compact.matches&&!saveData){tour.current=true;setTouring(true)}
+  const respectMotion=()=>{if(reduced.matches||compact.matches)pauseTour()};respectMotion();reduced.addEventListener('change',respectMotion);compact.addEventListener('change',respectMotion);
   const briefSelected=()=>pauseTour();
   document.addEventListener('visibilitychange',syncVisibility);
   document.addEventListener('editableframes:brief-selected',briefSelected);
-  return()=>{alive.current=false;observer.disconnect();reduced.removeEventListener('change',respectMotion);document.removeEventListener('visibilitychange',syncVisibility);document.removeEventListener('editableframes:brief-selected',briefSelected);engine.current?.dispose?.()}
+  return()=>{alive.current=false;observer.disconnect();reduced.removeEventListener('change',respectMotion);compact.removeEventListener('change',respectMotion);document.removeEventListener('visibilitychange',syncVisibility);document.removeEventListener('editableframes:brief-selected',briefSelected);engine.current?.dispose?.()}
  },[]);
  useEffect(()=>{
   const strip=tabs.current,selected=strip?.querySelector<HTMLElement>('[aria-pressed="true"]');
@@ -97,11 +102,11 @@ export default function Playground({initial='castle',autoTour=false}:{initial?:s
  return <div className="playground" id="playground" data-revision={version} data-scene={slug} data-tour={touring?'running':'paused'} onPointerDownCapture={interact} onKeyDownCapture={interact} onFocusCapture={interact}>
   <h2 className="sr-only">Interactive code-generated video playground</h2><noscript><p className="no-script">Enable JavaScript to edit and play scenes. The collection previews and guide are available without it.</p></noscript>
   <div className="workbench-top"><span className="mono"><span className="live-dot"/> THE PLAYGROUND</span><span className="mono">{studies.length} STUDIES · INFINITE LITTLE CHANGES</span></div>
-  {autoTour&&<div className="tour-bar"><span>{touring?'A little tour. Touch a control to make it yours.':'Your turn. Edit freely, or keep exploring.'}</span><button type="button" data-tour-control aria-pressed={touring} onClick={()=>touring?pauseTour():void resumeTour()}>{touring?'Ⅱ Pause tour':'▶ Resume tour'}</button></div>}
+  {autoTour&&<div className="tour-bar"><span>{touring?'A little tour. Touch a control to make it yours.':'Your turn. Edit freely, or keep exploring.'}</span><button type="button" data-tour-control aria-pressed={touring} onClick={()=>touring?pauseTour():void resumeTour()}>{touring?'Ⅱ Pause tour':ready?'▶ Resume tour':'▶ Start tour'}</button></div>}
   <div ref={tabs} className="scene-tabs" aria-label="Choose a scene">{studies.map((s,i)=><button key={s.id} aria-pressed={s.scene===slug} onClick={()=>select(s.scene)}><span>{String(i+1).padStart(2,'0')}</span> {s.scene==='device'?'Product demo':s.scene==='unet'?'U-Net':s.scene.charAt(0).toUpperCase()+s.scene.slice(1)}</button>)}</div>
   <div className="workbench-body"><div className="viewer"><div ref={stage} className="stage" aria-busy={busy}>
    <canvas ref={canvas} width="1280" height="720" aria-label={`Animated preview: ${study.title}`} style={{visibility:ready&&!busy?'visible':'hidden'}}/>
-   {(!ready||busy)&&<img className="poster" src={`/demos/${slug}.jpg`} alt={study.detail} width="1280" height="720" fetchPriority="high"/>}
+   {(!ready||busy)&&<img className="poster" src={posters[slug]?.src??`/demos/${slug}.jpg`} srcSet={posters[slug]?.srcSet} sizes="(max-width: 700px) 90vw, (max-width: 1000px) 65vw, 72vw" alt={study.detail} width="1280" height="720" fetchPriority="high"/>}
    {!ready&&!busy&&<button className="stage-start" data-playback-control disabled={busy} onClick={async()=>{const selected=current.current;try{await start();if(current.current===selected)setPlaying(true)}catch{}}}>{busy?'Opening…':'▶ Play & make it yours'}</button>}
    {busy&&<div className="stage-loading" role="status" aria-live="polite"><span className="stage-spinner" aria-hidden="true"/><strong>Preparing the scene…</strong><span>Just a moment. You can still choose another scene.</span></div>}
   </div><div className="transport"><button className="play-button" data-playback-control disabled={busy} aria-label={playing?'Pause animation':'Play animation'} onClick={async()=>{const selected=current.current;try{await start();if(current.current===selected)setPlaying(!playing)}catch{}}}>{playing?'Ⅱ':'▶'}</button><input aria-label="Animation time" disabled={busy} type="range" min="0" max={study.duration} step="0.01" value={time} onChange={async e=>{const t=Number(e.target.value);setPlaying(false);clock.current=t;setTime(t);try{await start();await draw(t)}catch{}}}/><span className="mono">{time.toFixed(1)} / {study.duration}s</span></div><div className="scene-caption"><div><span className="eyebrow">{study.genre}</span><h3>{study.title}</h3></div><span className="source-tag">MADE OF CODE ↗</span></div><p className="scene-description">{study.detail}</p><div className="editor-actions"><button disabled={busy} onClick={image}>↓ Save frame</button><button onClick={settings}>↓ Save edits</button><label className="file-button">↑ Open edits<input type="file" accept="application/json,.json" onChange={e=>{restore(e.target.files?.[0]);e.target.value=''}}/></label></div></div>
