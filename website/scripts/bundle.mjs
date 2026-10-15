@@ -3,8 +3,10 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 const root=new URL('../',import.meta.url);
-for(const [entry,out]of [['vendor/films/renderer.mjs','scenes'],['vendor/films/device-scene.mjs','device'],['vendor/core.mjs','core']])await build({entryPoints:[fileURLToPath(new URL(entry,root))],outfile:fileURLToPath(new URL(`public/runtime/${out}.mjs`,root)),alias:{'three/addons':fileURLToPath(new URL('node_modules/three/examples/jsm',root)),three:fileURLToPath(new URL('node_modules/three',root))},bundle:true,format:'esm',minify:true,target:'es2022'});
+for(const [entry,out]of [['vendor/films/renderer.mjs','scenes'],['vendor/films/device-scene.mjs','device'],['vendor/core.mjs','core'],['vendor/studio-paper/renderer.mjs','studio-paper']])await build({entryPoints:[fileURLToPath(new URL(entry,root))],outfile:fileURLToPath(new URL(`public/runtime/${out}.mjs`,root)),alias:{'three/addons':fileURLToPath(new URL('node_modules/three/examples/jsm',root)),three:fileURLToPath(new URL('node_modules/three',root))},bundle:true,format:'esm',minify:true,target:'es2022'});
 const file=new URL('src/data/runtime.json',root),identity=JSON.parse(await readFile(file,'utf8'));
+const devices=JSON.parse(await readFile(new URL('vendor/films/devices.json',root),'utf8'));
+identity.downloads=Object.fromEntries(await Promise.all([...devices.map(m=>m.url),'/devices/studio_small_09_2k.hdr'].map(async url=>[url,(await readFile(new URL('public'+url,root))).byteLength])));
 for(const name of ['scenes','device','core'])identity.hashes[name+'.mjs']=createHash('sha256').update(await readFile(new URL(`public/runtime/${name}.mjs`,root))).digest('hex');
 // Binding versions the editable document contract, not visual fixes or added templates.
 await writeFile(file,JSON.stringify(identity)+'\n');

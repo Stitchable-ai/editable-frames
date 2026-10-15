@@ -4,6 +4,9 @@ import {createProductLighting,prepareMaterials} from '../../../packages/three/st
 import materialProfiles from '../../../packages/three/material-profiles.json';
 import environmentMeta from '../../../assets/environments/studio.json';
 import models from './devices.json';
+import {createSceneDownloads} from '../scene-downloads.mjs';
+const hdrURL='/devices/studio_small_09_2k.hdr';
+const paintProgress=()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
 const ease=x=>{x=clamp(x);return x*x*(3-2*x)};
 function rounded(x,a,b,w,h,r,color){x.fillStyle=color;x.beginPath();x.roundRect(a,b,w,h,r);x.fill();}
@@ -32,27 +35,39 @@ function appScreen(canvas,t,p){
 }
 export class DeviceScene{
  constructor(){
+  this.cache=new Map();this.loading=new Map();this.downloads=createSceneDownloads();this.disposed=false;
+ }
+ initialize(){
+  if(this.renderer)return;
   this.renderer=new T.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});this.renderer.setSize(1280,720);this.renderer.setPixelRatio(1);this.renderer.outputColorSpace=T.SRGBColorSpace;this.renderer.toneMapping=T.ACESFilmicToneMapping;this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=T.PCFSoftShadowMap;
   this.scene=new T.Scene();this.scene.background=new T.Color('#eceae4');this.camera=new T.PerspectiveCamera(34,1280/720,.1,100);this.camera.position.set(0,.8,8.4);this.camera.lookAt(0,0,0);
-  this.pivot=new T.Group();this.scene.add(this.pivot);this.cache=new Map();this.loading=new Map();this.disposed=false;
+  this.pivot=new T.Group();this.scene.add(this.pivot);
   const floor=new T.Mesh(new T.PlaneGeometry(200,200),new T.ShadowMaterial({color:'#28312f',opacity:.12}));floor.rotation.x=-Math.PI/2;floor.position.y=-2.1;floor.receiveShadow=true;this.scene.add(floor);
   const plinth=new T.Mesh(new T.CylinderGeometry(1.12,1.2,.19,96),new T.MeshStandardMaterial({color:'#d4d6d0',roughness:.4,metalness:.12}));plinth.position.set(1.3,-1.98,0);plinth.receiveShadow=true;plinth.castShadow=true;this.scene.add(plinth);
   this.screen=document.createElement('canvas');this.screen.width=480;this.screen.height=1040;
  }
  async environment(){
-  if(!this.envPromise)this.envPromise=createProductLighting(this.renderer,this.scene,{hdrURL:'/devices/studio_small_09_2k.hdr',hdrSha256:environmentMeta.sha256,ground:false}).then(rig=>{if(this.disposed){rig.dispose();return;}this.lighting=rig;rig.apply({background:'#eceae4'});}).catch(e=>{this.envPromise=null;throw e});
+  if(!this.envPromise)this.envPromise=createProductLighting(this.renderer,this.scene,{hdrURL,hdrSha256:environmentMeta.sha256,ground:false,maxEnvironmentWidth:512,prepareLegacy:false,loadArrayBuffer:async url=>{const bytes=await this.downloads.buffer(url);await paintProgress();if(this.disposed)throw Error('Scene was closed');return bytes}}).then(rig=>{if(this.disposed){rig.dispose();return;}this.lighting=rig;rig.apply({background:'#eceae4'});}).catch(e=>{this.envPromise=null;throw e});
   return this.envPromise;
  }
- async prepare(p){
-  await this.environment();if(this.disposed)return;
-  if(!this.cache.has(p.model)){
-   if(!this.loading.has(p.model))this.loading.set(p.model,this.load(p.model).finally(()=>this.loading.delete(p.model)));
-   await this.loading.get(p.model);
-  }
+ async prepare(p,{onProgress=()=>{},assetSizes={},isCurrent=()=>true}={}){
+  if(this.lighting&&this.cache.has(p.model))return;
+  const spec=models.find(m=>m.id===p.model);if(!spec)throw Error('Unknown phone model');
+  const unwatch=this.downloads.watch([hdrURL,spec.url],assetSizes,onProgress);
+  try{
+   // Fetch the HDR and phone together instead of waiting for one before the other.
+   await Promise.all([this.downloads.buffer(hdrURL),this.downloads.buffer(spec.url)]);
+   await paintProgress();if(this.disposed||!isCurrent())return;
+   this.initialize();
+   const environment=this.environment();
+   if(!this.cache.has(p.model)&&!this.loading.has(p.model))this.loading.set(p.model,this.load(p.model).finally(()=>this.loading.delete(p.model)));
+   await Promise.all([environment,this.loading.get(p.model)]);
+  }finally{unwatch()}
  }
  async load(id){
   const spec=models.find(m=>m.id===id);if(!spec)throw Error('Unknown phone model');
-  const gltf=await new GLTFLoader().loadAsync(spec.url);const root=gltf.scene;const b=spec.binding;
+  const bytes=await this.downloads.buffer(spec.url);await paintProgress();if(this.disposed)throw Error('Scene was closed');
+  const gltf=await new GLTFLoader().parseAsync(bytes,new URL('.',new URL(spec.url,location.origin)).href);const root=gltf.scene;const b=spec.binding;
   const materials=prepareMaterials(root,this.renderer,spec,materialProfiles,{roles:{[b.mesh]:'authored'}});
   const display=new T.CanvasTexture(this.screen);display.colorSpace=T.SRGBColorSpace;display.flipY=false;display.anisotropy=this.renderer.capabilities.getMaxAnisotropy();if(b.flipU){display.repeat.x=-1;display.offset.x=1}if(b.flipV){display.repeat.y=-1;display.offset.y=1}
   let screens=0;
@@ -74,5 +89,5 @@ export class DeviceScene{
   this.camera.position.set(Math.sin(t*.3)*p.orbit*.3,.72,8.4);this.camera.lookAt(0,0,0);this.renderer.render(this.scene,this.camera);return this.renderer.domElement;
  }
  release(item){item.materials.dispose();const textures=new Set();item.group.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material]){for(const v of Object.values(m))if(v?.isTexture)textures.add(v);m.dispose()}}});textures.forEach(t=>t.dispose());item.display.dispose();this.pivot.remove(item.group);}
- dispose(){this.disposed=true;for(const item of this.cache.values())this.release(item);this.cache.clear();this.lighting?.dispose();this.scene.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose?.()});this.renderer.dispose();this.renderer.forceContextLoss();}
+ dispose(){this.disposed=true;this.downloads.dispose();for(const item of this.cache.values())this.release(item);this.cache.clear();this.lighting?.dispose();this.scene?.traverse(o=>{o.geometry?.dispose();if(o.material)o.material.dispose?.()});this.renderer?.dispose();this.renderer?.forceContextLoss();}
 }

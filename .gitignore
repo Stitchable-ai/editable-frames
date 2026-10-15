@@ -24,3 +24,5 @@ website/.cloudflare/
 
 examples/ae-controls/bundle.js
 examples/ae-controls/binding.mjs
+
+website/public/runtime/studio-paper.mjs
