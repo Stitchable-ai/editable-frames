@@ -85,3 +85,7 @@ an AI service. Real demo controls support selection, independent object colors
 and scales, annotation, the example edit, undo/redo, pause and replay. Any manual
 input immediately stops the scripted cursor. The download still opens
 Stitchable Pro's download page in a new tab.
+
+Hosts can pass a `controlsRef` to the authored Studio component to pause its
+walkthrough before navigation and replay it after scrolling settles. These
+controls leave the scene's playback controls available to the visitor.

@@ -1,4 +1,4 @@
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useImperativeHandle,useRef,useState,type Ref} from 'react';
 import '../styles/studio-demo.css';
 
 type ObjectId='robot'|'sprout'|'friend';
@@ -19,8 +19,9 @@ function Icon({name,size=16}:{name:string;size?:number}){
  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name]??paths.spark}/></svg>;
 }
 
-type StudioAssets={rendererUrl?:string;posterUrl?:string;logoUrl?:string};
-export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs',posterUrl='/demos/paper.jpg',logoUrl='/tool-logos/stitchable.svg'}:StudioAssets={}){
+export type StudioWalkthroughControls={pauseWalkthrough:()=>void;replayWalkthrough:()=>void};
+type StudioAssets={rendererUrl?:string;posterUrl?:string;logoUrl?:string;controlsRef?:Ref<StudioWalkthroughControls>};
+export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs',posterUrl='/demos/paper.jpg',logoUrl='/tool-logos/stitchable.svg',controlsRef}:StudioAssets={}){
  const root=useRef<HTMLDivElement>(null),canvas=useRef<HTMLCanvasElement>(null),renderer=useRef<any>(null),loading=useRef<Promise<void>|null>(null),controller=useRef<AbortController|null>(null),runVersion=useRef(0),alive=useRef(true);
  const modelRef=useRef<Model>({...original}),preview=useRef<Partial<Model>|null>(null),history=useRef<Model[]>([{...original}]),historyIndex=useRef(0),friendProgress=useRef(0),wateringProgress=useRef(0),wateringPreview=useRef(false),previewRange=useRef<[number,number]>([11.8,14.2]),fullPlayback=useRef(false),noteSequence=useRef(0),sceneLabel=useRef<HTMLSpanElement>(null),sourceTime=useRef(12),clockLabel=useRef<HTMLSpanElement>(null),messages=useRef<HTMLDivElement>(null),playhead=useRef<HTMLSpanElement>(null);
  const [model,setModel]=useState<Model>({...original}),[selected,setSelected]=useState<ObjectId|null>(null),[mode,setMode]=useState<'select'|'annotate'>('select'),[phase,setPhase]=useState<Phase>('idle'),[running,setRunning]=useState(false),[ready,setReady]=useState(false),[active,setActive]=useState(false),[playing,setPlaying]=useState(true),[reduced,setReduced]=useState(false),[fromBeginning,setFromBeginning]=useState(false),[revision,setRevision]=useState(0);
@@ -116,11 +117,18 @@ export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs
   finally{if(controller.current===c){controller.current=null;preview.current=null;friendProgress.current=modelRef.current.friend;wateringProgress.current=modelRef.current.watering;wateringPreview.current=false;setRunning(false)}}
  }
  const runRef=useRef(run);runRef.current=run;
+ const stopRef=useRef(stop);stopRef.current=stop;
+ const pauseAuto=useRef(()=>{});
+ useImperativeHandle(controlsRef,()=>({
+  pauseWalkthrough(){pauseAuto.current();stopRef.current()},
+  replayWalkthrough(){pauseAuto.current();void runRef.current()},
+ }),[]);
  useEffect(()=>{
   alive.current=true;const element=root.current!,panel=element.closest<HTMLElement>('[data-agent-panel]');
   const motion=matchMedia('(prefers-reduced-motion: reduce)');setReduced(motion.matches);
   const saveData=(navigator as Navigator&{connection?:{saveData?:boolean}}).connection?.saveData;
   let inView=false,autoVisible=false,played=false,timer=0,disposed=false;
+  pauseAuto.current=()=>{clearTimeout(timer);played=true};
   function sync(){const open=!panel?.hidden;if(!open)played=false;const visible=open&&inView&&!document.hidden;setActive(visible);if(!visible){clearTimeout(timer);stop();return}void ensure().catch(()=>setStatus('The scene could not load. Try replaying the demo.'));if(autoVisible&&!played&&!motion.matches&&!saveData){played=true;timer=window.setTimeout(()=>{if(!disposed)void runRef.current()},600)}}
   const observe=new IntersectionObserver(([entry])=>{inView=entry.isIntersecting;autoVisible=entry.intersectionRatio>=.55;sync()},{threshold:[0,.18,.55]});observe.observe(element);
   const layout=new ResizeObserver(()=>{if(element.offsetWidth>0)frame()});layout.observe(element);
