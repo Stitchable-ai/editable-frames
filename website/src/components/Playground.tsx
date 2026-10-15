@@ -86,7 +86,8 @@ export default function Playground({initial='castle',autoTour=false,introDemo=fa
  useEffect(()=>{
   alive.current=true;
   let inView=false;
-  const syncVisibility=()=>{const active=inView&&!document.hidden;visible.current=active;setOnScreen(active);if(!active)setPlaying(false)};
+  // Visibility suspends drawing without discarding the visitor's playback intent.
+  const syncVisibility=()=>{const active=inView&&!document.hidden;visible.current=active;setOnScreen(active)};
   const observer=new IntersectionObserver(([entry])=>{inView=entry.isIntersecting;syncVisibility()},{threshold:.12});
   if(stage.current)observer.observe(stage.current);
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -210,6 +211,7 @@ export default function Playground({initial='castle',autoTour=false,introDemo=fa
   raf=requestAnimationFrame(tick);return()=>cancelAnimationFrame(raf);
  },[playing,ready,slug,busy,onScreen]);
  async function resumeTour(){tour.current=true;setTouring(true);try{await start();if(alive.current&&tour.current&&visible.current)setPlaying(true)}catch{pauseTour()}}
+ async function resumeClip(){const selected=current.current;try{await start();if(alive.current&&current.current===selected)setPlaying(true)}catch{}}
 
  function download(name:string,blob:Blob){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),5000)}
  async function image(){try{await start();await draw();canvas.current?.toBlob(b=>b&&download(`editableframes-${slug}.png`,b))}catch{}}
@@ -223,7 +225,7 @@ export default function Playground({initial='castle',autoTour=false,introDemo=fa
   <div className="workbench-body"><div className="viewer"><div ref={stage} className="stage" aria-busy={busy}>
    <canvas ref={canvas} width="1280" height="720" aria-label={`Animated preview: ${study.title}`} style={{visibility:ready&&!busy&&!loadError?'visible':'hidden'}}/>
    {(!ready||busy||loadError)&&<img className="poster" src={posters[slug]?.src??`/demos/${slug}.jpg`} srcSet={posters[slug]?.srcSet} sizes="(max-width: 700px) 90vw, (max-width: 1000px) 65vw, 72vw" alt={study.detail} width="1280" height="720" fetchPriority="high"/>}
-   {!ready&&!busy&&!loadError&&<button className="stage-start" data-playback-control onClick={async()=>{const selected=current.current;try{await start();if(current.current===selected)setPlaying(true)}catch{}}}>▶ Play & make it yours</button>}
+   {!playing&&!busy&&!loadError&&<button type="button" className="stage-play" data-playback-control aria-label={ready?'Resume animation':'Play preview'} onClick={()=>void resumeClip()}><span className="stage-play-icon" aria-hidden="true"><svg width="34" height="38" viewBox="0 0 34 38" fill="currentColor"><path d="M8 5 29 19 8 33V5Z"/></svg></span><span className="stage-play-label">{ready?'Resume clip':'Play & make it yours'}</span></button>}
    {busy&&<div className="stage-loading" role="status" aria-live="polite"><span className="stage-spinner" aria-hidden="true"/><strong>{progress?.phase==='downloading'?'Downloading scene assets…':progress?.phase==='preparing'?'Downloads complete. Preparing the scene…':progress?.phase==='renderer'?'Loading the 3D renderer…':'Opening the scene…'}</strong><progress className="scene-download-progress" aria-label="Scene download progress" max={progress?.total??1} value={progress?.total?Math.min(progress.loaded,progress.total):undefined}/><span className="scene-download-amount">{progress?.percent!==null&&progress?.percent!==undefined?`${progress.percent}% · ${downloadSize(progress.loaded)} of ${downloadSize(progress.total!)}`:progress?.loaded?`${downloadSize(progress.loaded)} downloaded`:'Connecting…'}</span><span>Playback starts when ready. You can still choose another clip.</span></div>}
    {!busy&&loadError&&<div className="stage-loading stage-load-error" role="alert"><strong>This scene couldn’t load.</strong><span>{loadError}</span><button type="button" data-playback-control onClick={()=>void playStudy(current.current)}>Retry loading</button></div>}
   </div><div className="transport"><button className="play-button" data-playback-control disabled={busy} aria-label={playing?'Pause animation':'Play animation'} onClick={async()=>{const selected=current.current;try{await start();if(current.current===selected)setPlaying(!playing)}catch{}}}>{playing?'Ⅱ':'▶'}</button><input aria-label="Animation time" disabled={busy} type="range" min="0" max={study.duration} step="0.01" value={time} onChange={async e=>{const t=Number(e.target.value);setPlaying(false);clock.current=t;setTime(t);try{await start();await draw(t)}catch{}}}/><span className="mono">{time.toFixed(1)} / {study.duration}s</span></div><div className="scene-caption"><div><span className="eyebrow">{study.genre}</span><h3>{study.title}</h3></div><span className="source-tag">MADE OF CODE ↗</span></div><p className="scene-description">{study.detail}</p><div className="editor-actions"><button disabled={busy} onClick={image}>↓ Save frame</button><button onClick={settings}>↓ Save edits</button><label className="file-button">↑ Open edits<input type="file" accept="application/json,.json" onChange={e=>{restore(e.target.files?.[0]);e.target.value=''}}/></label></div></div>

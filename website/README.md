@@ -61,6 +61,12 @@ cursor and cancels all remaining scripted actions. Choosing a scene starts that
 clip at the beginning and preserves an active tour; selecting a clip after
 pausing the tour plays that clip without restarting the tour.
 
+Changing scene properties keeps the selected clip playing. Scrolling the preview
+out of view or hiding the page suspends drawing and retains playback intent, so
+it resumes on return. Explicit pause and scrubbing show a large center Play
+control; it resumes at the existing source time. Paused clips stay paused while
+their properties are edited.
+
 Collection thumbnails reveal as they enter view; they remain visible without
 JavaScript and with reduced motion.
 
