@@ -2,7 +2,7 @@
 
 <img src="assets/brand/editableframes-icon.svg" width="88" height="88" alt="EditableFrames: a pencil inside four frame corners">
 
-**Code the motion. Keep the control.**
+**Generate video with AI. Edit with clicks.**
 
 Create videos with code. Give every clip its own editing panel. Change a detail without starting over.
 
