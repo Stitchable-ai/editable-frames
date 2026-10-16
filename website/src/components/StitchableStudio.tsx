@@ -1,4 +1,4 @@
-import {useEffect,useImperativeHandle,useRef,useState,type Ref} from 'react';
+import {useEffect,useId,useImperativeHandle,useRef,useState,type Ref} from 'react';
 import '../styles/studio-demo.css';
 
 type ObjectId='robot'|'sprout'|'friend';
@@ -28,6 +28,14 @@ export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs
  const [draft,setDraft]=useState<AnnotationTarget|null>(null),[region,setRegion]=useState<Region|null>(null),[regionDragging,setRegionDragging]=useState(false),[noteText,setNoteText]=useState(''),[note,setNote]=useState<Note|null>(null),[chatText,setChatText]=useState(''),[sent,setSent]=useState<Note[]>([]),[status,setStatus]=useState('Click the character to explore its controls.');
  const regionRef=useRef<Region|null>(null),regionTime=useRef(0),drag=useRef<{x:number;y:number;pointer:number;moved:boolean}|null>(null),ignoreObjectClick=useRef(false);
  const currentSelected=useRef<ObjectId|null>(null),noteRef=useRef<Note|null>(null);
+ const chatHistoryId=useId(),historyTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
+ const [chatHistoryVisible,setChatHistoryVisible]=useState(false),[chatFocused,setChatFocused]=useState(false);
+ function hideChatHistory(){if(historyTimer.current)clearTimeout(historyTimer.current);historyTimer.current=null;setChatHistoryVisible(false)}
+ function revealChatHistory(){
+  if(!root.current||getComputedStyle(root.current).getPropertyValue('--studio-floating-chat').trim()!=='1')return;
+  if(historyTimer.current)clearTimeout(historyTimer.current);
+  setChatHistoryVisible(true);historyTimer.current=setTimeout(()=>{historyTimer.current=null;setChatHistoryVisible(false)},1800);
+ }
  function commit(patch:Partial<Model>){
   const next={...modelRef.current,...patch};
   if(![next.body,next.leaf,next.friendColor].every(value=>/^#[\da-f]{6}$/i.test(value))||![next.scale,next.sproutScale,next.friendScale].every(value=>Number.isFinite(value)&&value>=.75&&value<=1.25)||![0,1].includes(next.friend)||![0,1].includes(next.watering))return;
@@ -56,7 +64,7 @@ export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs
  function scale(value:number){commit(currentSelected.current==='sprout'?{sproutScale:value}:currentSelected.current==='friend'?{friendScale:value}:{scale:value})}
  function attach(id:AnnotationTarget,text:string){const next:Note={object:id,text:text.trim()||friendComment,number:++noteSequence.current,...(id==='gardeners'&&regionRef.current?{region:{...regionRef.current},sourceTime:regionTime.current}:{})};noteRef.current=next;setNote(next);setDraft(null);setMode('select');setStatus('Your note is attached above the main chat composer.')}
  function respond(text:string){setSent(turns=>turns.map((turn,i)=>i===turns.length-1?{...turn,response:text}:turn))}
- function sendAttached(){const n=noteRef.current;if(n)setSent(turns=>[...turns,n]);setNote(null);noteRef.current=null;setChatText('')}
+ function sendAttached(){const n=noteRef.current;if(n)setSent(turns=>[...turns,n]);setNote(null);noteRef.current=null;setChatText('');setChatFocused(false)}
  function finishFriend(){friendProgress.current=1;commit({friend:1,friendScale:modelRef.current.friend?modelRef.current.friendScale:modelRef.current.scale});respond('The same size, with the same handmade feel.');setStatus('Two little gardeners. Now give them a little story.')}
  function beginWatering(){wateringPreview.current=true;wateringProgress.current=0;previewRange.current=[17,20];sourceTime.current=18;fullPlayback.current=false;setFromBeginning(false);frame()}
  function finishWatering(){friendProgress.current=1;wateringProgress.current=1;wateringPreview.current=false;regionRef.current=null;setRegion(null);commit({friend:1,watering:1,friendScale:modelRef.current.friend?modelRef.current.friendScale:modelRef.current.scale});respond('Hand in hand, a happy little shower. Added as Scene 02.');setStatus('A new scene: two happy gardeners, one little sunflower.')}
@@ -95,6 +103,7 @@ export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs
   loading.current=(async()=>{const url=new URL(rendererUrl,location.origin).href;const m=await import(/* @vite-ignore */url);if(!alive.current||!canvas.current)return;renderer.current=m.createStudioPaper(canvas.current);frame();setReady(true)})().finally(()=>{loading.current=null});return loading.current;
  }
  function reset(){
+  hideChatHistory();setChatFocused(false);
   regionRef.current=null;setRegion(null);setRegionDragging(false);drag.current=null;
   modelRef.current={...original};history.current=[{...original}];historyIndex.current=0;preview.current=null;friendProgress.current=0;wateringProgress.current=0;wateringPreview.current=false;previewRange.current=[11.8,14.2];sourceTime.current=12;fullPlayback.current=false;noteSequence.current=0;setFromBeginning(false);setModel({...original});setSelected(null);currentSelected.current=null;setMode('select');setDraft(null);setNoteText('');setNote(null);noteRef.current=null;setSent([]);setChatText('');setPhase('idle');setStatus('Watch a detail change, then turn a note into an edit.');setRevision(v=>v+1);
  }
@@ -131,7 +140,18 @@ export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs
   pauseAuto.current=()=>{clearTimeout(timer);played=true};
   function sync(){const open=!panel?.hidden;if(!open)played=false;const visible=open&&inView&&!document.hidden;setActive(visible);if(!visible){clearTimeout(timer);stop();return}void ensure().catch(()=>setStatus('The scene could not load. Try replaying the demo.'));if(autoVisible&&!played&&!motion.matches&&!saveData){played=true;timer=window.setTimeout(()=>{if(!disposed)void runRef.current()},600)}}
   const observe=new IntersectionObserver(([entry])=>{inView=entry.isIntersecting;autoVisible=entry.intersectionRatio>=.55;sync()},{threshold:[0,.18,.55]});observe.observe(element);
-  const layout=new ResizeObserver(()=>{if(element.offsetWidth>0)frame()});layout.observe(element);
+  const layout=new ResizeObserver(()=>{
+   if(element.offsetWidth<=0)return;
+   frame();
+   const workspace=element.querySelector<HTMLElement>('.studio-workspace'),stage=element.querySelector<HTMLElement>('[data-studio-stage]'),composer=element.querySelector<HTMLElement>('.studio-chat-composer');
+   if(!workspace||!stage||!composer||getComputedStyle(element).getPropertyValue('--studio-floating-chat').trim()!=='1')return;
+   const stageBottom=stage.offsetTop+stage.offsetHeight;
+   element.style.setProperty('--studio-chat-bottom',`${Math.max(10,workspace.clientHeight-stageBottom+10)}px`);
+   element.style.setProperty('--studio-chat-history-width',`${Math.min(260,workspace.clientWidth-24)}px`);
+   element.style.setProperty('--studio-chat-history-max',`${Math.max(36,Math.min(180,stageBottom-composer.offsetHeight-28))}px`);
+   if(messages.current)messages.current.scrollTop=messages.current.scrollHeight;
+  });layout.observe(element);
+  for(const selector of ['[data-studio-stage]','.studio-chat-composer']){const part=element.querySelector(selector);if(part)layout.observe(part)}
   const tabs=new MutationObserver(sync);if(panel)tabs.observe(panel,{attributes:true,attributeFilter:['hidden']});
   const preference=()=>{setReduced(motion.matches);if(motion.matches)stop();sync()};motion.addEventListener('change',preference);document.addEventListener('visibilitychange',sync);
   return()=>{disposed=true;alive.current=false;runVersion.current++;clearTimeout(timer);observe.disconnect();layout.disconnect();tabs.disconnect();motion.removeEventListener('change',preference);document.removeEventListener('visibilitychange',sync);const current=controller.current;controller.current=null;current?.abort();renderer.current?.dispose();renderer.current=null};
@@ -139,24 +159,28 @@ export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs
  useEffect(()=>{if(!active)return;if(reduced||!playing){frame();return}let raf=0,last=0;const tick=(now:number)=>{if(now-last>=1000/12){const delta=last?Math.min(.15,(now-last)/1000):0;last=now;if(playing&&!reduced){const [start,end]=previewRange.current;sourceTime.current=fullPlayback.current?(sourceTime.current+delta)%(modelRef.current.watering?24:16):start+(sourceTime.current-start+delta)%(end-start)}frame()}raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick);return()=>cancelAnimationFrame(raf)},[active,playing,reduced,revision,selected,draft,note,sent]);
  function undo(direction:number){const index=historyIndex.current+direction;if(index<0||index>=history.current.length)return;historyIndex.current=index;modelRef.current=history.current[index];friendProgress.current=modelRef.current.friend;wateringProgress.current=modelRef.current.watering;if(!modelRef.current.watering&&sourceTime.current>=16){sourceTime.current=12;previewRange.current=[11.8,14.2]}setModel({...modelRef.current});setRevision(v=>v+1)}
  useEffect(()=>{if(messages.current)messages.current.scrollTop=messages.current.scrollHeight},[sent,phase]);
+ useEffect(()=>{if(sent.length)revealChatHistory()},[sent]);
+ useEffect(()=>{if(!active)hideChatHistory()},[active]);
+ useEffect(()=>()=>{if(historyTimer.current)clearTimeout(historyTimer.current)},[]);
  const expanded=model.watering===1||phase==='watering-edit';
  const selectedLabel=selected?names[selected]:'Scene objects',selectedColor=selected==='sprout'?model.leaf:selected==='friend'?model.friendColor:model.body,selectedScale=selected==='sprout'?model.sproutScale:selected==='friend'?model.friendScale:model.scale;
  return <div className="studio-demo-shell">
-  <div className="studio-demo" ref={root} data-studio-demo data-phase={phase} data-running={running} data-studio-active={active} data-selected={selected??''} data-friends={model.friend} data-watering-scene={model.watering} data-playback-mode={fromBeginning?'full':'selection'} data-revision={revision} onPointerDownCapture={takeOver} onKeyDownCapture={takeOver} onClickCapture={takeOver} onInputCapture={takeOver}>
+  <div className="studio-demo" ref={root} data-studio-demo data-phase={phase} data-running={running} data-studio-active={active} data-chat-history-visible={chatHistoryVisible} data-chat-drafting={chatFocused||Boolean(note)||Boolean(chatText)} data-chat-obscured={mode==='annotate'||Boolean(draft)} data-selected={selected??''} data-friends={model.friend} data-watering-scene={model.watering} data-playback-mode={fromBeginning?'full':'selection'} data-revision={revision} onPointerDownCapture={takeOver} onKeyDownCapture={takeOver} onClickCapture={takeOver} onInputCapture={takeOver}>
    <div className="studio-titlebar"><span className="studio-traffic" aria-hidden="true"><i/><i/><i/></span><span data-studio-origin><img src={logoUrl} width="17" height="17" alt=""/> Stitchable Pro Studio</span></div>
    <div className="studio-workspace">
     <div className="studio-rail" aria-hidden="true"><span className="is-active"><Icon name="home"/></span><span><Icon name="folder"/></span><span><Icon name="film"/></span><span><Icon name="spark"/></span><span className="studio-avatar">S</span></div>
     <div className="studio-projects" aria-hidden="true"><strong>Chats <Icon name="plus" size={13}/></strong><span className="studio-new-chat">＋ New chat</span><small>CREATIVE WORKSPACE</small><span>Product launch film</span><span>Kinetic type study</span><span>Little worlds</span><span className="studio-project-active"><Icon name="film" size={13}/> A small act of care</span><span className="studio-project-foot">Your ideas, in motion.</span></div>
-    <section className="studio-chat" aria-label="Studio demo conversation">
+    <section className="studio-chat" aria-label="Studio demo conversation" onPointerEnter={event=>{if(event.pointerType==='mouse'&&matchMedia('(any-hover: hover)').matches)revealChatHistory()}} onFocusCapture={event=>{if(event.target instanceof HTMLTextAreaElement){setChatFocused(true);revealChatHistory()}}} onBlurCapture={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null))setChatFocused(false)}}>
      <header><span>Paper garden</span><span aria-hidden="true">···</span></header>
-     <div className="studio-messages" ref={messages}><div className="studio-message-user">Make a tiny paper world.<small>Warm, playful. A little handmade.</small></div><div className="studio-assistant"><span className="studio-agent-dot">✦</span><p>A little gardener, a growing sunflower.<br/>The scene is ready to make yours.</p><div className="studio-tool-pill"><Icon name="check" size={12}/> Created the scene</div></div>
+     <div className="studio-messages" id={chatHistoryId} ref={messages} role="log" aria-label="Recent Studio messages" onWheel={revealChatHistory}><div className="studio-message-user">Make a tiny paper world.<small>Warm, playful. A little handmade.</small></div><div className="studio-assistant"><span className="studio-agent-dot">✦</span><p>A little gardener, a growing sunflower.<br/>The scene is ready to make yours.</p><div className="studio-tool-pill"><Icon name="check" size={12}/> Created the scene</div></div>
       {sent.map(turn=><div className="studio-chat-turn" key={turn.number}><div className="studio-sent-message"><div className="studio-chat-reference" data-studio-reference={turn.region?"region":"object"}><Icon name={turn.region?"region":"pin"} size={12}/><span>{names[turn.object]}</span><b>{turn.number}</b></div><p>{turn.text}</p><small>{turn.number===2?'Make this the next scene.':'Make that change.'}</small></div>{turn.response&&<div className="studio-assistant studio-reply"><span className="studio-agent-dot">✦</span><p>{turn.response}</p><div className="studio-tool-pill"><Icon name="check" size={12}/> {turn.number===2?'Scene 02 added':'Scene updated'}</div></div>}</div>)}
       {['editing','watering-edit'].includes(phase)&&<div className="studio-tool-pill studio-working"><span/> {phase==='watering-edit'?'Adding Scene 02…':'Editing the scene…'}</div>}
 
      </div>
      <form className="studio-chat-composer" onSubmit={event=>{event.preventDefault();void manualSend()}}>
+      <button type="button" className="studio-history-toggle" aria-label="Show Studio chat history" aria-controls={chatHistoryId} aria-expanded={chatHistoryVisible} onClick={()=>chatHistoryVisible?hideChatHistory():revealChatHistory()}><Icon name="chat" size={16}/></button>
       {note&&<div className="studio-attached-note" data-studio-attached><span className="studio-note-thumb">{note.number}</span><span><b>{names[note.object]}</b><small>{note.text}</small></span><button type="button" aria-label="Remove annotation" onClick={()=>{noteRef.current=null;setNote(null)}}>×</button></div>}
-      <label className="sr-only" htmlFor="studio-chat-text">Studio demo chat message</label><textarea id="studio-chat-text" data-studio-chat-input rows={2} value={chatText} onChange={e=>setChatText(e.target.value)} placeholder={note?'What would you like to change?':'Ask about your video…'}/>
+      <label className="sr-only" htmlFor="studio-chat-text">Studio demo chat message</label><textarea id="studio-chat-text" data-studio-chat-input rows={2} value={chatText} onChange={e=>setChatText(e.target.value)} placeholder={note?'What would you like to change?':'Ask Stitchable…'}/>
       <div className="studio-chat-tools"><span aria-hidden="true">＋ <span>✦</span></span><small>Stitch · Creative</small><button type="submit" data-studio-send disabled={!note} aria-label="Apply annotated edit"><Icon name="arrow" size={14}/></button></div>
      </form>
     </section>
