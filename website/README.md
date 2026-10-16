@@ -96,8 +96,9 @@ Hosts can pass a `controlsRef` to the authored Studio component to pause its
 walkthrough before navigation and replay it after scrolling settles. These
 controls leave the scene's playback controls available to the visitor.
 
-Below 690px of available Studio width, the chat composer floats over the lower
-right of the preview. The timeline and object controls keep their full width.
+Below 690px of available Studio width, the chat composer floats at the lower
+right over the timeline. Recent history opens downward over the inspector in a
+210px panel, keeping the video clear. The composer compacts again after sending.
 Hover, textarea focus, the history button, and incoming messages reveal recent
 chat history for 1.8 seconds. New replies restart that timer. The dock clears the
 preview during object and region annotation. Desktop layouts retain the sidebar.

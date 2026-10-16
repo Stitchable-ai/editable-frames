@@ -57,6 +57,12 @@ npx cf deploy --prebuilt
 
 GitHub Actions runs **Framework validation**, **Rendering regression** and **Website validation** on pushes and pull requests. It needs no Cloudflare credentials. Cloudflare Builds is configured to deploy pushes to `main`, repeating the website checks; the repository permission step above remains to verify automatic triggering. Cloudflare does not wait for GitHub Actions; its own command validates the website, while a repository owner can additionally require all three GitHub checks in a main-branch ruleset before merges.
 
+A successful Git push or GitHub validation run does not confirm publication.
+Check the active Worker deployment and fetch the live HTML and hashed assets.
+If production still serves an older version, publish the current checked Build
+Output with `npm run deploy`, then verify the public URL again. Report source
+pushes and verified production deployments separately.
+
 All paths are watched initially to avoid missing a dependency. Keep the main site's build connection separate. The deployment account already had the organization's GitHub app installation. This new repository still needs its repository selection confirmed as described above.
 
 ## Launch verification receipt

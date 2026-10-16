@@ -48,13 +48,13 @@
 .studio-pointer-region{display:none;color:#a267ff;font:32px/1 system-ui;text-shadow:0 1px 2px white,1px 0 2px white}
 .studio-pointer[data-mode=region] .studio-pointer-arrow,.studio-pointer[data-mode=region] .studio-pointer-bubble{display:none}.studio-pointer[data-mode=region] .studio-pointer-region{display:block}
 
-/* Narrow hosts use a floating composer over the preview; history is transient. */
-.studio-demo{--studio-floating-chat:0}.studio-history-toggle{display:none}
+/* Narrow hosts keep the video clear: chat floats over the lower timeline. */
+.studio-demo{--studio-floating-chat:0;--studio-chat-layout:lower-timeline-v2}.studio-history-toggle{display:none}
 @container(max-width:690px){
  .studio-demo{--studio-floating-chat:1}
  .studio-workspace{position:relative;display:block;min-height:0}
  .studio-editor{position:static}.studio-rail,.studio-projects{display:none}
- .studio-chat{position:absolute;z-index:9;right:12px;bottom:var(--studio-chat-bottom,180px);display:block;width:min(190px,calc(100% - 24px));min-height:0;padding:0;background:none;border:0;transition:opacity .16s ease}
+ .studio-chat{position:absolute;z-index:9;right:12px;bottom:var(--studio-chat-bottom,104px);display:block;width:min(190px,calc(100% - 24px));min-height:0;padding:0;background:none;border:0;transition:opacity .16s ease}
  .studio-chat>header{display:none}
  .studio-chat-composer{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:center;gap:6px;margin:0;padding:7px;border:1px solid #8570997a;border-radius:13px;background:#202027ed;backdrop-filter:blur(14px);box-shadow:0 8px 26px #0007,0 1px 0 #ffffff12 inset}
  .studio-chat-composer textarea{height:26px;min-height:26px;max-height:26px;padding:2px 0;line-height:1.4;font-size:12px}
@@ -62,13 +62,13 @@
  .studio-history-toggle[aria-expanded=true]{background:#a16ce32b!important;color:#edddff!important}
  .studio-chat-tools{display:none;justify-content:flex-end;margin:0}.studio-chat-tools>span,.studio-chat-tools>small{display:none}.studio-chat-tools button{width:30px;height:30px}
  .studio-attached-note{grid-column:1/-1;grid-row:1;margin:0;padding:5px 6px;animation:none}.studio-attached-note b{font-size:10px}.studio-attached-note small{font-size:9px}
- .studio-demo[data-chat-drafting=true] .studio-chat{width:min(260px,calc(100% - 24px))}
+ .studio-demo[data-chat-drafting=true] .studio-chat{width:min(240px,calc(100% - 24px))}
  .studio-demo[data-chat-drafting=true] .studio-chat-composer{grid-template-columns:28px minmax(0,1fr) 30px}
  .studio-demo[data-chat-drafting=true] .studio-chat-tools{display:flex}
  .studio-demo[data-chat-drafting=true] .studio-chat-composer textarea{height:42px;max-height:42px}
- .studio-messages{position:absolute;right:0;bottom:calc(100% + 8px);width:var(--studio-chat-history-width,260px);max-height:var(--studio-chat-history-max,150px);padding:12px;gap:12px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;border:1px solid #665474;border-radius:12px;background:#1b1923f5;box-shadow:0 12px 30px #0007;backdrop-filter:blur(14px);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(7px);transition:opacity .16s ease,transform .16s ease,visibility 0s .16s}
+ .studio-messages{position:absolute;right:0;top:calc(100% + 8px);bottom:auto;width:var(--studio-chat-history-width,210px);max-height:var(--studio-chat-history-max,100px);padding:10px;gap:12px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;border:1px solid #665474;border-radius:12px;background:#1b1923f5;box-shadow:0 12px 30px #0007;backdrop-filter:blur(14px);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(7px);transition:opacity .16s ease,transform .16s ease,visibility 0s .16s}
  .studio-demo[data-chat-history-visible=true] .studio-messages{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition-delay:0s}
- .studio-messages .studio-message-user,.studio-messages .studio-sent-message{font-size:11px;line-height:1.55;padding:9px}.studio-messages .studio-assistant{font-size:11px;line-height:1.55}.studio-chat-reference{font-size:10px}.studio-messages .studio-tool-pill{font-size:8px}.studio-chat-turn .studio-assistant{margin-top:9px}
+ .studio-messages .studio-message-user,.studio-messages .studio-sent-message{font-size:11px;line-height:1.55;padding:9px}.studio-messages .studio-assistant{font-size:11px;line-height:1.55}.studio-chat-reference{font-size:10px}.studio-messages .studio-tool-pill{display:none}.studio-chat-turn .studio-assistant{margin-top:9px}
  .studio-demo[data-chat-obscured=true] .studio-chat{opacity:0;visibility:hidden;pointer-events:none}
 }
 @media(pointer:coarse){.studio-chat-composer textarea{font-size:16px}}

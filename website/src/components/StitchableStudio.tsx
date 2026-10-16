@@ -143,15 +143,18 @@ export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs
   const layout=new ResizeObserver(()=>{
    if(element.offsetWidth<=0)return;
    frame();
-   const workspace=element.querySelector<HTMLElement>('.studio-workspace'),stage=element.querySelector<HTMLElement>('[data-studio-stage]'),composer=element.querySelector<HTMLElement>('.studio-chat-composer');
-   if(!workspace||!stage||!composer||getComputedStyle(element).getPropertyValue('--studio-floating-chat').trim()!=='1')return;
-   const stageBottom=stage.offsetTop+stage.offsetHeight;
-   element.style.setProperty('--studio-chat-bottom',`${Math.max(10,workspace.clientHeight-stageBottom+10)}px`);
-   element.style.setProperty('--studio-chat-history-width',`${Math.min(260,workspace.clientWidth-24)}px`);
-   element.style.setProperty('--studio-chat-history-max',`${Math.max(36,Math.min(180,stageBottom-composer.offsetHeight-28))}px`);
+   const workspace=element.querySelector<HTMLElement>('.studio-workspace'),stage=element.querySelector<HTMLElement>('[data-studio-stage]'),timeline=element.querySelector<HTMLElement>('.studio-timeline'),composer=element.querySelector<HTMLElement>('.studio-chat-composer');
+   if(!workspace||!stage||!timeline||!composer||getComputedStyle(element).getPropertyValue('--studio-floating-chat').trim()!=='1')return;
+   const stageBottom=stage.offsetTop+stage.offsetHeight,timelineBottom=timeline.offsetTop+timeline.offsetHeight;
+   // Dock on the track; even the expanded composer stays below the picture.
+   const dockEdge=Math.max(timelineBottom+4,stageBottom+composer.offsetHeight+8);
+   const bottom=Math.max(8,workspace.clientHeight-dockEdge);
+   element.style.setProperty('--studio-chat-bottom',`${bottom}px`);
+   element.style.setProperty('--studio-chat-history-width',`${Math.min(210,workspace.clientWidth-24)}px`);
+   element.style.setProperty('--studio-chat-history-max',`${Math.max(0,Math.min(112,bottom-20))}px`);
    if(messages.current)messages.current.scrollTop=messages.current.scrollHeight;
   });layout.observe(element);
-  for(const selector of ['[data-studio-stage]','.studio-chat-composer']){const part=element.querySelector(selector);if(part)layout.observe(part)}
+  for(const selector of ['[data-studio-stage]','.studio-timeline','.studio-inspector','.studio-chat-composer']){const part=element.querySelector(selector);if(part)layout.observe(part)}
   const tabs=new MutationObserver(sync);if(panel)tabs.observe(panel,{attributes:true,attributeFilter:['hidden']});
   const preference=()=>{setReduced(motion.matches);if(motion.matches)stop();sync()};motion.addEventListener('change',preference);document.addEventListener('visibilitychange',sync);
   return()=>{disposed=true;alive.current=false;runVersion.current++;clearTimeout(timer);observe.disconnect();layout.disconnect();tabs.disconnect();motion.removeEventListener('change',preference);document.removeEventListener('visibilitychange',sync);const current=controller.current;controller.current=null;current?.abort();renderer.current?.dispose();renderer.current=null};
