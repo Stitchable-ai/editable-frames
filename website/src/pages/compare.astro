@@ -1,0 +1,39 @@
+---
+import Page from '../layouts/Page.astro';
+---
+<Page title="EditableFrames vs Remotion vs HyperFrames — Workflow & Build Time" description="Compare Remotion, HyperFrames and EditableFrames: scene authoring, time to a polished video, live previews, revision workflows, AI agents and video export." path="/compare/">
+
+
+<section class="section"><p class="eyebrow">THE SHIFT</p><h1>Video is code now.<br/><em>Your stack shouldn't decide whether you can ship it.</em></h1><p>Code-generated video brings scene design, animation and software into the same workflow. Your choice of framework shapes how you build the first version and handle the next round of feedback. EditableFrames pairs custom scene code with optional controls for the details people and agents need to change.</p></section>
+<article class="prose"><h2>From first draft to finished video</h2>
+<p id="timing-note">Time to a polished video depends on the assets, scene complexity, your experience and review rounds. We have not timed these frameworks against a shared production brief; the comparison below describes the work involved, without assigning untested minute counts or a speed ranking.</p>
+<div class="comparison-scroll" role="region" aria-label="Framework comparison" tabindex="0">
+<table aria-describedby="timing-note">
+<caption class="sr-only">Authoring, build time, revisions and export across three code-video frameworks</caption>
+<thead><tr><th scope="col">Aspect</th><th scope="col">Remotion</th><th scope="col">HyperFrames</th><th scope="col">EditableFrames</th></tr></thead>
+<tbody>
+<tr><th scope="row">Scene authoring</th><td>React compositions with frame-based animation.</td><td>HTML, CSS and JavaScript projects.</td><td>Custom Canvas, SVG, DOM or WebGL scenes through a renderer contract.</td></tr>
+<tr><th scope="row">React required?</th><td>Yes, for scene composition.</td><td>No.</td><td><strong>No.</strong> Choose the rendering library for your scene.</td></tr>
+<tr><th scope="row">Time to first preview</th><td>Set up a composition, connect assets and animation, then preview in Studio. Existing compositions can shorten setup.</td><td>Start with an agent-built project, then play and review it. The brief and asset readiness affect the first draft.</td><td>Try an included study immediately after it loads. A custom scene still needs source code, assets and renderer setup.</td></tr>
+<tr><th scope="row">Time to a polished video</th><td>Budget for composition design, motion, asset integration, review and final export. Reusable props can reduce repeat work.</td><td>Budget for generation, reviewing the project, refining visuals and timing, and final export. A generated draft still needs review.</td><td>Budget for scene design, optional controls, review and supported local export. Existing studies help exploration; a bespoke video still needs authoring.</td></tr>
+<tr><th scope="row">Changing a detail</th><td>Adjust exposed props in Studio with live preview, or edit the React source.</td><td>Refine the shared project files through an agent, Studio or your own tools, then preview the result.</td><td><strong>Adjust exposed clip controls</strong> through validated commands and undo/redo. Details without controls require source edits.</td></tr>
+<tr><th scope="row">Preview vs. final export</th><td>Preview in Studio or an embedded Player; export the finished video separately.</td><td>Play the project while iterating; render exact frames for the finished video.</td><td>Preview supported scenes in the browser; export video separately through the local SDK.</td></tr>
+<tr><th scope="row">Reusable variations</th><td>Parameterize a composition with props for different content and settings.</td><td>Keep and adapt the editable project files for the next version.</td><td>Reuse scene source and exposed controls; the playground can save and import compatible edit recipes.</td></tr>
+<tr><th scope="row">AI agent workflow</th><td>Agents can author and revise the React source.</td><td>Agents build and revise the same project files used by Studio and other tools.</td><td><strong>People and agents share validated edits.</strong> The local SDK checks revisions and preserves reversible history.</td></tr>
+<tr><th scope="row">Custom libraries</th><td>Integrate libraries into the React composition and rendering workflow.</td><td>Build within the HTML, CSS and JavaScript project workflow.</td><td><strong>Bring a rendering library</strong> through the renderer contract, within the supported host and export capabilities.</td></tr>
+<tr><th scope="row">Getting the final file</th><td>Render through Studio, the CLI or a rendering API.</td><td>Render the project to a finished video.</td><td>Supported local projects export MP4, transparent ProRes MOV or PNG/WAV sequences. This website saves PNGs and edit recipes; its studies are not all CLI export templates.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Workflow references: <a href="https://www.remotion.dev/docs/visual-editing" target="_blank" rel="noopener">Remotion visual editing ↗</a>, <a href="https://www.remotion.dev/docs/render" target="_blank" rel="noopener">Remotion export ↗</a>, <a href="https://hyperframes.heygen.com/introduction" target="_blank" rel="noopener">HyperFrames project workflow ↗</a> and the <a href="/reference/">EditableFrames beta reference</a>.</p>
+<h2>Why teams switch</h2><ul><li><strong>No React lock-in.</strong> Your team doesn't need to speak React to ship video. If HTML and JS can build it, EditableFrames renders it.</li><li><strong>No plugin gatekeeping.</strong> No extension system stands between you and a new renderer — the contract accepts any library.</li><li><strong>Agents edit like people.</strong> Claude Code, Codex and other tool-capable agents use the same validated commands and undo history.</li><li><strong>MIT licensed.</strong> Commercial use allowed.</li></ul><p><a href="/guide/">Read the framework guide</a> · <a href="/#gallery">Try the 12 studies</a> · <a href="https://github.com/Stitchable-ai/editable-frames" target="_blank" rel="noopener">MIT source on GitHub ↗</a></p></article>
+</Page>
+<style>
+  .section h1 { font-size: clamp(33px,4vw,52px); line-height: 1.1; font-weight: 500; letter-spacing: -2px; margin: 18px 0 23px; }
+  @media (max-width: 600px) { .section h1 { font-size: 36px; letter-spacing: -1.5px; } }
+  .comparison-scroll { overflow-x: auto; margin-block: 1.5rem; }
+  .comparison-scroll table { width: 100%; min-width: 760px; }
+  .comparison-scroll th, .comparison-scroll td { vertical-align: top; }
+  .comparison-scroll th:first-child { width: 19%; }
+  .comparison-scroll td { width: 27%; }
+</style>
