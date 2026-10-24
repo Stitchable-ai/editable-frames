@@ -23,12 +23,13 @@ import { STITCHABLE_PREVIEW } from '../data/stitchable-preview';
       <StitchableStudio client:visible/>
       <div class="agent-instructions stitchable-download"><div><span class="eyebrow">STITCHABLE PRO · DESKTOP APP</span><h3>Point to a detail. Make it yours.</h3><p>Fine-tune a scene with direct controls.<br/>Preview what’s next: point to an object, add a note, and turn it into an edit.</p></div><div class="stitchable-download-action"><a class="agent-open" href={STITCHABLE_PREVIEW.download} target="_blank" rel="noopener">Download Stitchable Pro <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 15v5h16v-5"/></svg></a><p class="stitchable-download-note">Guided demo · annotation is an upcoming feature.</p></div></div>
     </div>
-    <p class="agent-copy-status" role="status" aria-live="polite" aria-atomic="true" data-agent-status>Nothing is sent from this page. You choose where to paste.</p>
+    <p class="agent-copy-status" role="status" aria-live="polite" aria-atomic="true" data-agent-status>Your prompt stays here. You choose where to paste.</p>
     <noscript><p class="no-script">Read the <a href={`${REPOSITORY}/blob/main/docs/agents.md`}>agent setup guide</a> for all tools. You can select and copy the Claude prompt above.</p></noscript>
   </div>
   <div class="agent-source"><p>Open-source, model-neutral, and ready for new creative libraries.<br/>For local EditableFrames projects: Node.js, Chromium and FFmpeg.</p><a href={REPOSITORY} target="_blank" rel="noopener"><img src="/tool-logos/github.svg" width="23" height="23" alt=""/> Explore the MIT source <span aria-hidden="true">↗</span></a></div>
 </section>
 <script>
+  import { capture } from '../lib/analytics';
   import { buildAgentPrompt } from '../data/agent-guides';
   import { buildStudyBrief } from '../data/study-briefs';
   for (const root of document.querySelectorAll<HTMLElement>('[data-agent-guide]')) {
@@ -39,13 +40,15 @@ import { STITCHABLE_PREVIEW } from '../data/stitchable-preview';
     const briefSection=brief.closest<HTMLElement>('.agent-brief')!;
     let lastPromptTab=0;
     function selectTab(index: number, focus = false) {
+      const old=tabs.find(tab=>tab.getAttribute('aria-selected')==='true')?.dataset.agentTab;
+      if(old!==tabs[index].dataset.agentTab)capture('site_tab_changed',{window_id:'agent_guide',from_tab_id:old,tab_id:tabs[index].dataset.agentTab});
       const isStitchable=tabs[index].dataset.agentTab==='stitchable';
       briefSection.hidden=isStitchable;
       if(!isStitchable)lastPromptTab=index;
       tabs.forEach((tab,i) => { tab.setAttribute('aria-selected',String(i===index)); tab.tabIndex=i===index?0:-1; });
       panels.forEach(panel => { panel.hidden=panel.dataset.agentPanel!==tabs[index].dataset.agentTab; });
       root.querySelectorAll<HTMLButtonElement>('[data-agent-copy]').forEach(button => { button.textContent=button.dataset.agentCopy==='prompt'?'Copy prompt ⧉':'Copy setup commands ⧉'; });
-      status.textContent=isStitchable?'The Studio demo runs here. The download opens in a new tab.':'Nothing is sent from this page. You choose where to paste.';
+      status.textContent=isStitchable?'The Studio demo runs here. The download opens in a new tab.':'Your prompt stays here. You choose where to paste.';
       if(focus)tabs[index].focus();
     }
     tabs.forEach((tab,i) => {
@@ -87,6 +90,7 @@ import { STITCHABLE_PREVIEW } from '../data/stitchable-preview';
         try { copied=document.execCommand('copy'); } catch {}
         if(!copied)await navigator.clipboard.writeText(field.value);
         field.setSelectionRange(0,0);button.focus({preventScroll:true});
+        capture('agent_setup_copied',{agent_id:panel.dataset.agentPanel,kind:button.dataset.agentCopy==='prompt'?'prompt':'commands',ict_stage:'transactional'});
         button.textContent='Copied ✓';
         status.textContent=button.dataset.agentCopy==='prompt'?'Prompt copied. Open your tool and paste it into a new conversation.':'Setup commands copied. Run them in a new local folder.';
       } catch {

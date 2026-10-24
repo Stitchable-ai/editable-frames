@@ -1,0 +1,19 @@
+---
+import Page from '../layouts/Page.astro';
+---
+<Page title="Website privacy and analytics — EditableFrames" description="What EditableFrames website analytics measures and how to change your browser preference." path="/privacy/">
+<section class="section"><div class="section-heading"><div><span class="eyebrow">YOUR BROWSER</span><h1>Website privacy<br/><em>and analytics.</em></h1></div></div>
+<p>We use PostHog to measure page visits, scene and agent tabs, deliberate editing, downloads and setup-copy actions. Website analytics are on by default. Global Privacy Control and Do Not Track keep collection off.</p>
+<p>Your creative brief, prompts, scene edit values, imported files and media stay out of analytics. Session recording and automatic click capture are disabled. The standalone framework and CLI do not send this website telemetry.</p>
+<p>First-party cookies group visits and retain campaign attribution for up to 30 days. Your preference is remembered for a year and shared with the Stitchable website. The websites use separate PostHog projects. Turning collection off stops future website events in this browser; it does not delete previously received events.</p>
+<p role="status" data-analytics-status>Checking your browser preference…</p>
+<div class="agent-copy-buttons"><button data-analytics-choice="on">Turn analytics on</button><button data-analytics-choice="off">Turn analytics off</button></div>
+<p><a href="/">← Back to EditableFrames</a></p></section>
+</Page>
+<script>
+import {analyticsPreference,setAnalyticsPreference} from '../lib/analytics';
+const status=document.querySelector('[data-analytics-status]');
+function refresh(){if(status)status.textContent=analyticsPreference()==='on'?'Website analytics are on in this browser.':'Website analytics are off in this browser.';}
+document.querySelectorAll<HTMLButtonElement>('[data-analytics-choice]').forEach(button=>button.addEventListener('click',()=>{setAnalyticsPreference(button.dataset.analyticsChoice==='on');refresh();}));
+refresh();
+</script>

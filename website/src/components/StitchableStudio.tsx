@@ -1,3 +1,4 @@
+import {capture} from '../lib/analytics';
 import {useEffect,useId,useImperativeHandle,useRef,useState,type Ref} from 'react';
 import '../styles/studio-demo.css';
 
@@ -36,11 +37,13 @@ export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs
   if(historyTimer.current)clearTimeout(historyTimer.current);
   setChatHistoryVisible(true);historyTimer.current=setTimeout(()=>{historyTimer.current=null;setChatHistoryVisible(false)},1800);
  }
+ const firstManual=useRef(false);
+ function manualEdit(){if(!firstManual.current){firstManual.current=true;capture('demo_first_manual_edit',{example_id:'studio-paper-garden',edit_receipt:'validated_local_command',ict_stage:'comparison'});}}
  function commit(patch:Partial<Model>){
   const next={...modelRef.current,...patch};
   if(![next.body,next.leaf,next.friendColor].every(value=>/^#[\da-f]{6}$/i.test(value))||![next.scale,next.sproutScale,next.friendScale].every(value=>Number.isFinite(value)&&value>=.75&&value<=1.25)||![0,1].includes(next.friend)||![0,1].includes(next.watering))return;
   if(JSON.stringify(next)===JSON.stringify(modelRef.current))return;
-  history.current=history.current.slice(0,historyIndex.current+1);history.current.push(next);historyIndex.current++;modelRef.current=next;setModel(next);setRevision(v=>v+1);
+  history.current=history.current.slice(0,historyIndex.current+1);history.current.push(next);historyIndex.current++;modelRef.current=next;setModel(next);setRevision(v=>v+1);return true;
  }
  function stop(){
   const wasRunning=Boolean(controller.current&&!controller.current.signal.aborted);
@@ -60,8 +63,8 @@ export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs
  function regionDown(event:React.PointerEvent<HTMLDivElement>){if(mode!=='annotate'||!model.friend||event.button!==0||(event.target as Element).closest('form'))return;const p=regionPoint(event);drag.current={...p,pointer:event.pointerId,moved:false}}
  function regionMove(event:React.PointerEvent<HTMLDivElement>){const start=drag.current;if(!start||start.pointer!==event.pointerId)return;const p=regionPoint(event);if(!start.moved&&Math.hypot(p.x-start.x,p.y-start.y)<.015)return;start.moved=true;event.currentTarget.setPointerCapture(event.pointerId);setRegionDragging(true);showRegion({x:Math.min(start.x,p.x),y:Math.min(start.y,p.y),width:Math.abs(start.x-p.x),height:Math.abs(start.y-p.y)})}
  function regionUp(event:React.PointerEvent<HTMLDivElement>){const start=drag.current;if(!start||start.pointer!==event.pointerId)return;drag.current=null;if(!start.moved)return;ignoreObjectClick.current=true;setTimeout(()=>{ignoreObjectClick.current=false},0);const box=regionRef.current,stage=event.currentTarget.getBoundingClientRect();const contains=(id:ObjectId)=>{const r=root.current?.querySelector<HTMLElement>(`[data-studio-object="${id}"]`)?.getBoundingClientRect();if(!r||!box)return false;const x=(r.x+r.width/2-stage.x)/stage.width,y=(r.y+r.height/2-stage.y)/stage.height;return x>=box.x&&x<=box.x+box.width&&y>=box.y&&y<=box.y+box.height};if(contains('robot')&&contains('friend'))openRegion();else{regionRef.current=null;setRegion(null);setRegionDragging(false);setStatus('Draw a box around both gardeners to add a group note.')}}
- function color(value:string){commit(currentSelected.current==='sprout'?{leaf:value}:currentSelected.current==='friend'?{friendColor:value}:{body:value})}
- function scale(value:number){commit(currentSelected.current==='sprout'?{sproutScale:value}:currentSelected.current==='friend'?{friendScale:value}:{scale:value})}
+ function color(value:string){if(commit(currentSelected.current==='sprout'?{leaf:value}:currentSelected.current==='friend'?{friendColor:value}:{body:value}))manualEdit();}
+ function scale(value:number){if(commit(currentSelected.current==='sprout'?{sproutScale:value}:currentSelected.current==='friend'?{friendScale:value}:{scale:value}))manualEdit();}
  function attach(id:AnnotationTarget,text:string){const next:Note={object:id,text:text.trim()||friendComment,number:++noteSequence.current,...(id==='gardeners'&&regionRef.current?{region:{...regionRef.current},sourceTime:regionTime.current}:{})};noteRef.current=next;setNote(next);setDraft(null);setMode('select');setStatus('Your note is attached above the main chat composer.')}
  function respond(text:string){setSent(turns=>turns.map((turn,i)=>i===turns.length-1?{...turn,response:text}:turn))}
  function sendAttached(){const n=noteRef.current;if(n)setSent(turns=>[...turns,n]);setNote(null);noteRef.current=null;setChatText('');setChatFocused(false)}
@@ -208,7 +211,7 @@ export default function StitchableStudio({rendererUrl='/runtime/studio-paper.mjs
    </div>
    <div className="studio-pointer" data-studio-pointer hidden aria-hidden="true"><svg className="studio-pointer-arrow" width="28" height="34" viewBox="0 0 32 38"><path d="M6 4V28L12 22L17 33L22 30L17 20H28L6 4Z" fill="#a267ff" stroke="#fff" strokeWidth="2" strokeLinejoin="round"/></svg><span className="studio-pointer-region">＋</span><span className="studio-pointer-bubble"><Icon name="chat" size={22}/><i/><i/><i/></span><span className="studio-pointer-label">You</span><span className="studio-pointer-ring"/></div>
   </div>
-  <div className="studio-demo-caption"><div className="studio-demo-steps"><span className={phase==='properties'?'is-current':''}>01 <b>Adjust</b></span><span className={['annotate','comment','chat','annotate-water','comment-water','chat-water'].includes(phase)?'is-current':''}>02 <b>Point & chat</b></span><span className={['editing','watering-edit','playback','complete'].includes(phase)?'is-current':''}>03 <b>Make it yours</b></span></div><button type="button" data-studio-replay onClick={()=>running?stop():void run()}>{running?'Ⅱ Pause walkthrough':reduced?'Show example edit':'↻ Replay walkthrough'}</button></div>
+  <div className="studio-demo-caption"><div className="studio-demo-steps"><span className={phase==='properties'?'is-current':''}>01 <b>Adjust</b></span><span className={['annotate','comment','chat','annotate-water','comment-water','chat-water'].includes(phase)?'is-current':''}>02 <b>Point & chat</b></span><span className={['editing','watering-edit','playback','complete'].includes(phase)?'is-current':''}>03 <b>Make it yours</b></span></div><button type="button" data-studio-replay onClick={()=>{if(running)stop();else{capture('demo_started',{example_id:'studio-paper-garden',kind:'walkthrough',interaction_origin:'guided_demo'});void run();}}}>{running?'Ⅱ Pause walkthrough':reduced?'Show example edit':'↻ Replay walkthrough'}</button></div>
   <p className="studio-demo-status" role="status" aria-live="polite">{status}</p>
  </div>;
 }
