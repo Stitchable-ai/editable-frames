@@ -53,7 +53,7 @@ Live browser verification used `qa_run=webqa-20261024-ict-a`. Both projects disp
 | Installer CTA | Recorded macOS and release v0.4.1; no installation claimed |
 | Shared Off and regrant | Off on the main site blocked all PostHog requests on the other host. A discovered project-cookie regrant defect was fixed in both SDK integrations and regression-tested |
 | Mobile hydration | Corrected initial fallback labeling; final mobile page had no overflow or false desktop opening |
-| Embedded site | Parent emitted one acquisition pageview; child interaction receipt is checked independently from a direct visit |
+| Embedded site | Parent emitted one acquisition pageview; stored child scene-change receipt had `is_embedded=true` and `tab_id=device`; direct visits remain separate |
 
 Saved business charts exclude `is_qa=true`; the explicitly named QA verification chart includes this test run. Business charts may correctly be empty immediately after deployment. Built-in Web analytics can include QA unless the same event-property filter is applied. These are anonymous browser counts, not authenticated accounts or unique humans.
 
@@ -64,5 +64,5 @@ Final checks: **17 analytics tests per website**, type/diagnostic checks, static
 1. Open the **Website ICT dashboard** link above. Select the named **QA verification** chart to see test actions. The other charts intentionally exclude QA.
 2. To inspect one action, open **Stored events**, click **Reload**, then expand a row with **Show more**. Find `qa_run=webqa-20261024-ict-a`, `surface`, `page_route`, `example_id` or `window_id`, and `$insert_id`.
 3. To test your own traffic, open a fresh tab with `?utm_source=blog&utm_medium=referral&utm_campaign=my-test&qa_run=webqa-my-test` on a relevant page. Make an edit or change a working tab. In **Stored events**, add the event-property filter `qa_run = webqa-my-test` and reload. Use a new label per test.
-4. For real traffic reports, open **Incoming traffic** and add `is_qa = false` under filters. Inspect source, landing page and path sections. A first or last campaign field is available for custom breakdowns; visits without a tag/referrer remain unknown/direct.
+4. For real traffic reports, open **Incoming traffic**, click **Filters** above the headline numbers and add the event property `is_qa = false`. Scroll to **Sources by**, open its dropdown and select **UTM source** (or UTM campaign). The adjacent **Pages by** dropdown supports landing pages and paths. A first or last campaign field is available for custom breakdowns; visits without a tag/referrer remain unknown/direct.
 5. To turn website collection off, use the footer **Privacy & analytics** link and select **Turn analytics off**. Account product analytics settings are independent.
