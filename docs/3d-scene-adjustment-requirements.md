@@ -89,8 +89,9 @@ across zoom levels with a bounded screen size. Show active axis, value and units
 Snap increments and numeric precision are host preferences, not hardcoded metres.
 
 Use one selected object initially. Clicking a gizmo takes priority over object
-selection and camera navigation. Escape, lost capture and invalidation cancel.
-Never leave an invisible or occluded handle intercepting input.
+selection and camera navigation. Escape and unexpected capture loss cancel before
+publication; normal capture loss after release follows the finalization rules in
+§5D. Never leave an invisible or occluded handle intercepting input.
 
 ### R3. Cameras, lighting and scene editing
 
@@ -99,6 +100,11 @@ no authored property and no export. Provide Return to shot and an explicit Use
 this view as shot action, which commits supported camera fields atomically.
 Manipulating a shot camera from another editor view uses its own selectable proxy.
 Navigation and object manipulation cannot own the same pointer simultaneously.
+Navigation requires an opt-in renderer capability for transient view state,
+separate from authored props. Subject rendering, helpers, picking and constraints
+must use the same accepted editor camera and viewport. A view change requests a
+render even at unchanged source time; it invalidates outstanding picks. Renderers
+without this capability remain renderable and report navigation as unsupported.
 
 Expose declared camera position, orientation OR look-at target, perspective FOV
 (or orthographic size), and relevant clipping bounds. Do not simultaneously drive
@@ -110,24 +116,33 @@ Expose declared light position, target/direction, colour, intensity and appropri
 shadow/shape parameters. A point light has no useful aim control; an environment
 light has no useful position arrow. Renderer-specific intensity units and colour
 handling must be labelled. Camera/light target controls that must change together
-should share one semantic anchor so today's single-anchor gesture validation can
-commit them atomically. Props, backgrounds and additional characters reuse the same
-object contract rather than adding a fixed catalogue of scene primitives.
+should share one semantic anchor so single-anchor validation can commit them
+atomically. Initially there is one placement gizmo binding per anchor; aim targets
+may remain numeric controls. Additional target gizmos need explicit binding IDs
+and control-key mappings, not another ambiguous position role. Props, backgrounds
+and additional characters reuse the object contract rather than a fixed catalogue.
 
 ### R4. Animation and history
 
-Freeze the child-confirmed painted frame when a drag is admitted. Sample and freeze
-its camera, parent transform, pivot, authoring values and active shot. Unanimated
+Freeze the child-confirmed painted presentation when a drag is admitted. It
+identifies renderer instance, document/source revision, source clock, active shot,
+editor-view revision and viewport-mapping revision. Rendering, picking, handle
+hit-testing and gesture initialization must agree on that presentation. Freeze its
+editor-camera pose/projection separately from the authored shot camera, plus parent
+transform, pivot and sampled authoring values. Suspend navigation, including
+inertia, during manipulation. External view/mapping changes invalidate the gesture. Unanimated
 fields with Auto-key off change the base value; an animated field or Auto-key on
 inserts/updates the source-time key, preserving existing easing and rational timing.
 Follow [current key timing](object-manipulation.md); do not write object motion to
 outer clip transform tracks. One completed drag is one undo entry, no matter how
-many pointer updates arrive. A no-op produces no entry. Cancel produces no entry.
+many pointer updates arrive. A no-op produces no entry. Cancellation before the
+publication boundary produces no entry; after it, reconcile the outcome (§5D).
 
 After edits, backward/random seeks and export must evaluate from source time and
 saved controls, without accumulating pointer deltas or animation playback state.
-Freeze or cancel on a camera cut, seek, source rebind, selected-object replacement,
-viewport mapping change or conflicting writer. Do not silently rebase a gesture.
+Cancel before publication on a camera cut, seek, source rebind, selected-object
+replacement, viewport mapping change or conflicting writer. Do not silently rebase
+a gesture; after publication begins, report its authoritative outcome.
 
 ## 4. Proposed portable interfaces
 
@@ -152,23 +167,52 @@ controls: {
   ]
 }
 
-// Proposed adapter capabilities: supported operations, not inferred from fields.
-spatialCapabilities({anchor: 'actor'}) // =>
-({version: 2, translate: ['x','y','z','xy','xz','yz','screen'],
-  rotate: ['x','y','z'], scale: ['uniform'], spaces: ['world','local']})
+// Proposed adapter capabilities: independent of controls schema version.
+spatialCapabilities({anchor: 'actor', presentationId}) // =>
+({gestureProtocols: [2], bindings: [{id: 'placement', operations: {
+  translate: {handles: ['x','y','z','xy','xz','yz','screen'],
+    spaces: ['world','local'], keys: ['actor.position']},
+  rotate: {handles: ['x','y','z'], spaces: ['world','local'],
+    keys: ['actor.orientation']},
+  scale: {handles: ['uniform'], spaces: ['local'], keys: ['actor.scale']}
+}}]})
 
 // New fields extend the existing begin/update/commit/cancel envelope.
 // The host retains its admission, identity and ordered response state.
 gesture({version: 2, phase: 'update', id, anchor: 'actor',
-  operation: 'translate', handle: 'z', space: 'world',
+  bindingId: 'placement', operation: 'translate', handle: 'z', space: 'world',
   start, point, clock}) // => {values: {'actor.position': [1, 0, 2]}}
 ```
 
-Keep gesture identity and authority outside authored code. Negotiate protocol 2
-before sending it; old hosts must report unsupported editing rather than interpret
-rotation as movement. Existing v1 scenes remain unchanged. Unsupported v2 controls
-must fail clearly without resetting saved values/history; optionally offer an
-explicit read-only render path where the host can safely supply the required data.
+Renderer protocol, controls schema and gesture protocol are **independent**.
+Controls-v1 scenes can use a v2 manipulation adapter; new quaternion fields require
+a controls schema that understands them. Before admission, every intervening host,
+transport and adapter must explicitly support the selected gesture protocol.
+Missing negotiation means legacy-only: send only existing move/resize envelopes on
+that path. Never probe v2 operations through the legacy normalizer. A v2-only
+adapter rejects unversioned input. Unsupported combinations leave saved state
+unchanged; old hosts reject unsupported schemas without resetting history.
+
+Keep identity and authority outside authored code. Validate and freeze the binding,
+operation, handle, space, permitted control keys and snapping configuration at
+admission. Revalidate them before publication. A translate proposal cannot alter
+rotation or another field just because it shares the anchor. Coupled transforms
+must explicitly declare all permitted keys and publish atomically. Capability
+advertisements and renderer hit results are proposals, not write authorization.
+
+The edit surface also needs a versioned handle-hit query, for example
+`hitTestHandle({point, presentationId}) -> {anchor, bindingId, operation, handle}`.
+Only bounded semantic data crosses the host bridge. The host checks it against
+the current capabilities and accepted presentation; stale results are discarded.
+A busy/replaced renderer is distinct from a confirmed empty hit. Expose disabled
+reasons for unsupported transforms. Presentation IDs are host-generated correlation
+values; neither they nor a renderer message grant permission to commit.
+
+The optional runtime view/overlay service must deliver transient view state to
+subject rendering as well as the adapter; it supplies an editor-only surface and
+invalidates it with the same presentation. It is absent during content capture.
+The exact facade is a spike deliverable, but both host implementations must share
+these semantics. Existing content rendering remains usable without that service.
 
 Add normalized quaternion validation and sampling through the control normalizer,
 core value type, template mapping, keyframes, inspector, serialization and consumers.
@@ -179,12 +223,26 @@ component-interpolate them as if they were ordinary positions. Preserve delibera
 multi-turn animation through a separate authored angle/spin control; shortest-path
 quaternions alone cannot encode winding. [Three quaternion reference](https://threejs.org/docs/pages/Quaternion.html).
 
-Binding identity must include newly meaningful rotation/coordinate semantics and
-spatial binding revision. Preserve legacy v1 identity computation; do not invalidate
-all old projects merely by adding a version field. Incompatible rebinds require an
-explicit migration/reset. Existing generic component rounding must not turn valid
-unit quaternions into invalid ones: normalize after any permitted rounding, and
-compare orientations rather than raw component signs.
+Sampling must be invariant under negating either endpoint. At an exact zero-dot
+(180-degree) tie, choose representatives whose first nonzero component in
+`[w,x,y,z]` is positive before interpolation; otherwise choose the shortest
+hemisphere. Apply existing temporal easing to the interpolation parameter. Do not
+rewrite a track for a sign-only no-op. Test intermediate orientations for all four
+endpoint-sign combinations, not only equality at the keys.
+
+Separate **persistent spatial-semantics identity** from **transient binding
+generation**. The persistent identity is deterministic across mounts and includes
+authored mappings, units and transform/pivot conventions; it excludes runtime
+instance IDs and generation counters. Preserve legacy v1 identity and history;
+opening a project does not implicitly migrate it. Incompatible authored semantics
+require explicit migration/reset, while remounting alone never does.
+
+The host captures transient binding generation at admission and checks it when
+accepting results and immediately before publication. Replacing the bound root,
+camera object or conversion mapping invalidates that generation; ordinary draft
+repaints do not. View-pose changes separately invalidate presentation identity.
+Existing component rounding must not invalidate unit quaternions: normalize after
+permitted rounding, and compare orientations rather than raw component signs.
 
 A runtime-only Three adapter binds an anchor to its editable root, camera, picking
 objects and conversions between rendered transforms and declared controls. Persist
@@ -228,11 +286,20 @@ coordinates are logical pixels; do not multiply by DPR twice.
 
 Gizmo axis orientation and storage space are different. A world-X drag may produce
 several changed components in a parent-local position field. Capture the parent's
-world matrix and inverse at begin. For a local position binding, convert the
-proposed world pivot through that inverse before subtracting the authored pivot
-offset. For rotation/scale about pivot `p`, the adapter must honour the renderer's
-chosen `T(position) T(p) R S T(-p)` convention or provide explicit conversions.
-Do not use a changing animated bounding-box centre as the gesture pivot.
+world matrix `P` and inverse at begin. Here `local` position means parent-local,
+not object-axis coordinates. For the explicit pivot convention
+`M = T(t) T(p) R S T(-p)`, recover `t = P⁻¹(worldPivot) − p`.
+For ordinary Three `M = T(t) R S`, instead recover
+`t = P⁻¹(worldPivot) − R S p`. The binding must declare which convention it consumes
+or provide explicit conversions. A noncentral pivot may therefore require a
+rotation proposal to include a compensating position field. Declare that coupled
+key set in capabilities; never move the visible pivot accidentally. Do not use a
+changing animated bounding-box centre as the gesture pivot.
+
+Prefer a proxy beneath an identity-transform editor root, expressed at the frozen
+world pivot with world orientation. Convert its output back through the captured
+parent and declared convention; do not copy proxy position directly to a local
+field. A different proxy hierarchy must prove the same round-trip invariants.
 
 Adopt explicit authoring units, handedness and up axis in each adapter; imported
 asset normalization belongs below a stable placement root. Do not refit/recentre
@@ -251,9 +318,30 @@ notes an explicit limitation for `attach`.
 When an axis projects almost to a point or a ray is nearly parallel to the chosen
 drag plane, keep values finite and stable: disable that handle with guidance to
 orbit or use numeric input, or use a tested frozen alternative. Never change the
-constraint halfway through a drag. Apply snapping in the declared manipulation
-space, then convert and validate stored values. Bounds are evaluated in the
-field's documented storage space, not accidentally in screen coordinates.
+constraint halfway through a drag. Freeze snapping at admission. Initial snapping
+uses **displacement from the starting pivot**, with zero displacement preserving
+the starting pose; absolute grid snapping is a separately declared option. World
+increments use world units along frozen world axes. Local increments use authored
+placement units along frozen object-oriented axes, with ancestor uniform scale
+included in conversion and the object's own visual scale excluded. Report those
+units in the inspector. Rotation uses angular displacement; scale uses the authored
+positive scalar. Preserve coordinates outside the selected axes. Do not assume
+r180 `translationSnap` handles rotated/scaled ancestry: its world branch adds
+parent translation but does not perform a full parent-space conversion. Implement
+the declared snap frame in the adapter and cover it with numeric fixtures.
+
+Enforce storage-space bounds while retaining the frozen axis/plane constraint.
+For an axis, derive the feasible interval for scalar displacement from field bounds;
+do not independently clamp converted X/Y/Z components. For a plane, project the
+candidate onto the feasible region in its two declared coordinates. Bounds take
+precedence over snapping: allow an off-grid boundary value rather than leave the
+constraint or fail the gesture. Reaching a limit must permit reverse travel.
+
+Uniform scale saturates at a documented positive lower bound (and declared upper
+bound), preserving equal components. Pivot crossing must not create a negative
+scale, cancel an otherwise valid drag or prevent reversing direction. A degenerate
+starting radius uses a tested fallback or refuses admission with guidance.
+Snapping cannot emit zero/negative scale; no nonfinite value reaches a proposal.
 
 ### C. Picking, overlay and disposal
 
@@ -264,22 +352,50 @@ object-list escape hatch. Do not let a large projected rectangle select a hidden
 object in front of the visible one. For skinned meshes, update pose-dependent bounds
 as needed and test actual picking against the supported Three version.
 
-Render gizmos, selection outlines and camera/light helpers in an editor-only surface
-outside the captured content root. A separate overlay pass/canvas can share the
-scene camera and viewport; any occlusion policy must be explicit. Export and
-reference-image capture use content-only rendering even when a drag is active.
-Changing editor view must never become an implicit camera override during capture.
-Dispose overlay resources, listeners and pending proposals on unmount/rebind;
-no second uncontrolled animation loop or stale GPU context may survive.
+Render gizmos, selection outlines and camera/light helpers in an editor-only
+surface; a separate overlay pass/canvas shares the accepted view and viewport.
+Specify its occlusion policy. DOM ancestry alone cannot exclude editor pixels:
+[the current exporter](../scripts/render.mjs) screenshots an element's visible
+rectangle, which can contain overlapping sibling overlays. Use an isolated content
+render, or an acknowledged capture transition that excludes editor pixels from the
+actual captured image and restores the editor afterwards.
+
+Direct stills, movies and generation references sample an immutable **committed**
+revision, requested source time and its authored shot camera. Exclude transient
+pose drafts and editor-view state. Capture concurrent with publication chooses
+one complete committed revision, records its identity and never mixes revisions.
+Capture during a drag does not commit or cancel it. An optional draft-capture
+feature would need explicit draft identity; it is not implied by this contract.
+Authored captions and other content overlays remain included. Dispose editor
+resources, listeners and pending proposals on unmount/rebind; no second uncontrolled
+animation loop or stale GPU context may survive.
 
 ### D. Async host transaction
 
-Reuse the existing gesture session: trusted begin → freeze painted frame and
-identity → adapter preview → validate draft → trusted release → final validation
-and atomic publication. Keep at most one executing update and one latest pending
-point. Number responses or serialize calls; the final released point must not be
-lost behind a slower earlier update. Reject late results after cancel or source
-change. Retain existing byte/key/time budgets and lease renewal.
+Use an explicit lifecycle: admitted/preparing → active → finalizing → publishing
+→ committed/failed/uncertain. Canceled is terminal before publishing. Keep the
+existing gesture validator, but extend its host consumer for this lifecycle.
+
+- Trusted begin freezes the accepted presentation, binding generation and identity.
+  Keep at most one executing update and one latest pending point. Serialize or
+  number responses; late work cannot replace a newer draft.
+- A matching trusted release fixes the final point and enters finalizing, including
+  when begin is still pending. Expected capture loss after release is not cancel;
+  unexpected loss before release is. Disable new updates and drain/evaluate that
+  final point. If its evaluation fails, do not publish an earlier draft.
+- Escape/invalidation can cancel until the host atomically consumes admission for
+  publication. Immediately before that boundary, recheck cancellation, identity,
+  generation, allowed fields and the final proposal. Publish with a document-revision
+  compare-and-swap, not only an earlier frontend revision check.
+- After publication starts, report the authoritative transaction outcome. Do not
+  announce cancellation if a dispatched save may still succeed. A lost acknowledgment
+  is uncertain: reconcile by a stable host transaction ID/receipt before retrying.
+  Never duplicate an undo entry or overwrite a newer revision. A later reversal of
+  a successful publication is a separate normal undo, not gesture cancellation.
+
+Retain byte/key/time budgets and lease renewal through finalization. A deadline
+before publication cancels; after dispatch it may require reconciliation. Neither
+renderer callbacks nor transport tokens can consume the host's write admission.
 
 No LLM, filesystem write, asset download or provider call occurs per pointer move.
 Benchmark drag-to-paint latency on representative hardware; a proposed target is
@@ -306,6 +422,13 @@ GLBs remain immutable Library/project assets with stable version references.
 EditableFrames loads admitted bytes and instantiates scene objects; it does not
 become an asset marketplace or download manager. An LLM may propose imports or
 changes through tools, but cannot create a second persistence path.
+Persist immutable asset/version references, never resolved runtime URLs. Resolution
+and private package bindings stay host-owned and cannot be overridden by gesture
+proposals. Asset identity covers every model dependency used in preview/export.
+Initial fixtures may require self-contained GLBs; external buffers/textures need
+separately admitted, pinned references or explicit rejection. Preserve native
+private-binding and self-containment checks. Standalone projects provide equivalent
+project-local custody without requiring Stitchable Library.
 
 1. **Contract and math spike:** negotiate protocol, specify field/rotation identity,
    prove proxy input, transformed-parent conversion and overlay-free capture in a
@@ -354,9 +477,29 @@ These are release gates for follow-up code, **not tests claimed to pass in this 
   creates one undoable camera edit. Object drag cannot also orbit the view.
 - [ ] Light position/target/intensity edits reproduce at the same frame; fields that
   have no meaning for that light type do not advertise working affordances.
-- [ ] Preview, direct still capture, movie export and reference renders contain no
-  gizmos/helpers. Forward/backward/random seeks yield the same authored transforms;
+- [ ] Captured content from preview, direct stills, movies and reference renders
+  contains no editor helpers; the interactive editing surface may display them.
+  Forward/backward/random seeks yield the same authored transforms;
   do not claim cross-GPU pixel identity.
+- [ ] An asynchronous pick begun in editor view A is rejected after orbit to B at
+  the same source time; subject rendering, helper picking and constraints agree.
+  Editing a shot camera from a different editor view never moves the editor view.
+- [ ] Delayed begin, final evaluation and persistence each exercise release, Escape,
+  expected/unexpected capture loss and conflicting writes. Lost acknowledgment
+  reconciles without duplicate history; a failed final point never saves old data.
+- [ ] Controls-v1 plus v2 gestures works when negotiated; legacy adapters never
+  receive v2 input. A v2-only adapter rejects unversioned input. Unsupported bridge
+  versions, operation/key mismatches and stale handle hits leave state unchanged.
+- [ ] Remount preserves persistent semantics/history but invalidates old runtime
+  bindings. A draft repaint does not invalidate its own gesture.
+- [ ] Mid-drag capture followed by cancellation matches the captured committed
+  revision, not the draft; overlapping editor canvases do not enter its pixels.
+  Capture concurrent with commit identifies either whole revision, never a mixture.
+- [ ] Numeric fixtures cover world snapping under rotated/scaled parents,
+  axis-preserving bounds, plane bounds/snap conflicts, pivot conventions, scale
+  pivot-crossing/degenerate starts and quaternion 180-degree sign ties.
+- [ ] A GLB with an external dependency is either fully pinned/admitted or rejected;
+  temporary URLs and private bindings cannot be persisted through transform edits.
 - [ ] Standalone and native consumer tests report supported runtime versions,
   resource cleanup and latency measurements. A browser-only demo is insufficient
   evidence for native-host completion.
