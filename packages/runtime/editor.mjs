@@ -41,7 +41,7 @@ export async function mount({templates,createRenderer,scene,binding,initial,medi
    if(f.when&&studio.controlValue(c,studio.node(c,f.when.anchor),f.when.property)!==f.when.equals)continue;
    if(f.kind==='preset'){const b=document.createElement('button');b.textContent=f.label;b.onclick=()=>edit({type:'batch',label:f.label,commands:f.operations.map(o=>({type:'set',clip:selected,...o}))}).catch(fail);$('#controls').append(b);continue}
    const macro=f.kind==='macro',node=macro?null:studio.node(c,f.anchor),s=macro?{type:'number',min:f.min,max:f.max}:studio.schema(c,node)[f.property];
-   const label=document.createElement('label');label.textContent=f.label;label.dataset.anchor=f.anchor??'';label.dataset.property=f.property??'';const jsonInput=['json','vec3'].includes(s.type);const input=document.createElement(s.type==='enum'?'select':jsonInput?'textarea':'input');input.setAttribute('aria-label',f.label);
+   const label=document.createElement('label');label.textContent=f.label;label.dataset.anchor=f.anchor??'';label.dataset.property=f.property??'';const jsonInput=['json','vec3','quaternion'].includes(s.type);const input=document.createElement(s.type==='enum'?'select':jsonInput?'textarea':'input');input.setAttribute('aria-label',f.label);
    if(s.type==='enum')for(const v of s.values)input.add(new Option(v,v));else if(!jsonInput)input.type=s.type==='number'?'range':s.type==='boolean'?'checkbox':s.type==='color'?'color':'text';
    if(s.type==='number'){input.min=s.min??0;input.max=s.max??100;input.step=s.integer?1:s.step??.01}
    const shown=macro?f.min:studio.controlValue(c,node,f.property);input.value=jsonInput?JSON.stringify(shown):shown??'';input.checked=!!shown;

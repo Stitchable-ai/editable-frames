@@ -22,6 +22,10 @@ Built by parent company [Stitchable](https://stitchable.ai). For a complete vide
 
 [Still image](docs/media/editor-still.png) · [How this demo was captured](docs/media/README.md)
 
+## Edit a 3D scene locally
+
+Select actors, move XYZ arrows, rotate, scale, adjust lights and camera framing, and save clean reference images. The [Scene Studio example](examples/scene-editor/README.md) includes drama blocking and a procedural robot-versus-ape scene, with keyframes and reversible edits. Run `npm run build:scene` then `npm run dev:scene`. This standalone editor is an opt-in integration example; native Stitchable integration remains separate.
+
 ## One framework, many visual styles
 
 Actual output from the included studies, effects and device viewer. Click any image to see it larger. Run the local studio to play and edit the examples.

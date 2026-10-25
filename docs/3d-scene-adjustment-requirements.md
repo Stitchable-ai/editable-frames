@@ -1,8 +1,13 @@
 # Editable 3D scenes: requirements and implementation design
 
-Status: **proposed; documentation only**. This document specifies additional 3D
-editing capabilities, not a completed editor. Source audit: EditableFrames
-`27f26c9158dc87b729d554dae9accba7e293ab44` (2026-10-26).
+Status: **standalone implementation available; native host integration pending**.
+The [Scene Studio example](../examples/scene-editor/README.md) implements an opt-in
+Three.js editor with spatial controls, keyframes, reversible transforms, local
+persistence and committed-state reference capture. The reusable core/adapter
+modules are included. Native Stitchable transport, Library and KDV integration
+remain pending; this document is the full target contract, not a claim that every
+host acceptance fixture has shipped. The baseline source audit below describes
+EditableFrames `27f26c9158dc87b729d554dae9accba7e293ab44` (2026-10-26), before this PR.
 
 ## 1. Outcome and scope
 
@@ -28,7 +33,7 @@ not initial release requirements.
 
 ## 2. What exists and what must change
 
-These are verified source observations, not claims inferred from screenshots:
+These are verified **baseline** source observations, before the implementation in this PR:
 
 - [Controls](../packages/core/controls.mjs) support typed fields, stable bindings,
   units and animation. Spatial roles are limited to position (`vec3`) and positive
