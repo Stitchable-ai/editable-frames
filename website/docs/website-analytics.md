@@ -66,3 +66,11 @@ Final checks: **17 analytics tests per website**, type/diagnostic checks, static
 3. To test your own traffic, open a fresh tab with `?utm_source=blog&utm_medium=referral&utm_campaign=my-test&qa_run=webqa-my-test` on a relevant page. Make an edit or change a working tab. In **Stored events**, add the event-property filter `qa_run = webqa-my-test` and reload. Use a new label per test.
 4. For real traffic reports, open **Incoming traffic**, click **Filters** above the headline numbers and add the event property `is_qa = false`. Scroll to **Sources by**, open its dropdown and select **UTM source** (or UTM campaign). The adjacent **Pages by** dropdown supports landing pages and paths. A first or last campaign field is available for custom breakdowns; visits without a tag/referrer remain unknown/direct.
 5. To turn website collection off, use the footer **Privacy & analytics** link and select **Turn analytics off**. Account product analytics settings are independent.
+
+## Review corrections — 2026-10-25
+
+Creative attribution now accompanies subsequent page/action events as `first_content`, `last_content`, `first_content_id`, `last_content_id`, `first_term`, and `last_term`. These are bounded tags from the saved first/latest touch; raw `utm_*` fields still describe the current tagged URL. Use `last_content` or `last_content_id` to compare downstream actions by campaign creative.
+
+Tabs opened while analytics is Off can resume after the shared choice is enabled: focus, visibility, the first click, and explicit actions recheck initialization. Off, DNT and GPC still block collection. Regrant never replays old actions.
+
+PNG download events keep the scene identity captured at export start. Changing scenes during preparation cancels the stale export; changing scenes after blob creation starts cannot relabel the saved image.

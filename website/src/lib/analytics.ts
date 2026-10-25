@@ -6,6 +6,7 @@ import {campaignOf, ensureSdkCapture, cleanPayload, cleanProperties, externalRef
 
 type State = {initialized:boolean; route:string; mode:string; campaign:Record<string,string>; referrer?:string; first?:Record<string,string>; last?:Record<string,string>; qa?:string};
 let dispatcher:ReturnType<typeof createDispatcher>|undefined;
+let listening=false;
 const state:State = {initialized:false,route:'/',mode:'desktop',campaign:{}};
 const routes = ["/", "/guide/", "/reference/", "/compare/", "/credits/", "/privacy/", "/genres/castle/", "/genres/device/", "/genres/showreel/", "/genres/unet/", "/genres/paper/", "/genres/underwater/", "/genres/grain/", "/genres/warehouse/", "/genres/storybook/", "/genres/dragon/", "/genres/ink/", "/genres/evolution/"];
 const surface = 'editableframes_site';
@@ -20,12 +21,14 @@ function environment() {return productionHosts.includes(location.hostname)?'prod
 function qaMark(name:string,detail:unknown){if(!state.qa)return;if(performance.getEntriesByName(name).length>=128)performance.clearMarks(name);performance.mark(name,{detail});}
 function context() {return {surface,product,environment:environment(),schema_version:1,release:import.meta.env.PUBLIC_ANALYTICS_RELEASE??WEBSITE_POSTHOG.release,page_route:state.route,presentation_mode:state.mode,is_embedded:window.parent!==window,is_qa:Boolean(state.qa),...(state.qa?{qa_run:state.qa}:{}),...state.campaign,
   first_source:state.first?.utm_source,first_medium:state.first?.utm_medium,first_campaign:state.first?.utm_campaign,
-  last_source:state.last?.utm_source,last_medium:state.last?.utm_medium,last_campaign:state.last?.utm_campaign};}
+  first_content:state.first?.utm_content,first_term:state.first?.utm_term,first_content_id:state.first?.content_id,
+  last_source:state.last?.utm_source,last_medium:state.last?.utm_medium,last_campaign:state.last?.utm_campaign,
+  last_content:state.last?.utm_content,last_term:state.last?.utm_term,last_content_id:state.last?.content_id};}
 function readAttribution(){try{const saved=JSON.parse(cookie(attributionKey)??'null');if(saved?.expires>Date.now()){state.first=campaignOf(new URLSearchParams(saved.first).toString());state.last=campaignOf(new URLSearchParams(saved.last).toString());}}catch{}}
 function saveAttribution(){if(blocked())return;setCookie(attributionKey,JSON.stringify({first:state.first,last:state.last,expires:Date.now()+30*86400000}));}
 export function capture(event:string,properties:Record<string,unknown>={}) {
-  if(!state.initialized||blocked()||!WEBSITE_EVENTS.has(event))return;
-  try{if(!ensureSdkCapture(posthog,!blocked()))return;posthog.capture(event,{interaction_origin:'user',...cleanProperties(properties),...context(),$insert_id:crypto.randomUUID()});}catch{/* Measurement cannot interrupt a visitor's action. */}
+  if(blocked()||!WEBSITE_EVENTS.has(event))return;
+  try{if(!state.initialized)initAnalytics();if(!state.initialized||!ensureSdkCapture(posthog,!blocked()))return;posthog.capture(event,{interaction_origin:'user',...cleanProperties(properties),...context(),$insert_id:crypto.randomUUID()});}catch{/* Measurement cannot interrupt a visitor's action. */}
 }
 export function setRouteContext(pathname:string){state.route=routeOf(pathname,routes);}
 export function setPresentationMode(mode:'desktop'|'website'|'mobile'){state.mode=mode;}
@@ -45,7 +48,18 @@ export function setAnalyticsPreference(enabled:boolean){
   window.dispatchEvent(new Event('stitchable:analytics-preference'));
 }
 export function initAnalytics(recordInitial=true){
-  if(typeof window==='undefined'||state.initialized||blocked())return;
+  if(typeof window==='undefined')return;
+  // Install wake-up handlers even when this tab opens with the shared choice Off.
+  if(!listening){
+    listening=true;
+    window.addEventListener('focus',()=>initAnalytics());
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)initAnalytics();});
+    document.addEventListener('click',event=>{initAnalytics();onLink(event);},true);
+    document.addEventListener('toggle',event=>{const el=event.target;if(el instanceof HTMLDetailsElement&&el.open)capture('faq_opened',{kind:el.closest('[data-faq-list]')?.getAttribute('data-faq-list')??'website',placement:el.id||'details'});},true);
+    window.addEventListener('popstate',()=>{initAnalytics(false);trackPage(location.pathname,'history');});
+    window.addEventListener('pagehide',()=>{if(state.initialized&&window.parent===window)capture('$pageleave');});
+  }
+  if(state.initialized||blocked())return;
   const prod=environment()==='production';const key=prod?(import.meta.env.PUBLIC_POSTHOG_KEY??WEBSITE_POSTHOG.key):import.meta.env.PUBLIC_POSTHOG_DEV_KEY;
   if(!key)return;
   state.mode=matchMedia('(max-width: 700px)').matches?'mobile':'website';
@@ -67,10 +81,6 @@ export function initAnalytics(recordInitial=true){
   state.initialized=true;
   ensureSdkCapture(posthog,!blocked());
   if(recordInitial&&!posthog.has_opted_out_capturing())trackPage(location.pathname,'initial');
-  document.addEventListener('click',onLink,true);
-  document.addEventListener('toggle',event=>{const el=event.target;if(el instanceof HTMLDetailsElement&&el.open)capture('faq_opened',{kind:el.closest('[data-faq-list]')?.getAttribute('data-faq-list')??'website',placement:el.id||'details'});},true);
-  window.addEventListener('popstate',()=>trackPage(location.pathname,'history'));
-  window.addEventListener('pagehide',()=>{if(window.parent===window)capture('$pageleave');});
 }
 function onLink(event:MouseEvent){
   if(!event.isTrusted)return;const el=event.target instanceof Element?event.target.closest('a'):null;if(!el?.href)return;

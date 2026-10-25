@@ -15,7 +15,8 @@ const SAFE_PROPERTIES = new Set([
   'kind','agent_id','destination','plan','platform','release_version','error_category',
   'presentation_mode','interaction_origin','is_embedded','ict_stage','selection_source',
   'surface','product','environment','schema_version','release','page_route','is_qa','qa_run',
-  'first_source','first_medium','first_campaign','last_source','last_medium','last_campaign',
+  'first_source','first_medium','first_campaign','first_content','first_term','first_content_id',
+  'last_source','last_medium','last_campaign','last_content','last_term','last_content_id',
   ...CAMPAIGN_KEYS,
 ]);
 const SDK_PROPERTIES = new Set([
