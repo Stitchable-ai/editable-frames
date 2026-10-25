@@ -16,7 +16,8 @@
     "preview": "astro preview --port 8794",
     "deploy": "cf deploy --prebuilt",
     "ci": "npm run check && npm run build:cloudflare && cf deploy --prebuilt --dry-run",
-    "build:cloudflare": "npm run build && wrangler build --experimental-new-config --experimental-cf-build-output"
+    "build:cloudflare": "npm run build && wrangler build --experimental-new-config --experimental-cf-build-output",
+    "test:analytics": "node --experimental-strip-types --test test/analytics*.test.mjs"
   },
   "dependencies": {
     "@astrojs/react": "6.0.1",
@@ -24,6 +25,7 @@
     "@fontsource-variable/bricolage-grotesque": "5.2.10",
     "@fontsource/ibm-plex-mono": "5.2.7",
     "astro": "7.0.7",
+    "posthog-js": "1.438.21",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "three": "0.180.0"

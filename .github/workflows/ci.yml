@@ -36,6 +36,7 @@ jobs:
           cache: npm
           cache-dependency-path: website/package-lock.json
       - run: npm ci
+      - run: npm run test:analytics
       - run: npm run ci
   rendering:
     name: Rendering regression
