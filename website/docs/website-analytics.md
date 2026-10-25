@@ -74,3 +74,11 @@ Creative attribution now accompanies subsequent page/action events as `first_con
 Tabs opened while analytics is Off can resume after the shared choice is enabled: focus, visibility, the first click, and explicit actions recheck initialization. Off, DNT and GPC still block collection. Regrant never replays old actions.
 
 PNG download events keep the scene identity captured at export start. Changing scenes during preparation cancels the stale export; changing scenes after blob creation starts cannot relabel the saved image.
+
+### Verified production correction release
+
+Worker version: `7de86812-003b-47c4-b3c7-6bb8bc36c208`. Release label: `web-ict-20261025.1`. 23 analytics tests, Astro diagnostics, build/SEO and deployment dry run passed. Exact public analytics/interaction bundle SHA-256 values matched the checked local build.
+
+A deliberately delayed Castle PNG completed after switching to Grain. Both the downloaded filename and event retained Castle; a real 665,348-byte PNG was saved. Creative tags survived full-page reloads. Tabs opened while Off made zero ingestion requests, then resumed without reload after enabling the shared choice.
+
+QA labels: `webqa-20261025-review-fix-b` and `webqa-20261025-review-cold`. The ingestion endpoint accepted the tested events. A fresh stored-event lookup in PostHog was not repeated because the preview was signed out; ingestion acceptance alone is not a stored-receipt claim.
