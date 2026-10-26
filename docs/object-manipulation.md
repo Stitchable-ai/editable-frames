@@ -44,3 +44,8 @@ tracks are untouched on open and converted only when edited. Collisions refuse
 that track edit with migration guidance. Never convert edited X/Y controls into
 vectors implicitly, or write object motion into clip transform/param tracks.
 
+## Proposed 3D extension
+
+For requirements covering XYZ arrows, rotation, cameras, lights and safe host
+integration, see [Editable 3D scenes](3d-scene-adjustment-requirements.md). This is
+a design proposal; the current screen-plane movement contract above is unchanged.

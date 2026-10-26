@@ -1,3 +1,4 @@
+import {isUnitQuaternion,slerpQuaternion} from './rotation.mjs';
 import {keySeconds,canonicalTrack} from './key-timing.mjs';
 import {normalizeObjectHierarchy} from './objects.mjs';
 import {easeProgress, validateEasing} from './animation.mjs';
@@ -13,6 +14,7 @@ const valueTypes=new Map();
 export function registerValueType(name,spec){if(!safe(name)||valueTypes.has(name)||typeof spec.validate!=='function')fail('Invalid or duplicate value type');valueTypes.set(name,spec);}
 registerValueType('number',{validate:(v,s)=>Number.isFinite(v)&&(s.role!=='scale'||v>0)&&(s.min===undefined||v>=s.min)&&(s.max===undefined||v<=s.max)&&(!s.integer||Number.isInteger(v)),interpolate:(a,b,u)=>a+(b-a)*u});
 registerValueType('vec3',{validate:(v,s)=>Array.isArray(v)&&v.length===3&&v.every(n=>Number.isFinite(n)&&(s.min===undefined||n>=s.min)&&(s.max===undefined||n<=s.max)),interpolate:(a,b,u)=>a.map((v,i)=>v+(b[i]-v)*u)});
+registerValueType('quaternion',{validate:isUnitQuaternion,interpolate:slerpQuaternion});
 registerValueType('color',{validate:v=>typeof v==='string'&&/^#[\da-f]{6}([\da-f]{2})?$/i.test(v)});
 registerValueType('text',{validate:(v,s)=>typeof v==='string'&&v.length<=(s.maxLength??160)});
 registerValueType('enum',{validate:(v,s)=>s.values.includes(v)});

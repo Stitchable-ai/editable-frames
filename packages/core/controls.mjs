@@ -1,3 +1,4 @@
+import {isUnitQuaternion} from './rotation.mjs';
 import {keyFrameRate} from './key-timing.mjs';
 import {normalizeObjectHierarchy} from './objects.mjs';
 import {mergeRendererProps as mergeProps} from './renderer.mjs';
@@ -42,6 +43,7 @@ export function validateControlValue(field, value, {reset = false} = {}) {
   const finite = n => Number.isFinite(n) && (field.min === undefined || n >= field.min) && (field.max === undefined || n <= field.max);
   const validators = {
     number: () => typeof value === 'number' && finite(value) && (field.role !== 'scale' || value > 0),
+    quaternion: () => isUnitQuaternion(value),
     vec3: () => Array.isArray(value) && value.length === 3 && value.every(finite),
     color: () => typeof value === 'string' && /^#[\da-f]{6}([\da-f]{2})?$/iu.test(value),
     string: () => typeof value === 'string', bool: () => typeof value === 'boolean',
@@ -53,7 +55,7 @@ export function validateControlValue(field, value, {reset = false} = {}) {
 }
 export function normalizeControls(controls) {
   if (controls == null) return {version: 1, fields: [], presets: []};
-  if (controls.version !== 1 || !Array.isArray(controls.fields) || controls.fields.length > 200) throw Error('Invalid controls v1 declaration');
+  if (![1,2].includes(controls.version) || !Array.isArray(controls.fields) || controls.fields.length > 200) throw Error('Invalid controls declaration');
   if(controls.frameRate)keyFrameRate(controls.frameRate);
   const keys = new Set(), bindings = new Set(), paths = [], roles = new Set();
   const fields = controls.fields.map(raw => {
@@ -64,16 +66,16 @@ export function normalizeControls(controls) {
     const parts = pointerParts(path);
     if (paths.some(previous => parts.every((v, i) => previous[i] === v) || previous.every((v, i) => parts[i] === v))) throw Error('Overlapping control paths');
     paths.push(parts);
-    if (!['number','vec3','color','string','bool','enum','json','media','model','device'].includes(raw.type)) throw Error('Unknown control type');
+    if (![...['number','vec3','color','string','bool','enum','json','media','model','device'],...(controls.version===2?['quaternion']:[])].includes(raw.type)) throw Error('Unknown control type');
     for (const bound of ['min','max','step']) if (raw[bound] !== undefined && !Number.isFinite(raw[bound])) throw Error('Invalid control bound');
     if (raw.min !== undefined && raw.max !== undefined && raw.min > raw.max) throw Error('Reversed control bounds');
     if (raw.step !== undefined && raw.step <= 0) throw Error('Invalid control step');
     if (raw.animatable !== undefined && typeof raw.animatable !== 'boolean') throw Error('Invalid animatable flag');
-    const interpolation = raw.interpolation ?? (['number','vec3'].includes(raw.type) ? 'continuous' : 'discrete');
-    if (!['continuous','discrete'].includes(interpolation) || interpolation === 'continuous' && !['number','vec3'].includes(raw.type)) throw Error('Invalid control interpolation');
+    const interpolation = raw.interpolation ?? (raw.type==='quaternion'?'slerp':['number','vec3'].includes(raw.type) ? 'continuous' : 'discrete');
+    if (!['continuous','discrete',...(controls.version===2?['slerp']:[])].includes(interpolation) || interpolation === 'continuous' && !['number','vec3'].includes(raw.type) || interpolation==='slerp' && raw.type!=='quaternion') throw Error('Invalid control interpolation');
     if (raw.type === 'enum' && (!Array.isArray(raw.options) || !raw.options.length || raw.options.some(v => typeof v !== 'string'))) throw Error('Enum needs string options');
     if(raw.role!==undefined){
-      if(!['position','scale'].includes(raw.role)||!raw.animatable||raw.role==='position'&&(raw.type!=='vec3'||!['local','world','canvas'].includes(raw.coordinateSpace)||typeof raw.unit!=='string'||!raw.unit)||raw.role==='scale'&&raw.type!=='number'||roles.has(`${anchor}:${raw.role}`))throw Error('Invalid or duplicate spatial role');
+      if(!['position','scale',...(controls.version===2?['rotation']:[])].includes(raw.role)||!raw.animatable||raw.role==='position'&&(raw.type!=='vec3'||!['local','world','canvas'].includes(raw.coordinateSpace)||typeof raw.unit!=='string'||!raw.unit)||raw.role==='scale'&&raw.type!=='number'||raw.role==='rotation'&&(raw.type!=='quaternion'||!['local','world'].includes(raw.coordinateSpace))||roles.has(`${anchor}:${raw.role}`))throw Error('Invalid or duplicate spatial role');
       roles.add(`${anchor}:${raw.role}`);
     }
     const field = {...copy(raw),key,anchor,property,path,animatable:raw.animatable ?? false,interpolation};
@@ -93,11 +95,14 @@ export function normalizeControls(controls) {
     return copy(preset);
   });
   normalizeObjectHierarchy(controls.objects??[],fields.map(field=>field.anchor));
-  return {version:1,fields,presets,...(controls.frameRate?{frameRate:structuredClone(controls.frameRate)}:{}),...(controls.objects!==undefined?{objects:copy(controls.objects)}:{})};
+  if(controls.spatialSemantics!==undefined&&(controls.version!==2||typeof controls.spatialSemantics!=='string'||controls.spatialSemantics.length>512))throw Error('Invalid spatial semantics');
+  return {version:controls.version,fields,presets,...(controls.spatialSemantics!==undefined?{spatialSemantics:controls.spatialSemantics}:{}),...(controls.frameRate?{frameRate:structuredClone(controls.frameRate)}:{}),...(controls.objects!==undefined?{objects:copy(controls.objects)}:{})};
 }
 export function controlsIdentity(controls) {
-  return JSON.stringify(controls.fields.map(({key,anchor,property,path,type,unit,coordinateSpace,role,animatable,interpolation}) =>
-    ({key,anchor,property,path,type,unit:unit ?? null,coordinateSpace:coordinateSpace??null,role:role??null,animatable,interpolation})).sort((a,b) => a.key.localeCompare(b.key)));
+  const fields=controls.fields.map(({key,anchor,property,path,type,unit,coordinateSpace,role,animatable,interpolation}) =>
+    ({key,anchor,property,path,type,unit:unit ?? null,coordinateSpace:coordinateSpace??null,role:role??null,animatable,interpolation})).sort((a,b) => a.key.localeCompare(b.key));
+  if(controls.version===1)return JSON.stringify(fields);
+  return JSON.stringify({version:2,fields,spatialSemantics:controls.spatialSemantics??'',objects:(controls.objects??[]).map(({id,parentId,pivot})=>({id,parentId:parentId??null,pivot:pivot??null})).sort((a,b)=>a.id.localeCompare(b.id))});
 }
 /** Unexposed props remain ordinary authored data; null means reset, not a value. */
 export function projectControlProps(defaultProps, instanceProps, controls, nodes, {resetControls=[]}={}) {
