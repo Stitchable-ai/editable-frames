@@ -65,7 +65,8 @@ export function createSpatialSession({controls,readIdentity,publish,reconcile,no
     cancel,
     async release({id,trusted,evaluate}) {
       if(trusted!==true)throw Error('A host-admitted release is required');
-      const a=check(id);if(a.phase!=='active')throw Error('Gesture already released');
+      let a;try{a=check(id);}catch(error){cancel(id);throw error;}
+      if(a.phase!=='active')throw Error('Gesture already released');
       a.phase='finalizing';
       try {
         const result=await evaluate();

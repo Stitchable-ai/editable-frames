@@ -102,7 +102,8 @@ export class ThreeSpatialEditor {
     this.transform.pointerDown(this.pointer(point,0));
     if(!this.transform.dragging)throw Error('Handle is not available from this camera');
     if(request.operation==='scale'&&this.transform.pointStart.length()<1e-5){this.transform.pointerUp({button:0});throw Error('Move away from the scale pivot before dragging');}
-    const basis=request.handle==='screen'?[new T.Vector3(1,0,0).applyQuaternion(this.camera.quaternion),new T.Vector3(0,1,0).applyQuaternion(this.camera.quaternion)]:[...request.handle].map(a=>axes[a]?.clone()).filter(Boolean);
+    const cameraOrientation=this.camera.getWorldQuaternion(new T.Quaternion());
+    const basis=request.handle==='screen'?[new T.Vector3(1,0,0).applyQuaternion(cameraOrientation),new T.Vector3(0,1,0).applyQuaternion(cameraOrientation)]:[...request.handle].map(a=>axes[a]?.clone()).filter(Boolean);
     if(request.space==='local'&&request.handle!=='screen')basis.forEach(v=>v.applyQuaternion(s.worldQuaternion));
     this.active={...s,extraValues:structuredClone(typeof s.b.extraValues==='function'?s.b.extraValues():s.b.extraValues),request:structuredClone(request),translationSnap,scaleSnap,basis};
   }

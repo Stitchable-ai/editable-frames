@@ -13,7 +13,7 @@ Open `http://127.0.0.1:4189`. The build also produces a self-contained `artifact
 ## Try it
 
 1. Select an actor or set from the object list, or click its visible geometry.
-2. **W** moves along X/Y/Z arrows or planes; **E** rotates; **R** scales uniformly. Choose world/local axes. Red is X, green Y, blue Z. Snap uses 0.25 world/local-parent units, 15 degrees, and 0.1 authored scale units. Bounds take precedence over the grid.
+2. **W** moves along X/Y/Z arrows or planes; **E** rotates; **R** scales uniformly. Choose world/local axes. Red is X, green Y, blue Z. Snap uses 0.25 world/local-parent units, 15 degrees, and 0.1 authored scale units. Bounds take precedence over the grid. Scaling respects authored positive bounds; absent a positive minimum, its fallback floor is 0.001 or the smaller positive maximum.
 3. Right-drag orbits the independent director camera; Shift + right-drag pans; scroll dollies. **Use this view as shot** commits the view as the output camera. Editing a shot camera starts from its evaluated position, target and lens. A custom camera replaces the authored shot sequence; keyframe it for a custom camera move.
 4. Select **Key light** for position, intensity and color. Select **Shot camera** for position, look-at target and FOV. Camera targets are numeric controls in this slice, not a second target gizmo.
 5. Scrub the source-time timeline. Enable **Auto-key**, edit at one frame, then at another. Existing keyed properties continue editing their track even when Auto-key is off. Edits use the current source frame, with smooth temporal easing. Each released drag commits one reversible transaction; Escape discards the draft. Undo/redo and JSON retain history.

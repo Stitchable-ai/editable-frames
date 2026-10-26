@@ -47,8 +47,13 @@ export function constrainTranslation({startLocal,basisWorld,parent,desired,min=-
   for(let i=0;i<3;i++){const v=local.getComponent(i),tolerance=1e-8*Math.max(1,Math.abs(v));if(v<min){if(min-v>tolerance)throw Error('Infeasible translation');local.setComponent(i,min);}if(v>max){if(v-max>tolerance)throw Error('Infeasible translation');local.setComponent(i,max);}}
   return local;
 }
-export function positiveScale(value,{min=.001,max=Infinity,snap=0}={}) {
+export function positiveScale(value,{min,max=Infinity,snap=0}={}) {
   if(!Number.isFinite(value))throw Error('Degenerate scale gesture');
-  const lower=Math.max(.001,min??.001);
-  return Math.max(lower,Math.min(max??Infinity,snap>0?Math.round(value/snap)*snap:value));
+  const upper=max??Infinity;
+  if(!(upper>0)||min!=null&&!Number.isFinite(min))throw Error('Invalid positive scale bounds');
+  // Authored positive bounds take precedence over the fallback floor. If only a
+  // smaller upper bound is declared, the fallback must still fit that interval.
+  const lower=min>0?min:Math.min(.001,upper);
+  if(lower>upper)throw Error('Invalid positive scale bounds');
+  return Math.max(lower,Math.min(upper,snap>0?Math.round(value/snap)*snap:value));
 }

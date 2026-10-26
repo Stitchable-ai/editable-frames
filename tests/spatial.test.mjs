@@ -68,3 +68,39 @@ test('local scene models reject external texture and buffer dependencies',async(
  assert.doesNotThrow(()=>validateGLB(glb({asset:{version:'2.0'},buffers:[{byteLength:4}],images:[{uri:'data:image/png;base64,AA=='}]})));
  assert.throws(()=>validateGLB(glb({images:[{uri:'https://example.com/texture.png'}]})),/external/);assert.throws(()=>validateGLB(glb({buffers:[{uri:'model.bin'}]})),/external/);
 });
+
+test('stale release cancels the draft and permits the next gesture',async()=>{
+ let i=identity(),published=0,evaluated=0;const s=createSpatialSession({controls:schema,readIdentity:()=>i,publish:()=>published++});
+ const b=begin(s,i);s.update({id:b.id,values:{p:[1,0,0]}});i={...i,viewRevision:1};
+ await assert.rejects(s.release({id:b.id,trusted:true,evaluate:()=>{evaluated++;return {values:{p:[2,0,0]}};}}),/Stale/);
+ assert.equal(s.state,null);assert.equal(published,0);assert.equal(evaluated,0);
+ const next=begin(s,i);await s.release({id:next.id,trusted:true,evaluate:()=>({values:{p:[3,0,0]}})});assert.equal(published,1);
+});
+test('duplicate release does not cancel the original final evaluation',async()=>{
+ const i=identity();let resolve,published=0;const s=createSpatialSession({controls:schema,readIdentity:()=>i,publish:()=>published++}),b=begin(s,i);
+ const releasing=s.release({id:b.id,trusted:true,evaluate:()=>new Promise(r=>resolve=r)});
+ await assert.rejects(s.release({id:b.id,trusted:true,evaluate:()=>({values:{p:[2,0,0]}})}),/already released/);
+ assert.equal(s.state.phase,'finalizing');resolve({values:{p:[1,0,0]}});assert.equal((await releasing).status,'committed');assert.equal(published,1);
+});
+test('screen-plane drag follows a parented camera in both manipulation spaces',async()=>{
+ const T=await import('three'),{ThreeSpatialEditor}=await import('../packages/three/spatial-editor.mjs');
+ for(const space of ['world','local']){
+  const object=new T.Object3D(),scene=new T.Scene(),rig=new T.Group(),camera=new T.PerspectiveCamera(45,1280/720,.1,100);scene.add(object,rig);rig.rotation.set(.2,Math.PI/4,.1);rig.add(camera);camera.position.z=5;scene.updateMatrixWorld(true);
+  const e=new ThreeSpatialEditor({controls:schema,props:{p:[0,0,0]},objects:{a:{object}},camera,width:1280,height:720});
+  try{e.setSelection('a');e.setMode('translate',space);e.begin({operation:'translate',handle:'screen',space},{x:640,y:360});const delta=new T.Vector3(...e.update({x:740,y:360}).values.p);
+   const worldQ=camera.getWorldQuaternion(new T.Quaternion()),right=new T.Vector3(1,0,0).applyQuaternion(worldQ),forward=camera.getWorldDirection(new T.Vector3());
+   assert.ok(delta.length()>.1);assert.ok(Math.abs(delta.dot(forward))<1e-10);assert.ok(delta.clone().normalize().distanceTo(right)<1e-10);
+  }finally{e.end();e.dispose();}
+ }
+});
+test('small authored scale intervals remain valid through drag, snap and reversal',async()=>{
+ const T=await import('three'),{ThreeSpatialEditor}=await import('../packages/three/spatial-editor.mjs'),{validateControlValue}=await import('../packages/core/controls.mjs');
+ const field={key:'s',anchor:'a',path:'/s',type:'number',role:'scale',min:.0001,max:.0005,animatable:true},object=new T.Object3D(),scene=new T.Scene(),camera=new T.PerspectiveCamera(45,1280/720,.1,100);scene.add(object);object.scale.setScalar(.0002);camera.position.z=5;camera.updateMatrixWorld(true);
+ const e=new ThreeSpatialEditor({controls:{version:1,fields:[field]},props:{s:.0002},objects:{a:{object}},camera,width:1280,height:720});
+ try{e.setSelection('a');e.setMode('scale','local');e.begin({operation:'scale',handle:'uniform',space:'local'},{x:650,y:360});
+  for(const [x,expected] of [[652,.00024],[630,.0001],[652,.00024],[680,.0005]]){const value=e.update({x,y:360}).values.s;validateControlValue(field,value);assert.ok(Math.abs(value-expected)<1e-12);}
+ }finally{e.end();e.dispose();}
+ assert.equal(positiveScale(.0002,{min:.0001,max:.0005,snap:.1}),.0001);
+ assert.equal(positiveScale(-1,{max:.0005}),.0005);assert.equal(positiveScale(-1),.001);
+ assert.throws(()=>positiveScale(1,{min:.2,max:.1}),/bounds/);assert.throws(()=>positiveScale(1,{max:0}),/bounds/);
+});
