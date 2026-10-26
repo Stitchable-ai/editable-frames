@@ -8,7 +8,7 @@ npm run build:scene
 npm run dev:scene
 ```
 
-Open `http://127.0.0.1:4189`. The build also produces a self-contained `artifacts/scene-editor/scene-studio.html`; it works offline. Use the localhost server for browser persistence. On browsers without Web Locks, the page runs in memory and **Download scene** is the persistence path. Downloaded JSON is tied to the source/assets binding that created it; keep the HTML and JSON together. A source rebuild can intentionally make an older snapshot incompatible.
+Open `http://127.0.0.1:4189`. The build also produces a self-contained `artifacts/scene-editor/scene-studio.html`; it works offline. Use the localhost server for browser persistence. The page checks that Web Locks and browser storage are usable. If either is unavailable or denied (including restricted local-file contexts), editing runs in memory: use **Download scene** before closing or reloading, and **Open scene** to restore that JSON. It never substitutes unlocked writes to shared browser storage. Downloaded JSON is tied to the source/assets binding that created it; keep the HTML and JSON together. A source rebuild can intentionally make an older snapshot incompatible.
 
 ## Try it
 

@@ -1,6 +1,7 @@
 import * as T from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {cinemaScene,authoredShot} from './cinema.mjs';
+import {createScenePersistence} from './persistence.mjs';
 import {Studio,HZ} from '../../packages/core/index.mjs';
 import {normalizeClipModule,sampledRendererProps} from '../../packages/core/definition.mjs';
 import {writePointer,readPointer} from '../../packages/core/controls.mjs';
@@ -11,7 +12,7 @@ import {ThreeSpatialEditor} from '../../packages/three/spatial-editor.mjs';
 
 const $=s=>document.querySelector(s),W=1280,H=720,FPS=24,LAST=287;
 const assets=JSON.parse($('#assets').textContent),binding=$('#source-binding').textContent;
-const storageSupported=!!navigator.locks;
+const persistence=createScenePersistence();
 let studio,definition,scene,instance,props,editor,orbit,session;
 let kind='drama',frame=48,playing=false,autoKey=false,selected='lead',mode='translate',space='world',view='editor';
 let editorCamera=new T.PerspectiveCamera(42,W/H,.05,200),viewRevision=0,viewportRevision=0,generation=0,lastTime=0,drag=null,busy=false,booted=false;
@@ -40,16 +41,16 @@ function commands(values,label='Edit scene',keyMode=autoKey){
  }
  return {type:'batch',label,commands:cmds};
 }
-function readSaved(){const text=localStorage.getItem(storageKey);return text?JSON.parse(text):null;}
+function readSaved(){if(!persistence.supported)return null;const text=persistence.storage.getItem(storageKey);return text?JSON.parse(text):null;}
 async function transaction(id,expectedRevision,action){
  const run=()=>{
   const old=studio.serialize(),previousNonce=storageNonce;
-  if(storageSupported){const saved=readSaved();const receipt=saved?.receipts?.find(r=>r.id===id);if(receipt)return receipt;if((saved?.nonce??null)!==storageNonce){const e=Error('Another window changed this scene. Reload before editing.');e.definite=true;throw e;}}
+  if(persistence.supported){let saved;try{saved=readSaved();}catch(error){error.definite=true;throw error;}const receipt=saved?.receipts?.find(r=>r.id===id);if(receipt)return receipt;if((saved?.nonce??null)!==storageNonce){const e=Error('Another window changed this scene. Reload before editing.');e.definite=true;throw e;}}
   if(studio.revision!==expectedRevision){const e=Error('Scene changed before the edit was saved');e.definite=true;throw e;}
-  try{const receipt=action();const record={id,revision:studio.revision,noOp:!!receipt?.noOp};if(!record.noOp){const nonce=crypto.randomUUID(),nextReceipts=[...receipts,record].slice(-64);if(storageSupported)localStorage.setItem(storageKey,JSON.stringify({nonce,raw:studio.serialize(),receipts:nextReceipts}));storageNonce=nonce;receipts=nextReceipts;savedLabel=storageSupported?'Saved in this browser':'Memory only · download JSON to keep';}return record;}
+  try{const receipt=action();const record={id,revision:studio.revision,noOp:!!receipt?.noOp};if(!record.noOp){const nonce=crypto.randomUUID(),nextReceipts=[...receipts,record].slice(-64);if(persistence.supported)persistence.storage.setItem(storageKey,JSON.stringify({nonce,raw:studio.serialize(),receipts:nextReceipts}));storageNonce=nonce;receipts=nextReceipts;savedLabel=persistence.supported?'Saved in this browser':'Memory only · download scene to keep';}return record;}
   catch(error){studio=Studio.restore(old,definition.templates,binding);storageNonce=previousNonce;error.definite=true;throw error;}
  };
- return storageSupported?navigator.locks.request(storageKey,run):run();
+ return persistence.run(storageKey,run);
 }
 function cancelGesture(message='Edit cancelled'){
  if(!drag)return;
@@ -59,7 +60,7 @@ function cancelGesture(message='Edit cancelled'){
 }
 async function editValues(values,label='Inspector edit'){
  if(drag||busy)return;playing=false;const command=commands(values,label);if(!command.commands.length)return;
- const rev=studio.revision;busy=true;try{await transaction(crypto.randomUUID(),rev,()=>studio.execute(command,rev));render();refreshInspector();status('Saved · '+label);}catch(e){fail(e);}finally{busy=false;}
+ const rev=studio.revision;busy=true;try{await transaction(crypto.randomUUID(),rev,()=>studio.execute(command,rev));render();refreshInspector();status((persistence.supported?'Saved · ':'Applied · ')+label);}catch(e){fail(e);}finally{busy=false;}
 }
 function setSelection(anchor){if(drag)return;playing=false;frame=Math.round(frame);if(anchor==='camera'&&view==='shot')setView('editor');selected=anchor;editor.setSelection(anchor);refreshInspector();render();}
 function setMode(next){if(drag)return;mode=next;editor.setMode(mode,space);refreshInspector();render();}
@@ -99,7 +100,7 @@ async function load(nextKind){
  if(studio)caches.set(kind,{raw:studio.serialize(),frame,storageNonce,receipts});
  editor?.dispose();orbit?.dispose();instance?.dispose();$('#canvas').replaceChildren();kind=nextKind;generation++;viewRevision++;frame=caches.get(kind)?.frame??48;
  scene=cinemaScene(kind);definition=normalizeClipModule({default:scene});storageKey='editableframes.scene-editor.'+binding+'.'+kind;
- let saved=null;try{if(storageSupported)saved=readSaved();}catch{}
+ let saved=null;try{if(persistence.supported)saved=readSaved();}catch{}
  const cached=caches.get(kind);if(cached){studio=Studio.restore(cached.raw,definition.templates,binding);storageNonce=cached.storageNonce;receipts=cached.receipts;}
  else if(saved){try{studio=Studio.restore(saved.raw,definition.templates,binding);storageNonce=saved.nonce;receipts=saved.receipts??[];}catch{saved=null;}}
  if(!cached&&!saved){studio=new Studio(definition.templates,{binding});studio.doc.clips=[studio.make(scene.id)];studio.base=structuredClone(studio.doc);storageNonce=null;receipts=[];}
@@ -129,7 +130,7 @@ async function load(nextKind){
  },true);
  canvas.addEventListener('pointerup',async event=>{
   if(!drag||drag.pointerId!==event.pointerId||!event.isTrusted)return;event.stopImmediatePropagation();const d=drag;d.released=true;
-  try{const result=await session.release({id:d.id,trusted:event.isTrusted,evaluate:()=>editor.update(localPoint(event))});if(result.status==='uncertain'){status('Save outcome uncertain; reload to reconcile before editing.');return;}drag=null;editor.end();orbit.enabled=view==='editor';render();refreshInspector();status(result.status==='cancelled'?'Edit cancelled':'Saved one reversible transform');}
+  try{const result=await session.release({id:d.id,trusted:event.isTrusted,evaluate:()=>editor.update(localPoint(event))});if(result.status==='uncertain'){status('Save outcome uncertain; reload to reconcile before editing.');return;}drag=null;editor.end();orbit.enabled=view==='editor';render();refreshInspector();status(result.status==='cancelled'?'Edit cancelled':(persistence.supported?'Saved one reversible transform':'Applied transform · download scene to keep'));}
   catch(e){drag=null;editor.end();orbit.enabled=view==='editor';render();refreshInspector();fail(e);}
   finally{try{canvas.releasePointerCapture(event.pointerId);}catch{}}
  },true);
@@ -147,6 +148,6 @@ $('#save').onclick=()=>download(kind+'-scene.json',studio.serialize());$('#open'
 window.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;if(e.key==='Escape'){cancelGesture();return;}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();history(e.shiftKey?'redo':'undo');return;}if(e.code==='Space'){e.preventDefault();$('#play').click();}if(!drag&&['w','e','r'].includes(e.key.toLowerCase()))setMode({w:'translate',e:'rotate',r:'scale'}[e.key.toLowerCase()]);});
 window.addEventListener('resize',()=>{viewportRevision++;if(drag)cancelGesture('Viewport changed');});
 window.addEventListener('storage',event=>{if(event.key===storageKey){if(drag)cancelGesture('Another window changed the scene');status('Another window saved this scene. Reload to adopt its changes.');}});
-window.cinema={get ready(){return booted;},get state(){return {kind,frame,selected,mode,view,props:sample(),draft:session?.state,revision:studio?.revision,history:studio?.history.length,keys:studio?.doc.clips[0]?.nodes,identity:identity()};},select:setSelection,seek,edit:editValues,undo:()=>history('undo'),redo:()=>history('redo'),capture,serialize:()=>studio.serialize(),get editor(){return editor;},get instance(){return instance;}};
+window.cinema={get ready(){return booted;},get state(){return {kind,frame,selected,mode,view,persistence:persistence.supported?'browser':'memory',props:sample(),draft:session?.state,revision:studio?.revision,history:studio?.history.length,keys:studio?.doc.clips[0]?.nodes,identity:identity()};},select:setSelection,seek,edit:editValues,undo:()=>history('undo'),redo:()=>history('redo'),capture,serialize:()=>studio.serialize(),get editor(){return editor;},get instance(){return instance;}};
 function loop(time){if(booted&&playing&&!drag){frame=(frame+Math.min(.1,(time-lastTime)/1000)*FPS)%LAST;render();}lastTime=time;requestAnimationFrame(loop);}requestAnimationFrame(loop);
-load('drama').catch(fail);
+persistence.initialize().then(()=>{savedLabel=persistence.supported?'Not yet saved':'Memory only · download scene to keep';return load('drama');}).catch(fail);

@@ -22,19 +22,19 @@ try{
  const select=anchor=>p.locator('[data-anchor="'+anchor+'"]').click();
  const mode=next=>p.locator('[data-mode="'+next+'"]').click();
  // Discover rendered semantic handles, then use trusted browser mouse input.
- async function handle(name){
-  const point=await p.evaluate(name=>{
+ async function handle(name,page=p){
+  const point=await page.evaluate(name=>{
    const e=cinema.editor;e.sync();const center=e.proxy.position.clone().project(e.camera),cx=(center.x+1)/2*e.width,cy=(1-center.y)/2*e.height;
    const sync=e.sync;e.sync=()=>{};let found;
    try{for(let radius=12;radius<180&&!found;radius+=4)for(let angle=0;angle<Math.PI*2;angle+=.13){const point={x:cx+Math.cos(angle)*radius,y:cy+Math.sin(angle)*radius};if(e.hitHandle(point)?.handle===name){found=point;break;}}}finally{e.sync=sync;}
    if(!found)throw Error('No visible '+name+' handle in '+e.mode);
    const r=cinema.instance.editing.renderer.domElement.getBoundingClientRect();return {x:r.left+found.x/e.width*r.width,y:r.top+found.y/e.height*r.height};
   },name);
-  await p.mouse.move(point.x,point.y);await p.mouse.down();
-  await p.waitForFunction(()=>!!cinema.state.draft);
+  await page.mouse.move(point.x,point.y);await page.mouse.down();
+  await page.waitForFunction(()=>!!cinema.state.draft);
   return point;
  }
- async function drag(name,dx=60,dy=-25){const point=await handle(name);await p.mouse.move(point.x+dx,point.y+dy,{steps:6});await p.mouse.up();await p.waitForFunction(()=>!cinema.state.draft);return state();}
+ async function drag(name,dx=60,dy=-25,page=p){const point=await handle(name,page);await page.mouse.move(point.x+dx,point.y+dy,{steps:6});await page.mouse.up();await page.waitForFunction(()=>!cinema.state.draft);return page.evaluate(()=>cinema.state);}
  await p.goto(url);await ready();const initial=await state();assert.equal(initial.kind,'drama');
  const moved=await drag('x');assert.notEqual(moved.props.actors.lead.position[0],initial.props.actors.lead.position[0]);assert.deepEqual(moved.props.actors.lead.position.slice(1),initial.props.actors.lead.position.slice(1));assert.equal(moved.history,initial.history+1);
  await p.locator('#undo').click();await p.waitForFunction(()=>cinema.state.props.actors.lead.position[0]===0);assert.deepEqual((await state()).props.actors.lead.position,initial.props.actors.lead.position);await p.locator('#redo').click();await p.waitForFunction(x=>cinema.state.props.actors.lead.position[0]===x,moved.props.actors.lead.position[0]);assert.deepEqual((await state()).props.actors.lead.position,moved.props.actors.lead.position);checks.push('Trusted axis drag, single transaction, undo and redo');
@@ -59,6 +59,11 @@ try{
  await p.reload();await ready();assert.equal((await state()).props.clay,true);assert.equal(await p.locator('#clay').isChecked(),true);
  await p.locator('#scene-kind').selectOption('battle');await p.waitForFunction(()=>cinema.ready&&cinema.state.kind==='battle');assert.equal(await p.locator('#clay').isChecked(),false);await p.locator('#scene-kind').selectOption('drama');await p.waitForFunction(()=>cinema.ready&&cinema.state.kind==='drama');assert.equal(await p.locator('#clay').isChecked(),true);await p.locator('#clay').uncheck();await p.waitForFunction(()=>!cinema.state.props.clay);checks.push('Clay toolbar follows inspector edits, undo/redo, reload and scene switching');
  const second=await context.newPage();await second.goto(url);await second.waitForFunction(()=>window.cinema?.ready);const old=await state();await second.evaluate(()=>cinema.edit({'key.intensity':6}));await p.evaluate(()=>cinema.edit({'key.intensity':7}));assert.equal((await state()).revision,old.revision);assert.equal((await state()).props.key.intensity,5);assert.match(await p.locator('#status').textContent(),/Another window/);await second.close();checks.push('Concurrent tab edits cannot overwrite a newer saved revision');
- const standalone=await context.newPage();await standalone.goto(pathToFileURL(path.join(out,'scene-studio.html')).href);await standalone.waitForFunction(()=>window.cinema?.ready);assert.equal(await standalone.evaluate(()=>cinema.state.kind),'drama');await standalone.close();checks.push('Self-contained HTML opens directly from disk');
+ const standalone=await context.newPage();await standalone.goto(pathToFileURL(path.join(out,'scene-studio.html')).href);await standalone.waitForFunction(()=>window.cinema?.ready);assert.equal(await standalone.evaluate(()=>cinema.state.kind),'drama');await standalone.locator('[aria-label="lead.position.x"]').fill('1.25');await standalone.locator('[aria-label="lead.position.x"]').press('Enter');await standalone.waitForFunction(()=>cinema.state.props.actors.lead.position[0]===1.25,{},{timeout:3000});await drag('x',45,-15,standalone);await standalone.evaluate(()=>cinema.undo());assert.equal((await standalone.evaluate(()=>cinema.state.props.actors.lead.position[0])),1.25);await standalone.close();checks.push('Self-contained HTML opens, edits and drags directly from disk');
+ const deniedContext=await browser.newContext({viewport:{width:1440,height:1000}});await deniedContext.addInitScript(()=>Object.defineProperty(navigator,'locks',{configurable:true,value:{request(){throw new DOMException("Failed to execute 'request' on 'LockManager': Access to the Locks API is denied in this context.",'SecurityError');}}}));
+ const denied=await deniedContext.newPage();denied.on('pageerror',e=>errors.push(e.message));await denied.goto(pathToFileURL(path.join(out,'scene-studio.html')).href);await denied.waitForFunction(()=>window.cinema?.ready);assert.equal(await denied.evaluate(()=>cinema.state.persistence),'memory');
+ await denied.locator('[aria-label="lead.position.x"]').fill('1.5');await denied.locator('[aria-label="lead.position.x"]').press('Enter');await denied.waitForFunction(()=>cinema.state.props.actors.lead.position[0]===1.5);await drag('x',45,-15,denied);await denied.evaluate(()=>cinema.undo());assert.equal(await denied.evaluate(()=>cinema.state.props.actors.lead.position[0]),1.5);await denied.evaluate(()=>cinema.redo());const retained=await denied.evaluate(()=>cinema.serialize());assert.match(await denied.locator('#revision').textContent(),/Memory only/);
+ const downloading=denied.waitForEvent('download');await denied.locator('#save').click();const downloaded=await downloading,downloadPath=await downloaded.path();assert.equal(await fs.readFile(downloadPath,'utf8'),retained);
+ await denied.reload();await denied.waitForFunction(()=>window.cinema?.ready);assert.equal(await denied.evaluate(()=>cinema.state.props.actors.lead.position[0]),0);await denied.locator('#open').setInputFiles(downloadPath);await denied.waitForFunction(()=>cinema.state.props.actors.lead.position[0]!==0);assert.equal(await denied.evaluate(()=>cinema.serialize()),retained);await deniedContext.close();checks.push('Denied Locks API still permits numeric edits, drags, undo/redo and JSON download/reopen');
  assert.deepEqual(errors,[]);await fs.writeFile(path.join(out,'browser-results.json'),JSON.stringify({checks,errors},null,2));console.log(JSON.stringify({checks,errors},null,2));
 }catch(error){console.error(error);throw error;}finally{await browser?.close();await new Promise(resolve=>server.close(resolve));}
