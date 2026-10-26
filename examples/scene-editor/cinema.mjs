@@ -63,17 +63,18 @@ export function cinemaScene(kind='drama') {
   // A cheap, local lighting environment gives metal readable reflections without a fetched HDRI.
   const env=new T.Scene();env.background=new T.Color('#455260');for(const [x,y,z,c] of [[-5,5,0,'#fff0d0'],[5,2,1,'#7bbbdc'],[0,6,-5,'#c4d3dc']]){const panel=box(4,4,.1,new T.MeshBasicMaterial({color:c}),env,x,y,z);panel.lookAt(0,0,0);}const pm=new T.PMREMGenerator(renderer),envTarget=pm.fromScene(env,.02);scene.environment=envTarget.texture;
   let animate,shotName='';
-  const editable={},placements=[];
-  const register=(id,object)=>{const wrapper=new T.Group();object.parent.add(wrapper);wrapper.add(object);const pivot=V();editable[id]={object:wrapper,pivot:()=>pivot.toArray(),convention:'pivot'};placements.push({id,object,wrapper,pivot});};
+  const editable={},placements=[],surfaceTargets=[];
+  const support=object=>{surfaceTargets.push(object);return object;};
+  const register=(id,object)=>{const wrapper=new T.Group();object.parent.add(wrapper);wrapper.add(object);const pivot=V();editable[id]={object:wrapper,surfaceSnap:true,pivot:()=>pivot.toArray(),convention:'pivot'};placements.push({id,object,wrapper,pivot});};
   if(props.kind==='drama'){
     scene.fog.density=.035;renderer.toneMappingExposure=1.1;
-    const ground=mat('#293338',.15,.45),wall=mat('#334854');box(20,.1,15,ground,scene,0,-.08,0);box(12,4,.15,wall,scene,0,2,-2.4);
+    const ground=mat('#293338',.15,.45),wall=mat('#334854');support(box(20,.1,15,ground,scene,0,-.08,0));box(12,4,.15,wall,scene,0,2,-2.4);
     // Concrete station room, night city and practical lighting.
     box(4.8,2.5,.2,mat('#091828'),scene,0,2.1,-2.28);
     for(let x=-2.4;x<=2.4;x+=1.2)box(.055,2.5,.16,mat('#71818b',.5),scene,x,2.1,-2.13);
     for(let i=0;i<28;i++){const x=-2.2+(i%7)*.65,y=1.1+Math.floor(i/7)*.5;box(.1,.13,.02,glow(i%3?'#5bafbd':'#efb36c',1.4),scene,x,y,-2.14);}
     for(const x of [-3.0,3.0]){box(.09,2.8,.12,glow('#e2ad6b',2),scene,x,1.7,-2.08);const light=new T.PointLight('#f7ad65',12,8,2);light.position.set(x,2,-1);scene.add(light);}
-    box(2.2,.12,.9,mat('#593f32',.1,.4),scene,0,1.0,.58);for(const x of [-1,1])box(.1,1,.65,mat('#17222a',.6),scene,x,.5,.58);const fill=new T.PointLight('#d7e9ff',11,10,2);fill.position.set(0,2.8,3);scene.add(fill);
+    support(box(2.2,.12,.9,mat('#593f32',.1,.4),scene,0,1.0,.58));for(const x of [-1,1])box(.1,1,.65,mat('#17222a',.6),scene,x,.5,.58);const fill=new T.PointLight('#d7e9ff',11,10,2);fill.position.set(0,2.8,3);scene.add(fill);
     const device=box(.13,.018,.24,mat('#0b1219',.6),scene,0,1.12,.1);box(.11,.003,.20,glow('#76c8dd',.8),device,0,.012,0);
     const loader=new GLTFLoader();
     function makeStandIn(id){const root=new T.Group(),cloth=mat(id==='michelle'?'#8f4f40':'#354a62'),skin=mat('#c99677'),hair=mat('#292124');ell(.24,.43,.15,cloth,root,0,1.18,0);ell(.15,.21,.15,skin,root,0,1.78,0);ell(.16,.12,.16,hair,root,0,1.92,-.02);for(const side of [-1,1]){link(V(side*.13,.92,0),V(side*.14,.2,0),.085,.1,cloth,root);ell(.09,.07,.16,hair,root,side*.14,.1,.05);link(V(side*.26,1.45,0),V(side*.34,.95,.12),.07,.09,cloth,root);ell(.065,.1,.06,skin,root,side*.34,.88,.12);}return root;}
@@ -102,9 +103,9 @@ export function cinemaScene(kind='drama') {
     };
   }else{
     renderer.toneMappingExposure=1.35;hemi.intensity=1.6;scene.fog.density=.022;
-    const asphalt=mat('#30383c',.2,.75);box(90,.2,80,asphalt,scene,0,-.15,0);
-    for(let i=0;i<20;i++){const x=(i%2?1:-1)*(8+(i%4)*2),z=-8-Math.floor(i/2)*3,h=5+(i*7%9);box(3,h,2.5,mat(i%2?'#273743':'#33404b'),scene,x,h/2,z);for(let y=1;y<h;y+=1.1)for(let a=-1;a<=1;a++)box(.3,.45,.04,glow('#9eb6ba',.35),scene,x+a*.8,y,z+1.26);}
-    for(let i=0;i<40;i++){const a=i*2.39,r=3+(i%8)*.9;const d=box(.15+(i%3)*.12,.1,.24,mat('#64635d'),scene,Math.sin(a)*r,.05,Math.cos(a)*r);d.rotation.y=a;}
+    const asphalt=mat('#30383c',.2,.75);support(box(90,.2,80,asphalt,scene,0,-.15,0));
+    for(let i=0;i<20;i++){const x=(i%2?1:-1)*(8+(i%4)*2),z=-8-Math.floor(i/2)*3,h=5+(i*7%9);support(box(3,h,2.5,mat(i%2?'#273743':'#33404b'),scene,x,h/2,z));for(let y=1;y<h;y+=1.1)for(let a=-1;a<=1;a++)box(.3,.45,.04,glow('#9eb6ba',.35),scene,x+a*.8,y,z+1.26);}
+    for(let i=0;i<40;i++){const a=i*2.39,r=3+(i%8)*.9;const d=support(box(.15+(i%3)*.12,.1,.24,mat('#64635d'),scene,Math.sin(a)*r,.05,Math.cos(a)*r));d.rotation.y=a;}
     const orange=mat('#bc4230',.6,.35),blue=mat('#174369',.75,.27),steel=mat('#a9b9bd',.8,.3),black=mat('#17232b',.55,.35),cyan=glow('#73e1fa',2.2);
     const robot=new T.Group();scene.add(robot);
     box(1.4,.65,.8,black,robot,0,2.3,0);const torso=box(1.7,1.65,.85,blue,robot,0,3.55,0);box(1.1,.4,.95,steel,robot,0,2.8,.05);
@@ -154,7 +155,7 @@ export function cinemaScene(kind='drama') {
   let editorCamera=null,lastClock=null;
   function applyPlacement(object,value,pivot){object.quaternion.fromArray(value.orientation);object.scale.setScalar(value.scale);object.position.fromArray(value.position).add(pivot).sub(pivot.clone().multiplyScalar(value.scale).applyQuaternion(object.quaternion));object.updateMatrixWorld(true);}
   return {
-   editing:{scene,camera,renderer,objects:editable,setView(view){editorCamera=view;},get shot(){return shotName;}},
+   editing:{scene,camera,renderer,objects:editable,surfaceTargets,setView(view){editorCamera=view;},get shot(){return shotName;}},
    render(clock){
     lastClock=clock;
     // Evaluate authored action with identity placement, then apply editable placement.

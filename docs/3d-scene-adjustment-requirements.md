@@ -342,6 +342,15 @@ candidate onto the feasible region in its two declared coordinates. Bounds take
 precedence over snapping: allow an off-grid boundary value rather than leave the
 constraint or fail the gesture. Reaching a limit must permit reverse travel.
 
+An explicitly enabled surface-placement mode may add a final world-up correction
+after a translation drag. This is separate from axis/grid snapping: the host must
+label that it settles on release, freeze the preference at admission, and publish
+the correction with the move in one transaction. It must respect stored-value
+bounds, preserve rotation, exclude the moving object from support tests, leave
+stationary clicks unchanged and remain cancellable before publication. Numeric
+entry stays exact. Scene Studio opts actors into this mode with admitted support
+meshes; this is approximate placement, not collision resolution or foot IK.
+
 Uniform scale saturates at a documented positive lower bound (and declared upper
 bound), preserving equal components. Pivot crossing must not create a negative
 scale, cancel an otherwise valid drag or prevent reversing direction. A degenerate

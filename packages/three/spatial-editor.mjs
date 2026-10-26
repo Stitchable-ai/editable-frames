@@ -5,16 +5,18 @@ import {normalizeObjectHierarchy,selectableObject} from '../core/objects.mjs';
 import {normalizeQuaternion} from '../core/rotation.mjs';
 import {rigidParent,worldPivotToPosition,constrainTranslation,positiveScale} from './spatial-math.mjs';
 
+import {surfaceBounds,surfaceDrop} from './surface-snap.mjs';
+
 const axes={x:new T.Vector3(1,0,0),y:new T.Vector3(0,1,0),z:new T.Vector3(0,0,1)};
 const axisName=h=>h==='uniform'||h==='screen'?'XYZ':h.toUpperCase();
 /** Pinned r180 facade. Never connects TransformControls DOM listeners. A host
  * forwards admitted normalized pointers; only sparse values leave this adapter.
  * Helpers occupy an independent scene; content captures never render it. */
 export class ThreeSpatialEditor {
-  constructor({controls,props,objects,camera,width,height}) {
+  constructor({controls,props,objects,camera,width,height,surfaceTargets=[]}) {
     this.controls=normalizeControls(controls);this.props=props;this.objects=objects;
     this.rows=normalizeObjectHierarchy(this.controls.objects??[],this.controls.fields.map(f=>f.anchor));
-    this.camera=camera;this.width=width;this.height=height;
+    this.surfaceTargets=surfaceTargets;this.camera=camera;this.width=width;this.height=height;
     this.overlay=new T.Scene();this.proxy=new T.Object3D();this.overlay.add(this.proxy);
     this.transform=new TransformControls(camera,null);this.helper=this.transform.getHelper();this.overlay.add(this.helper);
     const updateGizmo=this.transform._gizmo.updateMatrixWorld.bind(this.transform._gizmo);
@@ -93,7 +95,7 @@ export class ThreeSpatialEditor {
       if(!hit.object.material?.transparent)return null;
     }return null;
   }
-  begin(request,point,{translationSnap=0,rotationSnap=0,scaleSnap=0}={}) {
+  begin(request,point,{translationSnap=0,rotationSnap=0,scaleSnap=0,surfaceSnap=false}={}) {
     if(this.active)throw Error('Adapter gesture is active');
     const op=this.capabilities({anchor:this.selected}).bindings[0]?.operations[request.operation];
     if(!op?.handles.includes(request.handle)||!op.spaces.includes(request.space))throw Error('Unsupported spatial gesture');
@@ -105,9 +107,9 @@ export class ThreeSpatialEditor {
     const cameraOrientation=this.camera.getWorldQuaternion(new T.Quaternion());
     const basis=request.handle==='screen'?[new T.Vector3(1,0,0).applyQuaternion(cameraOrientation),new T.Vector3(0,1,0).applyQuaternion(cameraOrientation)]:[...request.handle].map(a=>axes[a]?.clone()).filter(Boolean);
     if(request.space==='local'&&request.handle!=='screen')basis.forEach(v=>v.applyQuaternion(s.worldQuaternion));
-    this.active={...s,extraValues:structuredClone(typeof s.b.extraValues==='function'?s.b.extraValues():s.b.extraValues),request:structuredClone(request),translationSnap,scaleSnap,basis};
+    this.active={...s,extraValues:structuredClone(typeof s.b.extraValues==='function'?s.b.extraValues():s.b.extraValues),request:structuredClone(request),translationSnap,scaleSnap,basis,surfaceSnap:surfaceSnap&&s.b.surfaceSnap===true,point:{...point},bounds:surfaceSnap&&s.b.surfaceSnap===true?surfaceBounds(s.b.object):null};
   }
-  update(point) {
+  update(point,{final=false}={}) {
     const a=this.active;if(!a)throw Error('No adapter gesture');
     this.transform.pointerMove(this.pointer(point));
     const values={...a.extraValues},req=a.request;
@@ -116,6 +118,16 @@ export class ThreeSpatialEditor {
       const desired=a.basis.map(v=>delta.dot(v));
       const field=a.f.position;
       const nextPosition=constrainTranslation({startLocal:a.position,basisWorld:a.basis,parent:a.parent,desired,min:field.min,max:field.max,snap:a.translationSnap,unitScale:req.space==='local'?a.parent.scale:1});
+      // Surface placement is an explicit final world-Y correction after the axis/grid drag.
+      // A click without pointer travel must remain a no-op. Settings and pose are frozen.
+      if(final&&a.surfaceSnap&&Math.hypot(point.x-a.point.x,point.y-a.point.y)>.5){
+        const delta=nextPosition.clone().sub(a.position).multiplyScalar(a.parent.scale).applyQuaternion(a.parent.quaternion);
+        const drop=surfaceDrop({bounds:a.bounds,delta,surfaces:this.surfaceTargets,exclude:a.b.object});
+        if(drop){
+          const corrected=nextPosition.clone().add(new T.Vector3(0,drop.offsetY,0).applyQuaternion(a.parent.quaternion.clone().invert()).divideScalar(a.parent.scale));
+          if(corrected.toArray().every(v=>Number.isFinite(v)&&(field.min===undefined||v>=field.min)&&(field.max===undefined||v<=field.max)))nextPosition.copy(corrected);
+        }
+      }
       values[field.key]=nextPosition.toArray();
       this.proxy.position.copy(a.worldPivot).add(nextPosition.clone().applyMatrix4(a.parent.matrix).sub(a.position.clone().applyMatrix4(a.parent.matrix)));
     } else {
