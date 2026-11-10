@@ -24,11 +24,13 @@ try{
  const a=await pixels(frameFile(beauty,early)),b=await pixels(frameFile(beauty,late));
  // Frame 6: the bar is far left; the product is in the clear.
  assert.ok(barAt(early)+demo.bar.width<250);
- const can=a.at(300,170);assert.ok(!close(can,WALL,30)&&!close(can,BAR,30),'the product is drawn over the wall');assert.ok(can[0]>can[2]*2,'and it is the red can');
+ // Label samples sit on rows 112-140: plain label above its text. The text is laid out with the platform's font, and
+ // white text lit by a warm plate has the plate's own colour, so a sample that lands on a letter proves nothing.
+ const can=a.at(300,125);assert.ok(!close(can,WALL,30)&&!close(can,BAR,30),'the product is drawn over the wall');assert.ok(can[0]>can[2]*2,'and it is the red can');
  // Frame 35: the bar stands in front of the product's centre, and ONLY the plate's depth says so.
  assert.ok(barAt(late)<320&&barAt(late)+demo.bar.width>320);
  assert.ok(close(b.at(320,170),BAR),'the plate foreground hides the product where it is nearer');
- const beside=b.at(barAt(late)+demo.bar.width+12,170);assert.ok(!close(beside,WALL,30)&&!close(beside,BAR,30),'the product is still visible beside the foreground');
+ const beside=b.at(barAt(late)+demo.bar.width+12,125);assert.ok(!close(beside,WALL,30)&&!close(beside,BAR,30),'the product is still visible beside the foreground');
  checks.push('A 3D object is hidden by plate foreground and shown over plate background, from the depth map alone');
 
  // The headline is DOM text; the cut-out layer puts the plate subject back over it.
@@ -47,12 +49,12 @@ try{
 
  // --- Lighting from the plate --------------------------------------------------
  // The plate's only bright area is a window on the left, so the can's left side is the lit one.
- const lit=mean(a,262,150,300,260),shade=mean(a,345,150,380,260);assert.ok(lit[0]>shade[0]*1.2,'the side facing the bright window is brighter');
+ const lit=mean(a,262,112,300,140),shade=mean(a,345,112,380,140);assert.ok(lit[0]>shade[0]*1.2,'the side facing the bright window is brighter');
  // The panorama's back half is the plate mirrored, so the side turned away still sees footage, not black.
  assert.ok(shade[0]>90,`the shaded side reflects the footage behind the camera, not an empty half (${Math.round(shade[0])})`);
  await mutate(dir,d=>d.studio.execute({type:'set',clip:d.studio.doc.clips[0].id,anchor:'light',property:'fromPlate',value:false},d.studio.revision,'model'));
  const neutralDir=path.join(tmp,'neutral');await render(dir,neutralDir,{format:'png',frames:early+1});const n=await pixels(frameFile(neutralDir,early));
- const warm=rgb=>rgb[0]/(rgb[2]+1),plateLit=mean(a,262,150,380,260),studioLit=mean(n,262,150,380,260);
+ const warm=rgb=>rgb[0]/(rgb[2]+1),plateLit=mean(a,262,112,380,140),studioLit=mean(n,262,112,380,140);
  assert.ok(Math.abs(plateLit[0]-studioLit[0])+Math.abs(plateLit[1]-studioLit[1])+Math.abs(plateLit[2]-studioLit[2])>12,'turning plate lighting off changes the product');
  assert.ok(warm(plateLit)>warm(studioLit),'under the warm plate the product reads warmer than under neutral studio light');
  assert.ok(close(n.at(20,340),a.at(20,340),2),'the footage itself is untouched by the lighting control');
