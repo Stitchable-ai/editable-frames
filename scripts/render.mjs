@@ -1,15 +1,18 @@
 import fs from 'node:fs/promises';import path from 'node:path';import {randomUUID} from 'node:crypto';import {chromium} from 'playwright';
-import {preview,readProject} from './project.mjs';import {mixAudio} from './audio.mjs';import {run,ffmpeg,ffprobe} from './process.mjs';import {HZ} from '../packages/core/index.mjs';
+import {preview,readProject} from './project.mjs';import {mixAudio} from './audio.mjs';import {run,ffmpeg,ffprobe} from './process.mjs';import {HZ} from '../packages/core/index.mjs';import {shutterSamples,validateShutter} from '../packages/plate/motion-blur.mjs';
 export function frameRate(value={num:24,den:1}){
  if(typeof value==='string'){const [num,den=1]=value.split('/').map(Number);value={num,den}}
  if(typeof value==='number')value={num:value,den:1};
  if(!Number.isSafeInteger(value.num)||!Number.isSafeInteger(value.den)||value.num<1||value.den<1||value.num/value.den>120||value.num/value.den<1||value.num>1000000||value.den>1000000)throw Error('Invalid rational frame rate');return value;
 }
 async function absent(file){try{await fs.lstat(file);throw Error('Output already exists: '+file)}catch(e){if(e.code!=='ENOENT')throw e}}
-export async function render(dir,output,{fps,frames,format,background='#101922',signal,onProgress=()=>{}}={}){
+export async function render(dir,output,{fps,frames,format,background='#101922',pass='beauty',motionBlur,signal,onProgress=()=>{}}={}){
  if(!output)throw Error('Output path is required');signal?.throwIfAborted();
  const d=await readProject(dir),rate=frameRate(fps??d.studio.doc.fps),duration=Math.max(0,...d.studio.doc.clips.map(c=>(c.start+c.duration)/HZ));
  const count=frames??Math.ceil(duration*rate.num/rate.den);if(!Number.isSafeInteger(count)||count<1||count>36000)throw Error('Invalid export frame budget');
+ // A control pass exists only where the scene's own code draws it.
+ if(pass!=='beauty'&&(d.kind!=='renderer'||!(d.scene.passes??[]).includes(pass)))throw Error(`This scene does not declare a ${pass} pass`+(d.kind==='renderer'&&d.scene.passes?.length?`; it declares: ${d.scene.passes.join(', ')}`:''));
+ const shutter=motionBlur?validateShutter(motionBlur):null;if(shutter&&count*shutter.samples>144000)throw Error('Motion blur sample budget exceeded; lower --samples or the frame count');
  format??=path.extname(output)==='.mov'?'mov':path.extname(output)==='.mp4'?'mp4':null;
  if(!['mp4','mov','png'].includes(format))throw Error('Use .mp4, .mov (alpha), or --format png');
  if(!/^#[0-9a-f]{6}$/i.test(background))throw Error('Background must be a six-digit color');
@@ -21,14 +24,26 @@ export async function render(dir,output,{fps,frames,format,background='#101922',
   onProgress({phase:'media',progress:0});host=await preview(dir,{port:0,editable:false,signal,snapshot:d});
   browser=await chromium.launch({headless:true,args:['--enable-webgl',process.platform==='darwin'?'--use-angle=metal':'--use-angle=swiftshader']});
   const page=await browser.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(host.url);await page.waitForFunction(()=>window.editableframe?.ready,{},{timeout:30000});
-  const frameDir=path.join(temp,'frames');await fs.mkdir(frameDir);
+  const frameDir=path.join(temp,'frames'),sampleDir=path.join(temp,'samples');await fs.mkdir(frameDir);if(shutter)await fs.mkdir(sampleDir);
   for(let frame=0;frame<count;frame++){
    signal?.throwIfAborted();if(errors.length)throw Error(errors.join('\n'));
-   let bytes;
-   if(d.kind==='renderer'){await page.evaluate(t=>window.editableframe.seek(t,{timeline:true}),frame*rate.den/rate.num);bytes=await page.locator('#screen').screenshot({omitBackground:true,timeout:30000});}
-   else{const png=await page.evaluate(async t=>{await window.editableframe.seek(t,{timeline:true});return window.editableframe.png()},frame*rate.den/rate.num);bytes=Buffer.from(png.split(',')[1],'base64');}
-   await fs.writeFile(path.join(frameDir,String(frame+1).padStart(6,'0')+'.png'),bytes);
+   // One capture per output frame, or one per shutter sample when motion blur is on.
+   const times=shutter?shutterSamples(frame,shutter):[frame];
+   for(let sample=0;sample<times.length;sample++){
+    const seconds=times[sample]*rate.den/rate.num;let bytes;
+    if(d.kind==='renderer'){await page.evaluate(([t,pass])=>window.editableframe.seek(t,{timeline:true,pass}),[seconds,pass]);bytes=await page.locator('#screen').screenshot({omitBackground:true,timeout:30000});}
+    else{const png=await page.evaluate(async t=>{await window.editableframe.seek(t,{timeline:true});return window.editableframe.png()},seconds);bytes=Buffer.from(png.split(',')[1],'base64');}
+    await fs.writeFile(shutter?path.join(sampleDir,String(frame*shutter.samples+sample+1).padStart(8,'0')+'.png'):path.join(frameDir,String(frame+1).padStart(6,'0')+'.png'),bytes);
+   }
    onProgress({phase:'frames',frame:frame+1,total:count,progress:(frame+1)/count});
+  }
+  if(shutter){
+   // Average each frame's samples as premultiplied colour, so a half-covered pixel keeps its hue instead of darkening.
+   // The mean is taken on encoded (display) values, not linear light.
+   onProgress({phase:'shutter',progress:0});
+   await run(ffmpeg(),['-v','error','-n','-framerate','1','-i',path.join(sampleDir,'%08d.png'),'-vf',`format=gbrap,premultiply=inplace=1,tmix=frames=${shutter.samples},select='not(mod(n+1\\,${shutter.samples}))',unpremultiply=inplace=1,format=rgba`,'-fps_mode','passthrough','-frames:v',String(count),path.join(frameDir,'%06d.png')],{signal,timeout:600000});
+   if((await fs.readdir(frameDir)).length!==count)throw Error('Motion blur produced the wrong number of frames');
+   await fs.rm(sampleDir,{recursive:true,force:true});
   }
   const actualDuration=count*rate.den/rate.num,audioPath=path.join(temp,'audio.wav');const audio=await mixAudio({...d,assets:host.media.assets},host.media.catalog,audioPath,actualDuration,{signal});
   let result;
@@ -46,7 +61,7 @@ export async function render(dir,output,{fps,frames,format,background='#101922',
    if(!info.streams.some(s=>s.codec_type==='video')||audio.tracks&&!info.streams.some(s=>s.codec_type==='audio'))throw Error('Encoded media failed stream validation');
   }
   signal?.throwIfAborted();
-  const receipt={version:1,engine:'editableframe',binding:d.binding,projectRevision:d.revision,fps:rate,frames:count,duration:actualDuration,format,alpha:format!=='mp4',runtime:d.runtimeIdentity,browser:browser.version(),ffmpeg:(await run(ffmpeg(),['-version'])).toString().split('\n')[0],platform:process.platform,background:format==='mp4'?background:null,audio:audio.tracks>0,audioTracks:audio.tracks,assets:Object.fromEntries(Object.entries(d.assets).map(([id,a])=>[id,a.sha256]))};
+  const receipt={version:1,engine:'editableframe',binding:d.binding,projectRevision:d.revision,fps:rate,frames:count,duration:actualDuration,format,alpha:format!=='mp4',pass,motionBlur:shutter,runtime:d.runtimeIdentity,browser:browser.version(),ffmpeg:(await run(ffmpeg(),['-version'])).toString().split('\n')[0],platform:process.platform,background:format==='mp4'?background:null,audio:audio.tracks>0,audioTracks:audio.tracks,assets:Object.fromEntries(Object.entries(d.assets).map(([id,a])=>[id,a.sha256]))};
   // Reserve the receipt path, and publish a complete file without overwriting another writer.
   const receiptFile=output+'.json',fd=await fs.open(receiptFile,'wx');let published=false;
   try{await fd.writeFile(JSON.stringify(receipt,null,2));await fd.sync();if(format==='png'){await absent(output);await fs.rename(result,output)}else await fs.link(result,output);published=true}finally{await fd.close();if(!published)await fs.rm(receiptFile,{force:true})}

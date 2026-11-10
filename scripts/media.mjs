@@ -1,20 +1,25 @@
 import fs from 'node:fs/promises';import path from 'node:path';import os from 'node:os';import {createHash} from 'node:crypto';import {createReadStream} from 'node:fs';
-import {run,ffmpeg,ffprobe} from './process.mjs';
+import {run,ffmpeg,ffprobe} from './process.mjs';import {validateDerived} from '../packages/plate/manifest.mjs';import {validateTrack} from '../packages/plate/track.mjs';import {validateCameraPath} from '../packages/plate/camera.mjs';
 export async function fileHash(file){const h=createHash('sha256');for await(const chunk of createReadStream(file))h.update(chunk);return h.digest('hex')}
 export async function readAssets(dir){
  let manifest;try{manifest=JSON.parse(await fs.readFile(path.join(dir,'assets.json'),'utf8'))}catch(e){if(e.code==='ENOENT')return {};throw e}
  if(manifest.version!==1 || !manifest.assets || Array.isArray(manifest.assets))throw Error('Invalid assets manifest');
  const assets={};for(const [id,a]of Object.entries(manifest.assets)){
-  if(['__proto__','constructor','prototype'].includes(id)||!/^[a-zA-Z0-9_-]{1,80}$/.test(id)||!['video','audio','image'].includes(a.type)||typeof a.src!=='string'||path.isAbsolute(a.src)||a.src.split(/[\\/]/).some(p=>p==='..'||p.startsWith('.'))||!/^[a-f0-9]{64}$/.test(a.sha256))throw Error('Invalid asset declaration: '+id);
+  if(['__proto__','constructor','prototype'].includes(id)||!/^[a-zA-Z0-9_-]{1,80}$/.test(id)||!['video','audio','image','data'].includes(a.type)||typeof a.src!=='string'||path.isAbsolute(a.src)||a.src.split(/[\\/]/).some(p=>p==='..'||p.startsWith('.'))||!/^[a-f0-9]{64}$/.test(a.sha256))throw Error('Invalid asset declaration: '+id);
   const file=await fs.realpath(path.join(dir,a.src));if(!file.startsWith(dir+path.sep))throw Error('Asset escapes project: '+id);
   if(await fileHash(file)!==a.sha256)throw Error('Asset content changed: '+id+'; import it as a new immutable asset');
+  // `data` is small JSON a renderer reads (a track, a camera path); it is never decoded as media.
+  if(a.type==='data'){if((await fs.stat(file)).size>8*1024**2)throw Error('Data asset exceeds 8 MiB: '+id);let json;try{json=JSON.parse(await fs.readFile(file,'utf8'))}catch{throw Error('Data asset is not JSON: '+id)}if(a.derived?.role==='track')validateTrack(json);if(a.derived?.role==='camera')validateCameraPath(json);}
   assets[id]={...a,file};
- }return assets;
+ }
+ // Mattes, depth, tracks and camera paths are pinned to the exact bytes they were computed from.
+ validateDerived(assets);return assets;
 }
 export async function prepareMedia(assets,{signal,maxDecodedBytes=8*1024**3,maxFrames=18000}={}){
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'ef-media-')),catalog={},frozenAssets={};let budget=0;
  try{await fs.mkdir(path.join(dir,'sources'));for(const [id,original]of Object.entries(assets)){
   const file=path.join(dir,'sources',id+path.extname(original.file));await fs.copyFile(original.file,file);if(await fileHash(file)!==original.sha256)throw Error('Asset changed while preparing: '+id);const a={...original,file};frozenAssets[id]=a;
+  if(a.type==='data'){catalog[id]={type:'data',sha256:a.sha256,derived:a.derived,audio:false,pts:[],url:'/__ef/source/'+id};continue}
   const info=JSON.parse((await run(ffprobe(),['-v','error','-show_streams','-show_format','-of','json',a.file],{signal})).toString());
   const v=info.streams.find(s=>s.codec_type==='video'),astream=info.streams.find(s=>s.codec_type==='audio'),audio=!!astream;
   let pts=[],duration=Number(info.format.duration??v?.duration??0);
@@ -34,8 +39,11 @@ export async function prepareMedia(assets,{signal,maxDecodedBytes=8*1024**3,maxF
   }
   if(a.type==='audio'&&!audio)throw Error('Asset has no audio: '+id);
   if(audio){budget+=duration*48000*4;if(!Number.isFinite(duration)||duration<=0||budget>maxDecodedBytes)throw Error('Audio decode budget exceeded');a.previewAudio=path.join(dir,'sources',id+'-audio.wav');await run(ffmpeg(),['-v','error','-n','-i',a.file,'-map','0:a:0','-vn','-af',`apad=whole_dur=${duration},atrim=duration=${duration}`,'-ar','48000','-ac','2','-c:a','pcm_s16le',a.previewAudio],{signal,timeout:300000});}
-  catalog[id]={type:a.type,sha256:a.sha256,duration,pts,audio,width:v?.width,height:v?.height,audioOffset:Number(astream?.start_time??0)-Number(v?.start_time??0),sourceUrl:audio?'/__ef/audio/'+id:null,url:'/__ef/media/'+id+'/'};
+  const [rn,rd]=String(v?.avg_frame_rate??'').split('/').map(Number),frameRate=a.type==='video'&&Number.isSafeInteger(rn)&&Number.isSafeInteger(rd)&&rn>0&&rd>0?{num:rn,den:rd}:undefined;
+  catalog[id]={type:a.type,sha256:a.sha256,derived:a.derived,frameRate,duration,pts,audio,width:v?.width,height:v?.height,audioOffset:Number(astream?.start_time??0)-Number(v?.start_time??0),sourceUrl:audio?'/__ef/audio/'+id:null,url:'/__ef/media/'+id+'/'};
  }
+ // A per-frame matte or depth map only lines up when it has exactly the plate's frames.
+ for(const [id,entry]of Object.entries(catalog)){const d=entry.derived;if(!d||entry.type!=='video')continue;const parent=catalog[d.of];if(parent.type==='video'&&parent.pts.length!==entry.pts.length)throw Error(`${id} has ${entry.pts.length} frames but ${d.of} has ${parent.pts.length}; a ${d.role} must match its plate frame for frame`)}
  return {dir,catalog,assets:frozenAssets,close:()=>fs.rm(dir,{recursive:true,force:true})};
  }catch(e){await fs.rm(dir,{recursive:true,force:true});throw e}
 }

@@ -3,13 +3,20 @@ import {createRendererCompositor} from './renderer-compositor.mjs';import {ptsIn
 import {Studio,clone,HZ} from '../core/index.mjs';import {createMediaHost} from '../media/browser.mjs';import {createAudioPlayback} from '../media/playback.mjs';import {createCompositor} from './compositor.mjs';
 export async function mount({templates,createRenderer,scene,binding,initial,mediaCatalog={},assetIds=[],persistence=null,capture=false}){
  const $=s=>document.querySelector(s);let canvas=$('#screen');
- if(scene){const stage=document.createElement('div');stage.id='screen';canvas.replaceWith(stage);canvas=stage;if(capture){stage.style.background='transparent';stage.style.borderRadius='0';document.documentElement.style.background='transparent';document.body.style.background='transparent';}}
+ if(scene){const stage=document.createElement('div');stage.id='screen';canvas.replaceWith(stage);canvas=stage;if(capture){stage.style.background='transparent';stage.style.borderRadius='0';document.documentElement.style.background='transparent';document.body.style.background='transparent';
+  // The stage is transparent where the scene draws nothing, so the editor's own chrome would be captured through it.
+  document.body.style.visibility='hidden';stage.style.visibility='visible';}}
  let studio;
  if(initial)studio=Studio.restore(initial,templates,binding);else{studio=new Studio(templates,{binding});studio.doc.clips=Object.keys(templates).map(id=>studio.make(id));studio.check(studio.doc);studio.base=clone(studio.doc)}
- let selected=studio.doc.clips[0]?.id,time=0,playing=false,last=0,timeline=false,revision=persistence?.revision,operations=Promise.resolve(),disposed=false;
+ let selected=studio.doc.clips[0]?.id,time=0,playing=false,last=0,timeline=false,pass='beauty',revision=persistence?.revision,operations=Promise.resolve(),disposed=false;
  const host=createMediaHost(mediaCatalog),services={};
  if(assetIds.length)services.asset=id=>{if(!assetIds.includes(id))throw Error('Undeclared asset: '+id);return '/__ef/source/'+encodeURIComponent(id);};
- if(Object.keys(mediaCatalog).length)services.mediaFrame=(id,time)=>{const a=mediaCatalog[id];if(!a||a.type==='audio')throw Error('Missing visual asset: '+id);const index=ptsIndex(a.pts,time);return index<0?undefined:a.url+String(index+1).padStart(6,'0')+'.png';};
+ if(Object.keys(mediaCatalog).length){
+  // Facts about a declared asset, and the data derived from it (matte, depth, track, camera).
+  services.mediaInfo=id=>{const a=mediaCatalog[id];if(!a)throw Error('Undeclared asset: '+id);return {type:a.type,width:a.width,height:a.height,duration:a.duration,frames:a.pts?.length??0,frameRate:a.frameRate?{...a.frameRate}:undefined,derived:a.derived?structuredClone(a.derived):undefined};};
+  services.derived=(id,role)=>{if(!mediaCatalog[id])throw Error('Undeclared asset: '+id);return Object.keys(mediaCatalog).find(key=>mediaCatalog[key].derived?.of===id&&mediaCatalog[key].derived.role===role);};
+ }
+ if(Object.keys(mediaCatalog).length)services.mediaFrame=(id,time)=>{const a=mediaCatalog[id];if(!a||a.type==='audio'||a.type==='data')throw Error('Missing visual asset: '+id);const index=ptsIndex(a.pts,time);return index<0?undefined:a.url+String(index+1).padStart(6,'0')+'.png';};
  const renderer=scene?createRendererCompositor(canvas,{scene,templates,services,capture}):createCompositor(canvas,{templates,createRenderer,host}),audio=createAudioPlayback(mediaCatalog);let selection=null,selectionVersion=0;
  if(scene)canvas.addEventListener('pointerdown',async event=>{
   const ticket=++selectionVersion;
@@ -26,7 +33,7 @@ export async function mount({templates,createRenderer,scene,binding,initial,medi
  const keySelection=event=>{if(scene&&selection&&(event.key==='Escape'||event.altKey&&event.key==='ArrowUp')){event.preventDefault();selectParent();}};
  if(scene)document.addEventListener('keydown',keySelection);
  const fail=e=>{$('#status').textContent=e.message;playing=false;audio.stop();$('#play').textContent='Play'};
- function draw(){selectionVersion++;const hadSelection=selection!==null;selection=null;if(hadSelection)refresh();const at=time,mode=timeline,id=selected;return renderer.render(studio,at,{selected:id,timeline:mode,playing})}
+ function draw(){selectionVersion++;const hadSelection=selection!==null;selection=null;if(hadSelection)refresh();const at=time,mode=timeline,id=selected;return renderer.render(studio,at,{selected:id,timeline:mode,playing,...(scene?{pass}:{})})}
  function context(){return {...studio.capabilities(selected),baseRevision:persistence?revision:studio.revision,...(scene?{selection,objects:objectRows(),capture:{kind:'dom',selector:'#screen'}}:{})}}
  function refresh(){
   if(!studio.doc.clips.some(c=>c.id===selected))selected=studio.doc.clips[0]?.id;
@@ -66,5 +73,5 @@ export async function mount({templates,createRenderer,scene,binding,initial,medi
  $('#open').onchange=async e=>{try{studio=Studio.restore(await e.target.files[0].text(),templates,binding);refresh();await draw()}catch(e){fail(e)}};
  $('#apply').onclick=()=>{try{const p=JSON.parse($('#proposal').value);edit(p.command,p.baseRevision,'model').catch(fail)}catch(e){fail(e)}};
  async function loop(now){if(disposed)return;if(playing){try{time=(time+Math.max(0,Math.min(.1,(now-last)/1000)))%duration();$('#seek').value=time;await draw();let s=studio,t=time;if(!timeline){s=Object.create(studio);s.doc={...studio.doc,clips:[{...clip(),start:0}]}}if(playing)await audio.update(s,t,true);else audio.stop()}catch(e){fail(e)}}last=now;requestAnimationFrame(loop)}requestAnimationFrame(loop);
- refresh();await draw();window.editableframes=window.editableframe={ready:true,get studio(){return studio},get selected(){return selected},templates,binding,context,selectObject,selectParent,select(id){selected=studio.doc.clips.find(c=>c.template===id||c.id===id)?.id??selected;time=0;playing=false;audio.stop();refresh();return draw()},async seek(t,options={}){playing=false;audio.stop();time=t;timeline=options.timeline??timeline;await draw()},edit,undo:()=>change('undo'),redo:()=>change('redo'),serialize:()=>studio.serialize(),captureTarget:scene?{kind:'dom',selector:'#screen'}:{kind:'canvas',selector:'#screen'},png:()=>{if(scene)throw Error('This renderer uses DOM-root capture; screenshot captureTarget after seek');return canvas.toDataURL('image/png')} ,stats:()=>({...host.stats(),audio:audio.stats()}),async dispose(){disposed=true;document.removeEventListener('keydown',keySelection);await audio.dispose();await renderer.dispose()}};
+ refresh();await draw();window.editableframes=window.editableframe={ready:true,get studio(){return studio},get selected(){return selected},templates,binding,context,selectObject,selectParent,select(id){selected=studio.doc.clips.find(c=>c.template===id||c.id===id)?.id??selected;time=0;playing=false;audio.stop();refresh();return draw()},async seek(t,options={}){playing=false;audio.stop();time=t;timeline=options.timeline??timeline;if(options.pass!==undefined){if(!scene&&options.pass!=='beauty')throw Error('Only renderer scenes draw control passes');pass=options.pass;}await draw()},edit,undo:()=>change('undo'),redo:()=>change('redo'),serialize:()=>studio.serialize(),captureTarget:scene?{kind:'dom',selector:'#screen'}:{kind:'canvas',selector:'#screen'},png:()=>{if(scene)throw Error('This renderer uses DOM-root capture; screenshot captureTarget after seek');return canvas.toDataURL('image/png')} ,stats:()=>({...host.stats(),audio:audio.stats()}),async dispose(){disposed=true;document.removeEventListener('keydown',keySelection);await audio.dispose();await renderer.dispose()}};
 }

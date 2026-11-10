@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+Hybrid scenes: code-rendered elements composited with filmed or generated footage. See [hybrid scenes](docs/hybrid-scenes.md).
+
+- Add derived assets: a matte, depth map, normals, track, camera path or environment is pinned to the hash of the footage it was computed from. A replaced take, a second asset for one role, or a derived video with a different frame count is refused. `asset-add` gains `--role`, `--of` and depth-encoding flags; JSON `data` assets are accepted.
+- Add `editableframes/plate`: corner-pin homographies, track and camera-path sampling, frame-rate conform and cadence, depth encodings, plate measurements (levels, light direction, noise), seeded grain, object-id colours and shutter sampling.
+- Add `editableframes/three-plate`: depth occlusion by the footage, matte hold-out, lighting from the footage, camera-path replay, a shadow catcher and clay/depth/normal/id/matte passes.
+- Add optional `mediaInfo` and `derived` renderer services, declared control passes (`passes`, `clock.pass`) and `render --pass`.
+- Add shutter motion blur at export: `render --motion-blur ANGLE [--samples N]`.
+- Add `init --hybrid`, a starter with a synthetic plate, and `npm run test:hybrid`.
+- Fix transparent DOM-root exports capturing the preview page's own header through the scene. Any transparent renderer export smaller than the header area was affected.
+
+Runtime files changed, so existing projects need their normal `rebind`.
+
 ## 0.1.0-beta.1 — 2026-10-07
 
 First beta for trusted local-code projects. No remote publication is implied.

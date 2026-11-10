@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';import path from 'node:path';import {pathToFileURL} from 'node:url';import {createHash,randomUUID} from 'node:crypto';import {build} from 'esbuild';
 import {root} from './build.mjs';import {Studio,clone} from '../packages/core/index.mjs';import {serve,sendFile} from './server.mjs';import {readAssets,prepareMedia,fileHash} from './media.mjs';
-import {normalizeClipModule} from '../packages/core/definition.mjs';
+import {normalizeClipModule} from '../packages/core/definition.mjs';import {validateDerived} from '../packages/plate/manifest.mjs';import {validateTrack} from '../packages/plate/track.mjs';import {validateCameraPath} from '../packages/plate/camera.mjs';
 const publicExports=JSON.parse(await fs.readFile(path.join(root,'package.json'),'utf8')).exports;
 function publicPackagePlugin(){return {name:'editableframes-public-exports',setup(b){b.onResolve({filter:/^editableframes(?:\/.*)?$/},args=>{const key=args.path==='editableframes'?'.':'./'+args.path.slice('editableframes/'.length),file=publicExports[key];return file?{path:path.join(root,file)}:{errors:[{text:'Unknown EditableFrames export: '+args.path}]};});}};}
 export const hash=s=>createHash('sha256').update(s).digest('hex');
@@ -16,9 +16,10 @@ export async function definition(dir){
 }
 export async function init(dir,{template='canvas'}={}){
  await fs.mkdir(dir,{recursive:true});if((await fs.readdir(dir)).length)throw Error('init needs an empty directory');
- if(!['canvas','media','renderer'].includes(template))throw Error('Unknown starter');
+ if(!['canvas','media','renderer','hybrid'].includes(template))throw Error('Unknown starter');
  await fs.copyFile(path.join(root,'templates',template,'clip.mjs'),path.join(dir,'clip.mjs'));
  if(template==='media'){const {createDemoMedia}=await import('./demo-media.mjs');await createDemoMedia(dir);}
+ if(template==='hybrid'){const {createHybridDemo}=await import('./demo-hybrid.mjs');await createHybridDemo(dir);}
  const d=await definition(dir),s=new Studio(d.templates,{binding:d.binding});s.doc.clips=[s.make(d.template.id)];s.doc.width=d.template.width??1280;s.doc.height=d.template.height??720;s.doc.fps=d.frameRate;s.check(s.doc);s.base=clone(s.doc);
  await snapshotSource(d);await fs.writeFile(path.join(dir,'project.json'),s.serialize());return {directory:path.resolve(dir),template:d.template.id};
 }
@@ -81,15 +82,20 @@ export async function rebind(dir,{reset=false}={}){
  }finally{await fd.close();await fs.rm(lock,{force:true})}
 }
 
-export async function importAsset(dir,id,source,{type}={}){
+export async function importAsset(dir,id,source,{type,role,of,encoding}={}){
  if(['__proto__','constructor','prototype'].includes(id)||!/^[a-zA-Z0-9_-]{1,80}$/.test(id))throw Error('Invalid asset ID');
  dir=await fs.realpath(dir);const lock=path.join(dir,'.editableframe-edit.lock'),fd=await fs.open(lock,'wx');
  try{
   const d=await readProject(dir);if(Object.hasOwn(d.assets,id))throw Error('Asset IDs are immutable; use a new ID and swap the port');
-  const ext=path.extname(source).toLowerCase();type??=(['.png','.jpg','.jpeg','.webp'].includes(ext)?'image':['.wav','.mp3','.flac','.m4a'].includes(ext)?'audio':'video');
-  if(!['image','audio','video'].includes(type)||!/^\.[a-z0-9]{1,8}$/.test(ext))throw Error('Invalid asset type/extension');
+  const ext=path.extname(source).toLowerCase();type??=(['.png','.jpg','.jpeg','.webp'].includes(ext)?'image':['.wav','.mp3','.flac','.m4a'].includes(ext)?'audio':ext==='.json'?'data':'video');
+  if(!['image','audio','video','data'].includes(type)||!/^\.[a-z0-9]{1,8}$/.test(ext))throw Error('Invalid asset type/extension');
+  // A derived asset records the hash of the take it describes, so a regenerated take cannot reuse it.
+  if((role===undefined)!==(of===undefined))throw Error('Use --role and --of together');
+  let derived;if(role){if(!Object.hasOwn(d.assets,of))throw Error('Unknown --of asset: '+of);derived={of,role,sourceSha256:d.assets[of].sha256,...(encoding?{encoding}:{})};}
   const sha256=await fileHash(source),src='assets/'+sha256+ext;await fs.mkdir(path.join(dir,'assets'),{recursive:true});await fs.copyFile(source,path.join(dir,src));
-  const manifest={version:1,assets:{...d.assetIdentity,[id]:{src,type,sha256}}};
+  const manifest={version:1,assets:{...d.assetIdentity,[id]:{src,type,sha256,...(derived?{derived}:{})}}};
+  // Validate the whole manifest before publishing it; a refused import leaves assets.json unchanged.
+  validateDerived(manifest.assets);if(type==='data'&&role){const json=JSON.parse(await fs.readFile(source,'utf8'));if(role==='track')validateTrack(json);if(role==='camera')validateCameraPath(json);}
   const file=path.join(dir,'assets.json'),tmp=file+'.'+randomUUID()+'.tmp';await fs.writeFile(tmp,JSON.stringify(manifest,null,2));await fs.rename(tmp,file);
   // Rebinding is separate and explicit; the old project/source snapshot is retained.
   return {id,sha256,next:'Run rebind to accept the added asset; set a media port to its ID.'};

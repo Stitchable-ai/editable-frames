@@ -129,6 +129,22 @@ path does not mix arbitrary DOM audio automatically. Legacy media-port audio kee
 its existing mixing path. `captureSurface` is absent in this host. Feature-check
 optional services; do not invent layer, depth, simulation or screen services.
 
+`context.mediaInfo(id)` returns `{type, width, height, duration, frames, frameRate,
+derived}` for a declared asset. `context.derived(id, role)` returns the ID of the
+asset computed from `id` with that role (`matte`, `depth`, `normals`, `track`,
+`camera`, `environment`), or undefined. Both exist only when the project declares
+media. A `data` asset is JSON: fetch `asset(id)` and parse it. See
+[hybrid scenes](hybrid-scenes.md) for compositing code with footage.
+
+## Optional control passes
+
+A scene may declare `passes: ['clay', 'depth', …]`: other ways it can draw
+itself, for conditioning a video model or compositing elsewhere. Names are open
+lowercase identifiers; `beauty` is implied and cannot be declared. The host
+supplies `clock.pass`, which is `'beauty'` unless a pass was requested, and never
+requests a pass the scene did not declare. `render DIR OUT --pass NAME` exports
+one. Draw nothing but the pass: hide footage and DOM layers.
+
 When exposing controls for separate components, use distinct stable semantic
 anchors and matching properties. Connect controlled DOM nodes to those IDs, or
 implement Canvas/WebGL picking against the current rendered geometry and props.

@@ -8,8 +8,9 @@ export function createRendererCompositor(stage,{scene,templates,services={},capt
   const residents=new Map();let chain=Promise.resolve(),disposed=false,lastRequest,renderVersion=0,pickVersion=0,activeJob,pendingJob,disposal;
   stage.style.position=capture?'fixed':'relative';stage.style.overflow='hidden';
   if(capture){stage.style.left='0';stage.style.top='0';stage.style.zIndex='2147483647';}
-  async function draw(studio,time,{selected,timeline=false,playing=false}={}) {
+  async function draw(studio,time,{selected,timeline=false,playing=false,pass='beauty'}={}) {
     if(disposed)throw Error('Compositor disposed');
+    if(pass!=='beauty'&&!(scene.passes??[]).includes(pass))throw Error(`This scene does not declare a ${pass} pass`);
     if(!Number.isFinite(time)||time<0)throw Error('Invalid source time');
     const clips=timeline?studio.doc.clips.filter(c=>time>=c.start/HZ&&time<(c.start+c.duration)/HZ):[studio.clip(selected)];
     const active=new Set(clips.map(c=>c.id));
@@ -31,12 +32,12 @@ export function createRendererCompositor(stage,{scene,templates,services={},capt
       const tr=clip.transform;resident.layer.style.opacity=String(tr.opacity);resident.layer.style.transform=`translate(${tr.x/width*100}%,${tr.y/height*100}%) scale(${tr.scale})`;
       resident.root.style.transform=`scale(${stage.clientWidth/scene.width},${stage.clientHeight/scene.height})`;
       const evaluated=evaluateClip(studio,clip,timeline?time:clip.start/HZ+time);
-      const clock={frame:evaluated.sourceTime*scene.fps,fps:scene.fps,frameRate:rendererFrameRate(scene),width:scene.width,height:scene.height,durationInFrames:scene.durationInFrames,capture,playing};
+      const clock={frame:evaluated.sourceTime*scene.fps,fps:scene.fps,frameRate:rendererFrameRate(scene),width:scene.width,height:scene.height,durationInFrames:scene.durationInFrames,capture,playing,pass};
       resident.clock=clock;
       try {await resident.instance.render(clock,sampledRendererProps(scene,templates[clip.template],clip,evaluated.nodes));}
       catch(error){residents.delete(clip.id);resident.layer.remove();await resident.instance.dispose().catch(()=>{});throw error;}
       resident.overlays.style.transform=`scale(${stage.clientWidth/1920},${stage.clientHeight/1080})`;resident.overlays.replaceChildren();
-      for(const node of evaluated.nodes.filter(n=>n.overlay)){
+      for(const node of pass==='beauty'?evaluated.nodes.filter(n=>n.overlay):[]){
         const p=node.props;if(!p.visible||evaluated.sourceTime<p.start||evaluated.sourceTime>p.end)continue;
         const label=document.createElement('div');label.textContent=p.text;
         Object.assign(label.style,{position:'absolute',left:`${p.x-14}px`,top:`${p.y-10}px`,padding:'10px 14px',font:`600 ${p.size}px sans-serif`,color:p.color,opacity:p.opacity,whiteSpace:'pre',background:p.style==='plain'?'transparent':p.background,borderRadius:p.style==='pill'?`${p.size}px`:'10px'});
