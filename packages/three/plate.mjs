@@ -64,6 +64,18 @@ export function createMatteHoldout() {
   const mesh = fullscreen(material, 1e9);
   return {mesh, update(texture) { material.uniforms.map.value = texture; }, dispose() { mesh.geometry.dispose(); material.dispose(); }};
 }
+/** Paint `source` into an equirectangular canvas `width` wide and `width / 2`
+ * high: as shot in front of the camera (u 0 to 0.5; Three's lookup puts -Z, into
+ * the picture, at u = 0.25) and mirrored behind it (u 0.5 to 1, centred on +Z).
+ * The mirror maps x to width - x, so the copy lands on the back half. A surface
+ * facing the camera reflects that back half, so leaving it empty turns a
+ * mirror-like product black. */
+export function paintPlatePanorama(context, source, width) {
+  const half = width / 2, height = width / 2;
+  context.setTransform(1, 0, 0, 1, 0, 0); context.drawImage(source, 0, 0, half, height);
+  context.setTransform(-1, 0, 0, 1, width, 0); context.drawImage(source, 0, 0, half, height);
+  context.setTransform(1, 0, 0, 1, 0, 0);
+}
 /** Light the scene with the plate itself. The frame is wrapped into a
  * panorama (in front of the camera as shot, mirrored behind it), its clipped
  * highlights are pushed above 1, and the result is prefiltered for physically
@@ -82,11 +94,7 @@ export function createPlateEnvironment(renderer, {width = 256, knee = 0.8, boost
   let target;
   return {
     update(source) {
-      const half = width / 2;
-      // Three's equirect lookup puts -Z (into the picture) at u = 0.25.
-      context.setTransform(1, 0, 0, 1, 0, 0); context.drawImage(source, 0, 0, half, height);
-      context.setTransform(-1, 0, 0, 1, width + half, 0); context.drawImage(source, 0, 0, half, height);
-      context.setTransform(1, 0, 0, 1, 0, 0);
+      paintPlatePanorama(context, source, width);
       const linear = expandHighlights(context.getImageData(0, 0, width, height).data, {knee, boost}), pixels = new Uint16Array(linear.length);
       for (let i = 0; i < linear.length; i++) pixels[i] = T.DataUtils.toHalfFloat(Math.min(65000, linear[i]));
       const texture = new T.DataTexture(pixels, width, height, T.RGBAFormat, T.HalfFloatType);

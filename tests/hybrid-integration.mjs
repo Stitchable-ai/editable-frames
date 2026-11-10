@@ -47,7 +47,9 @@ try{
 
  // --- Lighting from the plate --------------------------------------------------
  // The plate's only bright area is a window on the left, so the can's left side is the lit one.
- const lit=mean(a,262,150,300,260),shade=mean(a,345,150,380,260);assert.ok(lit[0]>shade[0]*1.4,'the side facing the bright window is brighter');
+ const lit=mean(a,262,150,300,260),shade=mean(a,345,150,380,260);assert.ok(lit[0]>shade[0]*1.2,'the side facing the bright window is brighter');
+ // The panorama's back half is the plate mirrored, so the side turned away still sees footage, not black.
+ assert.ok(shade[0]>90,`the shaded side reflects the footage behind the camera, not an empty half (${Math.round(shade[0])})`);
  await mutate(dir,d=>d.studio.execute({type:'set',clip:d.studio.doc.clips[0].id,anchor:'light',property:'fromPlate',value:false},d.studio.revision,'model'));
  const neutralDir=path.join(tmp,'neutral');await render(dir,neutralDir,{format:'png',frames:early+1});const n=await pixels(frameFile(neutralDir,early));
  const warm=rgb=>rgb[0]/(rgb[2]+1),plateLit=mean(a,262,150,380,260),studioLit=mean(n,262,150,380,260);
@@ -58,7 +60,7 @@ try{
  checks.push('The product is lit by the footage: direction follows the bright area, colour follows the plate, and it is an undoable control');
 
  // --- Control passes ------------------------------------------------------------
- const pass=async name=>{const out=path.join(tmp,name);const receipt=await render(dir,out,{format:'png',frames:1,pass:name});assert.equal(receipt.pass,name);return pixels(frameFile(out,0));};
+ const pass=async(name,folder=name)=>{const out=path.join(tmp,folder);const receipt=await render(dir,out,{format:'png',frames:1,pass:name});assert.equal(receipt.pass,name);return pixels(frameFile(out,0));};
  const id=await pass('id');assert.equal(id.at(5,5)[3],0,'no plate, no DOM: the pass is transparent outside the object');
  assert.equal(idFromColor(id.at(320,200)),0,'the body decodes to the first declared id');
  let lid=false;for(let y=80;y<140&&!lid;y++)lid=id.at(320,y)[3]===255&&idFromColor(id.at(320,y))===1;assert.ok(lid,'the lid decodes to the second');
@@ -68,7 +70,11 @@ try{
  // Nothing but the object: the capture page's own chrome must not show through a transparent frame.
  let stray=0;for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(matte.at(x,y)[3]&&(x<230||x>410||y<70))stray++;assert.equal(stray,0,'a transparent pass contains only the scene');
  const normal=await pass('normal');assert.ok(normal.at(320,200)[2]>200&&Math.abs(normal.at(320,200)[0]-128)<25,'the surface facing the camera has a camera-facing normal');
- const clay=await pass('clay'),grey=clay.at(300,200);assert.equal(grey[3],255);assert.ok(Math.max(...grey.slice(0,3))-Math.min(...grey.slice(0,3))<70&&!close(grey,can,25),'clay replaces the label with neutral shading');
+ const clay=await pass('clay'),grey=clay.at(300,200),spread=p=>Math.max(...p.slice(0,3))-Math.min(...p.slice(0,3));assert.equal(grey[3],255);assert.ok(!close(grey,can,25)&&spread(grey)<spread(can),'clay replaces the label');
+ // Clay is shaded by the scene's own lights, so the warm plate tints it. The material itself has no colour: under neutral light it is grey.
+ await mutate(dir,d=>d.studio.execute({type:'set',clip:d.studio.doc.clips[0].id,anchor:'light',property:'fromPlate',value:false},d.studio.revision,'model'));
+ const studioClay=(await pass('clay','clay-neutral')).at(300,200);await mutate(dir,d=>d.studio.undo());
+ assert.ok(spread(studioClay)<16,`under neutral light clay is neutral grey (${studioClay.slice(0,3)})`);
  await assert.rejects(render(dir,path.join(tmp,'albedo'),{format:'png',frames:1,pass:'albedo'}),/does not declare a albedo pass; it declares: clay/);
  checks.push('clay, depth, normal, id and matte passes export from the same scene; an undeclared pass is refused');
 
@@ -80,6 +86,15 @@ try{
  const manifest=JSON.parse(await fs.readFile(path.join(dir,'assets.json'),'utf8'));manifest.assets['plate-matte'].derived.sourceSha256='0'.repeat(64);await fs.writeFile(path.join(dir,'assets.json'),JSON.stringify(manifest));
  await assert.rejects(readProject(dir),/regenerate the matte/);
  checks.push('A matte from another take, a second matte, and a derived video with the wrong frame count are refused');
+ // The documented import sequence: several asset-add calls, then one rebind.
+ const seqDir=path.join(tmp,'sequence');await init(seqDir,{template:'hybrid'});const demoAsset=name=>path.join(seqDir,'assets',name);
+ await importAsset(seqDir,'shot',demoAsset('plate.mp4'));
+ await importAsset(seqDir,'shot-matte',demoAsset('plate-matte.mp4'),{role:'matte',of:'shot'});
+ await importAsset(seqDir,'shot-depth',demoAsset('plate-depth.mp4'),{role:'depth',of:'shot',encoding:demo.depth});
+ await importAsset(seqDir,'shot-track',demoAsset('board-track.json'),{role:'track',of:'shot'});
+ await rebind(seqDir);const seq=await readProject(seqDir);
+ assert.deepEqual(['shot-matte','shot-depth','shot-track'].map(id=>seq.assets[id].derived.of),['shot','shot','shot']);
+ checks.push('Several derived assets can be added before one rebind, as docs/hybrid-scenes.md shows');
 
  // --- Motion blur ------------------------------------------------------------------
  const blurDir=path.join(tmp,'blur-clip');await init(blurDir,{template:'renderer'});

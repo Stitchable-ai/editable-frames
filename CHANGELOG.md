@@ -10,6 +10,7 @@ Hybrid scenes: code-rendered elements composited with filmed or generated footag
 - Add optional `mediaInfo` and `derived` renderer services, declared control passes (`passes`, `clock.pass`) and `render --pass`.
 - Add shutter motion blur at export: `render --motion-blur ANGLE [--samples N]`.
 - Add `init --hybrid`, a starter with a synthetic plate, and `npm run test:hybrid`.
+- Document a trial of the hybrid helpers on generated footage, and how to conform mattes and depth maps made by other tools.
 - Fix transparent DOM-root exports capturing the preview page's own header through the scene. Any transparent renderer export smaller than the header area was affected.
 
 Runtime files changed, so existing projects need their normal `rebind`.

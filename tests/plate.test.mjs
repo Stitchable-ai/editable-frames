@@ -174,3 +174,11 @@ test('the host hands plate services to a scene and nothing it was not given', as
   await instance.dispose();
   await assert.rejects(mountRenderer(scene, {root, services: {derived: 'nope'}}), /Invalid derived service/);
 });
+
+test('the plate panorama fills both halves: as shot in front, mirrored behind', async () => {
+  const {paintPlatePanorama} = await import('../packages/three/plate.mjs');
+  const draws = [];let m = [1, 0, 0, 1, 0, 0];
+  const context = {setTransform: (...a) => {m = a;}, drawImage: (_s, x, y, w) => {const xs = [x, x + w].map(v => m[0] * v + m[4]);draws.push([Math.min(...xs), Math.max(...xs), m[0]]);}};
+  paintPlatePanorama(context, {}, 256);
+  assert.deepEqual(draws, [[0, 128, 1], [128, 256, -1]]);
+});

@@ -86,7 +86,9 @@ export async function importAsset(dir,id,source,{type,role,of,encoding}={}){
  if(['__proto__','constructor','prototype'].includes(id)||!/^[a-zA-Z0-9_-]{1,80}$/.test(id))throw Error('Invalid asset ID');
  dir=await fs.realpath(dir);const lock=path.join(dir,'.editableframe-edit.lock'),fd=await fs.open(lock,'wx');
  try{
-  const d=await readProject(dir);if(Object.hasOwn(d.assets,id))throw Error('Asset IDs are immutable; use a new ID and swap the port');
+  // Only the asset manifest is needed. Reading the whole project would refuse the
+  // binding the previous import changed, so a second import before rebind failed.
+  const d=await definition(dir);if(Object.hasOwn(d.assets,id))throw Error('Asset IDs are immutable; use a new ID and swap the port');
   const ext=path.extname(source).toLowerCase();type??=(['.png','.jpg','.jpeg','.webp'].includes(ext)?'image':['.wav','.mp3','.flac','.m4a'].includes(ext)?'audio':ext==='.json'?'data':'video');
   if(!['image','audio','video','data'].includes(type)||!/^\.[a-z0-9]{1,8}$/.test(ext))throw Error('Invalid asset type/extension');
   // A derived asset records the hash of the take it describes, so a regenerated take cannot reuse it.

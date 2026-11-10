@@ -32,6 +32,8 @@ Each journey says what the author does, what EditableFrames does, and how far it
 | 7 | **Fast motion.** Code elements that move quickly should smear like the footage does. | A shutter angle. | Renders several sub-frame samples per output frame and averages them. | Integration test: smear width and edge colour. |
 | 8 | **A moving camera.** The product stays put in a shot whose camera travels. | A camera path solved elsewhere. | Replays the path on a Three.js camera, with rotation interpolated correctly. | Unit tests only. Not yet tried on a real solve; solves of generated footage are approximate. |
 
+The integration tests use a synthetic plate. [On generated footage](#on-generated-footage) says what a trial on plates from video models found.
+
 ## Try it
 
 ```sh
@@ -92,6 +94,13 @@ Rules, each refused with a message that says what to do:
 - A derived video must have exactly as many frames as its plate.
 - A depth asset must carry an encoding. Tracks and camera paths are validated when loaded.
 
+**Conforming data from other tools.** A derived video is read by frame number: frame 40 of a matte describes frame 40 of the plate. Tools do not always return that.
+
+- *Fewer frames at the plate's own rate* means frames were dropped, usually at the end. Keep the frames where they are and hold the last one (or trim the plate). Stretching the video over the plate's length moves every frame in time; a depth map stretched from 112 to 121 frames ran up to five frames early.
+- *Another frame rate* has to be resampled onto the plate's frame times.
+- *A depth video must be grey.* Several hosted depth models return a false-colour picture. Ask for grayscale output, or map the colours back to values before importing.
+- Check the result against something that moves: compare a moving edge in the plate with the same edge in the matte or depth map at a few frames.
+
 **Depth encoding** is `{kind, near, far, packing}`. `kind` is `inverse` (what monocular depth models emit; precision is spent close to the camera) or `linear`. `near` and `far` are the distances white and black stand for, in scene units. `packing` is `gray8`, or `rg16` for 16 bits across red and green. Relative depth has no true scale, so `near` and `far` are values you tune until occlusion lands. They are not measurements.
 
 **Track** files are `{version: 1, kind: "planar" | "point", width, height, frameRate: {num, den}, frames: [{frame, quad | point, confidence?}]}`. Coordinates are plate pixels from the top-left. Quads are ordered top-left, top-right, bottom-right, bottom-left. Frames may be sparse; samples between them are interpolated, and samples outside them hold the nearest frame and say so.
@@ -142,6 +151,7 @@ The host then supplies `clock.pass` (`'beauty'` unless a pass was requested). A 
 | `createDepthOccluder(encoding)` | Lets the plate's own geometry hide the scene. Needs WebGL2, a perspective camera and the standard depth buffer. |
 | `createMatteHoldout()` | Punches the matted subject out of the canvas. The cheap alternative when there is no depth; it is all-or-nothing per pixel. |
 | `createPlateEnvironment(renderer)` | Lights the scene with the plate. |
+| `paintPlatePanorama(context, source, width)` | The panorama `createPlateEnvironment` builds: the plate in front of the camera, mirrored behind it. |
 | `applyKeyLight(light, estimate)` | Aims a directional light from `estimateKeyLight`. |
 | `applyCameraSample(camera, sample)` | Replays a camera path. |
 | `createShadowCatcher(plane)` | An invisible plane that shows only shadows, laid on a plane from `fitGroundPlane`. |
@@ -154,7 +164,7 @@ None of this narrows what a renderer may draw. A scene that uses other libraries
 
 Three helpers guess from a single view. Expose their results as controls.
 
-- **`estimateKeyLight`** reads which side the light is on from the brightest 5% of the frame. A picture cannot say how far in front of or behind the subject the light is, so that part is a stated assumption: a small source is placed level with the subject, a broad one in front of it.
+- **`estimateKeyLight`** reads which side the light is on from the brightest 5% of the frame. A picture cannot say how far in front of or behind the subject the light is, so that part is a stated assumption: a small source is placed level with the subject, a broad one in front of it. The brightest area is not always the light: a white desk under a window reads as light from below, and a low sun behind the subject reads as light from the front. A shadow cast from the estimate then falls the wrong way, so let the author set the direction.
 - **`createPlateEnvironment`** has only what the camera saw. It puts the plate in front and a mirrored copy behind the camera, and pushes clipped highlights above 1 so they can act as light sources. The result is plausible. It is not a measurement of the real surroundings, and the highlight boost is not recovered data. Use a real `environment` asset when you have one.
 - **Depth `near` and `far`** are yours to tune, as above.
 
@@ -179,7 +189,8 @@ Professional compositing uses more steps than this. Stated plainly:
 |---|---|
 | Occlusion by plate geometry | Done, from a depth map. |
 | Subject in front of graphics | Done, from a matte. |
-| Planar tracking and corner pin | Drawing done. The track comes from another tool. |
+| Planar tracking and corner pin | Drawing done, for flat surfaces. The track comes from another tool. A surface that bends (curled paper, cloth) needs a mesh warp, which is not provided. |
+| Edge clean-up of the cut-out | Not provided. A matte edge keeps some of the plate's background colour, which shows as a thin fringe over contrasting graphics. |
 | Reflections of the plate in the object | Approximated by `createPlateEnvironment`. |
 | Light direction | Estimated; editable. |
 | Black and white point match | Measured by `plateStats` / `matchLevels`. Applying it is left to the scene. |
@@ -191,6 +202,24 @@ Professional compositing uses more steps than this. Stated plainly:
 | Reflection or shadow of the object in the plate's own surfaces | Not provided. It needs the plate's normals and roughness. |
 | Linear-light compositing | Not provided. Layers are composited by the browser on encoded values. |
 
+## On generated footage
+
+The helpers were tried on twelve 5–6 second plates from four video models (Seedance 1 Pro Fast, Kling 2.5 Turbo Pro, Veo 3.1 Fast, Wan 2.2), with mattes and depth maps from hosted models and tracks from a classical planar tracker. Each scene was a renderer scene of the kind the starter shows. This is one trial, not a benchmark.
+
+![Four frames: an app screen pinned to a phone in a hand, with the thumb passing in front of it, and a code-rendered can on a desk beside a real can, with an arm passing in front of it.](media/hybrid-generated-plates.jpg)
+
+*Generated plates with code inside them. Left: an HTML screen pinned to a tracked phone; the thumb is the plate's, cut out again from a matte. Right: a code-rendered can beside the plate's own can; the arm hides it where the plate's depth map is nearer.*
+
+| Journey | What was found |
+|---|---|
+| Screen or label on a surface | Holds on rigid surfaces. A screen pinned to a phone in a moving hand stayed within 3 px of where it started on the screen, at 1088 × 1920, while the phone moved 24 px. A sheet of paper that curled is not a plane: with all four corners right, its edges missed the pin by up to 15 px. |
+| Headline behind a subject | Works with a hosted matte. Hair over dark letters shows a 1–2 px light fringe. |
+| Footage in front of a 3D object | Works once `near` and `far` are tuned by eye. The edge is as rough as the depth map's own edge, a few pixels. A depth model that normalises each frame separately changes an object's value when something new enters the shot; prefer one that is consistent over time. |
+| Lit by the footage | The plate's colour carries over. Under strongly coloured light a bare metal object takes too much of it (aluminium read as brass in a warm kitchen). `estimateKeyLight` chose the wrong side on two of three plates, as described above. |
+| Placing a 3D object without a camera solve | A real stand-in object in the plate (a plain can), tracked as a plane, gave position and scale for a code object beside it through a slow push-in. It also shows what the plate's own light and shadow look like on that object. |
+
+Two things made pinned graphics read as part of the surface: a `mix-blend-mode` chosen for the material (`screen` for chalk on a dark board, `multiply` for print on paper), and the plate's own frame rate for the whole project.
+
 ## Limits
 
 - The plate, matte and depth are decoded to PNG frames before preview and export, within the existing 8 GiB budget. Three videos per shot use it three times as fast.
@@ -198,4 +227,4 @@ Professional compositing uses more steps than this. Stated plainly:
 - `createDepthOccluder` assumes the plate and the scene share one camera. A depth map from a monocular model is consistent with itself, not with your scene units.
 - Antialiased edges mix values, so `id` and `depth` passes are exact only away from silhouettes. `renderPass` does not handle skinned or instanced meshes.
 - Results differ slightly across GPUs and browsers, as elsewhere in this framework.
-- The tests use a synthetic plate. They prove that pixels land where the inputs say. They do not prove that a particular matting, depth or tracking tool gives good inputs on real footage.
+- The tests use a synthetic plate. They prove that pixels land where the inputs say. They do not prove that a particular matting, depth or tracking tool gives good inputs on real footage; the trial above is the only evidence of that so far.
