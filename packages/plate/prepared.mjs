@@ -43,7 +43,7 @@ export function preparedFrame(data, seconds, {start = 0, speed = 1, requireRevie
 
 /** Bounded diagnostics. Area collapse flags review, not automatic deletion or
  * identity reassignment: a real subject can leave the shot. */
-export function analyzeMask(rgba, width, height, {channel='luminance', previousCoverage, collapseRatio=.2} = {}) {
+export function analyzeMask(rgba, width, height, {channel='luminance', previousCoverage, collapseRatio=.2,expected=true} = {}) {
   if (!integer(width) || !width || !integer(height) || !height || rgba.length !== width*height*4) throw Error('Mask raster dimensions do not match');
   if (!['luminance','alpha'].includes(channel)) throw Error('Mask channel must be luminance or alpha');
   let area=0, opaque=0, left=width,top=height,right=-1,bottom=-1;
@@ -53,6 +53,7 @@ export function analyzeMask(rgba, width, height, {channel='luminance', previousC
     if(a>127){opaque++;const x=p%width,y=Math.floor(p/width);left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}
   }
   const coverage=opaque/(width*height), issues=[];
+  if(expected&&opaque===0)issues.push('foreground-absent');
   if(finite(previousCoverage) && previousCoverage>.001 && coverage<previousCoverage*collapseRatio)issues.push('foreground-area-collapse');
   return {coverage,alphaCoverage:area/(width*height),bounds:right<0?null:[left,top,right-left+1,bottom-top+1],issues};
 }
@@ -109,6 +110,13 @@ export function pendingMaskCorrections(book,applied){
  if(!applied)return book.keys.some(k=>k.polygons.length)?structuredClone(book):null;
  validateMaskCorrections(applied);
  if(book.sourceSha256!==applied.sourceSha256||book.subject!==applied.subject)throw Error('Correction identity changed');
+ // Editing either endpoint or inserting inside a baked interpolation interval
+ // changes its whole span, which cannot be represented as a live delta.
+ for(let i=0;i<applied.keys.length-1;i++){
+  const a=applied.keys[i],b=applied.keys[i+1];
+  if(a.interpolation==='linear'&&book.keys.some(k=>k.frame>a.frame&&k.frame<b.frame))throw Error('Re-prepare from the original mask to change a baked interpolation interval');
+  if(a.interpolation==='linear'&&[a,b].some(old=>!equal(book.keys.find(k=>k.frame===old.frame),old)))throw Error('Re-prepare from the original mask to change a baked interpolation interval');
+ }
  const pending=structuredClone(book);pending.keys=[];
  for(const old of applied.keys)if(!book.keys.some(k=>k.frame===old.frame))throw Error('Re-prepare from the original mask to remove baked corrections');
  for(const key of book.keys){const old=applied.keys.find(k=>k.frame===key.frame);const count=old?.polygons.length??0;

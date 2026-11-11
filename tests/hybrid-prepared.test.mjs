@@ -71,3 +71,9 @@ test('baked corrections are applied once and subsequent edits remain provisional
  assert.equal(pendingMaskCorrections(edited,book).keys[0].polygons.length,1);
  assert.throws(()=>pendingMaskCorrections({...book,keys:[]},book),/original mask/);
 });
+
+test('changing a baked interpolated span requires preparation from the raw mask',()=>{
+ const p={operation:'add',points:[[0,0],[5,0],[5,5]]},a={version:1,sourceSha256:hash,subject:'hand',keys:[{frame:0,interpolation:'linear',polygons:[p]},{frame:10,polygons:[p]}]};
+ const edited=structuredClone(a);edited.keys.splice(1,0,{frame:5,polygons:[p]});assert.throws(()=>pendingMaskCorrections(edited,a),/interpolation interval/);
+ const appended=structuredClone(a);appended.keys[0].polygons.push(p);assert.throws(()=>pendingMaskCorrections(appended,a),/interpolation interval/);
+});
