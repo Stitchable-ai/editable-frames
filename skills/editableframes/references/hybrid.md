@@ -211,14 +211,20 @@ Two things made pinned graphics read as part of the surface: a `mix-blend-mode` 
 
 ## On filmed footage
 
-Two clips from a real camera (1920 × 1080, 25 fps, on a slow motion-control dolly) were tried the same way. It is a smaller trial than the one on generated plates, and it had no mattes or depth maps, so occlusion is not covered.
+Three clips from a real camera (1920 × 1080, 25 fps; two on a slow motion-control dolly, one on a tripod) were tried the same way, with a hosted matte and depth map for the third. It is a smaller trial than the one on generated plates.
 
 | Journey | What was found |
 |---|---|
 | Screen or label on a surface | A card pinned to the blank side panel of a box held within 2 px of the panel for 30 frames. Then the dolly's orbit brought the box's next face into view, and the track slid onto it. The tracking tool reported confidence of 0.70–0.85 and no lost frames. A blank surface is tracked by the detail around its edges, and on a solid object an orbit changes what is there. Check the pinned element at several frames, not only the first. |
 | Lit by the footage | `estimateKeyLight` chose the side that the real shadow shows (front-left) but placed the light too low, so a cast shadow came out too long. Its colour came from bright blue components, not from the light. A light set by hand from the real shadow matched its direction. The shadow catcher drew the can's shadow across a real object standing on the table. Beside real metal, the plain aluminium can read as dull grey. |
+| Headline behind a subject | Works with a hosted matte, except while a fast arm enters the shot (up to 460 px per frame): the matte lagged it by 1–2 frames, and the headline showed through the arm on those frames. The matte's edge along the forearm was soft, about 10 px from 10% to 90%. |
+| Footage in front of a 3D object | Failed with the hosted depth map as delivered: the model normalised each frame separately, so the board read as near until the arm came in and as far after it, and hid the object until then. Rescaled per frame against parts of the shot that do not move (the wall and the board), the arm hid the object with an edge 3–4 px wide and nothing leaked onto the arm. |
 
-The same trial found that MP4 and MOV exports came out 10–13 levels darker than the frames drawn (128 became 115), footage included, and that a scene with no transparency could not be exported to MOV. Both are fixed.
+The same trial found three export defects, all fixed:
+
+- MP4 and MOV exports came out 10–13 levels darker than the frames drawn (128 became 115), footage included.
+- A scene with no transparency could not be exported to MOV.
+- Footage tagged with BT.709 primaries and transfer, as most camera footage is, was drawn darker than its values before it ever reached the encoder. A board pixel stored as (142, 117, 73) drew as (136, 109, 63).
 
 ## Limits
 
