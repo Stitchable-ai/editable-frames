@@ -40,7 +40,10 @@ export async function prepareMedia(assets,{signal,maxDecodedBytes=8*1024**3,maxF
    duration=Math.max(duration,pts.at(-1)+(lastTicks>0?lastTicks*tn/td:1/30));
    budget+=v.width*v.height*4*frames.length;if(budget>maxDecodedBytes)throw Error('Decoded media budget exceeded; trim/proxy sources or raise maxDecodedBytes');
    const dest=path.join(dir,id);await fs.mkdir(dest);
-   await run(ffmpeg(),['-v','error','-i',a.file,'-map','0:v:0','-fps_mode','passthrough','-frames:v',String(frames.length),path.join(dest,'%06d.png')],{signal,timeout:300000});
+   // A PNG from a clip tagged with BT.709 primaries and transfer (most camera footage) carries cICP, cHRM and gAMA
+   // chunks, and the browser then draws it through that curve: footage drew darker, and a matte or depth map's data
+   // changed. The tags do not change the decoded values; clearing them keeps the chunks out.
+   await run(ffmpeg(),['-v','error','-i',a.file,'-map','0:v:0','-vf','setparams=color_primaries=unknown:color_trc=unknown','-fps_mode','passthrough','-frames:v',String(frames.length),path.join(dest,'%06d.png')],{signal,timeout:300000});
    const files=await fs.readdir(dest);if(files.length!==pts.length)throw Error('Decoded frame count differs from PTS index: '+id);
   }
   if(a.type==='audio'&&!audio)throw Error('Asset has no audio: '+id);
