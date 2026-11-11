@@ -11,6 +11,7 @@ Hybrid scenes: code-rendered elements composited with filmed or generated footag
 - Add shutter motion blur at export: `render --motion-blur ANGLE [--samples N]`.
 - Add `init --hybrid`, a starter with a synthetic plate, and `npm run test:hybrid`.
 - Document a trial of the hybrid helpers on generated footage, and how to conform mattes and depth maps made by other tools.
+- The hybrid starter lights its can from the footage at environment intensity 1 (was 1.5, set while half of the panorama was empty), with aluminium lids at aluminium's reflectance. Measured against real cans in generated plates.
 - Fix transparent DOM-root exports capturing the preview page's own header through the scene. Any transparent renderer export smaller than the header area was affected.
 
 Runtime files changed, so existing projects need their normal `rebind`.
