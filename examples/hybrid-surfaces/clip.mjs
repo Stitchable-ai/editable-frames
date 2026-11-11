@@ -12,6 +12,8 @@ export const controls={version:1,fields:[
  {key:'detail',anchor:'label',path:'/detail',type:'string',default:'BLOOD ORANGE',label:'Small print'},
  {key:'color',anchor:'label',path:'/color',type:'color',default:'#ed5426',label:'Body colour'},
  {key:'seam',anchor:'surface',path:'/seam',type:'number',min:-1,max:1,default:0,animatable:true,label:'Authored label rotation'},
+ {key:'bodyInset',anchor:'surface',path:'/bodyInset',type:'number',min:0,max:.1,default:.02,label:'Body edge inset'},
+ {key:'rimCurve',anchor:'surface',path:'/rimCurve',type:'number',min:0,max:.1,default:.03,label:'Lower body curvature'},
  {key:'reference',anchor:'lighting',path:'/reference',type:'number',min:1,max:255,default:180,label:'Neutral body reference'},
  {key:'shading',anchor:'lighting',path:'/shading',type:'number',min:0,max:1,default:1,label:'Preserve observed shading'},
  {key:'headline',anchor:'headline',path:'/headline',type:'string',default:'MADE TO MOVE.',label:'Motion title'},
@@ -27,7 +29,7 @@ export default defineRenderer({id:'surface-reskin',renderer:'canvas+dom',width:1
   const initialTrack=props.track??(mediaInfo?await (await fetch(asset('track'))).json():null);
   const doc=root.ownerDocument,stage=doc.createElement('div');stage.style.cssText='position:absolute;inset:0;overflow:hidden';root.append(stage);
   const canvas=()=>{const c=doc.createElement('canvas');c.style.cssText='position:absolute;inset:0;width:100%;height:100%';return c;};
-  const plate=canvas(),ink=canvas(),art=canvas();art.width=1024;art.height=1024;stage.append(plate);
+  const plate=canvas(),ink=canvas(),art=canvas();art.width=2048;art.height=1024;stage.append(plate);
   const title=doc.createElement('div');title.style.cssText='position:absolute;left:5%;top:8%;width:88%;font:900 72px/1.05 system-ui;color:white';
   const kinetic=createKineticText({root:title}),frames=createFrameLoader({document:doc,max:6});let holdout=null,identity='',labelKey='';
   return {
@@ -46,10 +48,14 @@ export default defineRenderer({id:'surface-reskin',renderer:'canvas+dom',width:1
     const [image,mask]=await Promise.all([frames.load(sourceFrame(String(props.foregroundSource),at.sourceFrame,info)),frames.load(sourceFrame(String(props.foregroundMask),at.maskFrame,{...info,seconds:at.maskSeconds}))]);
     const pc=plate.getContext('2d',{willReadFrequently:true});pc.drawImage(image,0,0,w,h);
     const key=JSON.stringify([props.label,props.detail,props.color]);
-    if(key!==labelKey){labelKey=key;const c=art.getContext('2d');c.fillStyle=props.color;c.fillRect(0,0,1024,1024);c.fillStyle='white';c.textAlign='center';c.textBaseline='middle';c.font='900 130px system-ui';c.fillText(String(props.label),512,470,480);c.font='700 30px system-ui';c.fillText(String(props.detail),512,650,480);}
+    if(key!==labelKey){labelKey=key;const c=art.getContext('2d');c.fillStyle=props.color;c.fillRect(0,0,2048,1024);c.fillStyle='white';c.textAlign='center';c.textBaseline='middle';c.font='900 190px system-ui';c.fillText(String(props.label),1024,470,900);c.font='700 38px system-ui';c.fillText(String(props.detail),1024,650,900);}
     const pin=sampleTrack(track,at.seconds);if(pin.held||pin.confidence<=0)throw Error('Original body track is missing at source frame '+at.sourceFrame);
     const fitted=props.meshTrack?sampleSurface(props.meshTrack,at.sourceFrame):null;
-    const mesh=fitted?{...fitted,vertices:scalePoints(fitted.vertices,track,w,h)}:cylinderMesh(scalePoints(pin.quad,track,w,h),{seam:Number(props.seam)});
+    const quad=scalePoints(pin.quad,track,w,h),inset=Number(props.bodyInset),curve=Number(props.rimCurve);
+    if(!Number.isFinite(inset)||inset<0||inset>.1||!Number.isFinite(curve)||curve<0||curve>.1)throw Error('Invalid body inset/curvature');
+    const fittedQuad=[quad[0].map((v,i)=>v+(quad[1][i]-v)*inset),quad[1].map((v,i)=>v+(quad[0][i]-v)*inset),quad[2].map((v,i)=>v+(quad[3][i]-v)*inset),quad[3].map((v,i)=>v+(quad[2][i]-v)*inset)];
+    const mesh=fitted?{...fitted,vertices:scalePoints(fitted.vertices,track,w,h)}:cylinderMesh(fittedQuad,{seam:Number(props.seam)});
+    if(!fitted){const bodyHeight=(Math.hypot(quad[3][0]-quad[0][0],quad[3][1]-quad[0][1])+Math.hypot(quad[2][0]-quad[1][0],quad[2][1]-quad[1][1]))/2;mesh.vertices=mesh.vertices.map(([x,y],i)=>{const u=i%65/64,v=Math.floor(i/65)/8;return [x,y-bodyHeight*curve*(2*u-1)**2*v**6];});}
     const ic=ink.getContext('2d',{willReadFrequently:true});ic.clearRect(0,0,w,h);drawSurfaceArtwork(ic,art,mesh,{wrap:true});
     const pixels=ic.getImageData(0,0,w,h);pixels.data.set(relightArtwork(pixels.data,pc.getImageData(0,0,w,h).data,{reference:Number(props.reference),strength:Number(props.shading)}));ic.putImageData(pixels,0,0);
     holdout.update(mask,{channel:receipt.alpha.channel,corrections:pending,frame:at.sourceFrame,sourceSha256:s.sha256,subject:receipt.subject});

@@ -33,3 +33,9 @@ The [surface example](../examples/hybrid-surfaces/clip.mjs) combines exact sourc
 `npm run test:prepared` checks real pixels through the CLI: all protected opaque interiors survive every frame of an animated crossing, using both alpha and luminance paths, and missing masks reject capture. `tests/hybrid-prepared.test.mjs` checks identity, correspondence, reverse seeks, correction history, layout overflow and seam-free UV coverage.
 
 The primitives do not solve a camera, infer cloth geometry, remove an old object or recover uncontaminated hair colors automatically. The mesh and camera import paths accept externally prepared data. A physically impossible insertion still needs changed blocking or a different plate. The [delivery plan](hybrid-compositing-plan.md) retains separate quality gates for these tasks; device performance and real-shot usability require measurement.
+
+## Exact geometry with a generated environment
+
+The [code-first example](../examples/hybrid-code-first/clip.mjs) keeps the exact foreground cylinder or optional imported GLB in code, over a clean background asset named `world`. A native host can bind `world` and supply verified `worldInfo` (width, height, frames, rational frameRate). The scene adds an authored contact shadow, plate-derived reflection approximation, control passes and an analytic orbit title. The background must have no original foreground object; this avoids a mismatched generated silhouette behind the exact object. It does not solve a camera or prove that a video model consumed 3D control passes. Imported photo geometry/material fidelity is a separate acceptance task.
+
+`surface-reskin` exposes `bodyInset` and `rimCurve` to fit a rigid body without painting over its rims. These are authored fit parameters, not a shape solve. Imported `meshTrack` vertices replace that approximation for a measured deforming surface.

@@ -54,7 +54,7 @@ export function analyzeMask(rgba, width, height, {channel='luminance', previousC
   }
   const coverage=opaque/(width*height), issues=[];
   if(expected&&opaque===0)issues.push('foreground-absent');
-  if(finite(previousCoverage) && previousCoverage>.001 && coverage<previousCoverage*collapseRatio)issues.push('foreground-area-collapse');
+  if(expected && finite(previousCoverage) && previousCoverage>.001 && coverage<previousCoverage*collapseRatio)issues.push('foreground-area-collapse');
   return {coverage,alphaCoverage:area/(width*height),bounds:right<0?null:[left,top,right-left+1,bottom-top+1],issues};
 }
 

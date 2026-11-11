@@ -1,8 +1,8 @@
 # Reliable hybrid compositing and motion design
 
-Status: proposed next work, 2026-11-11. This is a design and acceptance plan, not an implemented API. It supersedes any inference that a successful render or a few attractive frames establish a usable hybrid clip. Existing primitives and their tested scope remain documented in [hybrid-scenes.md](hybrid-scenes.md).
+Status: implementation and acceptance plan, 2026-11-11. Implemented APIs are documented separately below; research gates remain explicit. It supersedes any inference that a successful render or a few attractive frames establish a usable hybrid clip. Existing primitives and their tested scope remain documented in [hybrid-scenes.md](hybrid-scenes.md).
 
-Implementation update: the [prepared-media primitives](prepared-plates.md) now implement receipts, exact frame access, holdouts, corrections, cylinder/mesh replay and kinetic text. These mechanisms have synthetic regression coverage; the real-shot acceptance gates below still require full visual QA. Automatic geometry solving and production model selection remain research.
+Implementation update: the [prepared-media primitives](prepared-plates.md) now implement receipts, exact frame access, holdouts, corrections, cylinder/mesh replay and kinetic text. These mechanisms have synthetic regression coverage and retained real-shot QA in progress for people, close-up hands, original-object reskin and clean-background code composition. Automatic geometry solving and production model selection remain research.
 
 ## What the failed shots teach us
 
@@ -14,7 +14,7 @@ Implementation update: the [prepared-media primitives](prepared-plates.md) now i
 | A hand appears sliced through an added can | The example inserts a second can at an offset from the tracked original. Relative depth with hand-tuned near/far is being used as if it were registered scene geometry. | First distinguish insertion from reskinning. For a hand known to be in front, use its coherent alpha as the foreground constraint. |
 | A small labeled can sits over a larger generated can | Generating a world from a clay still did not preserve the product silhouette or proportions. | Reject the take for exact-object recomposition, or solve an explicit replacement workflow including removal of the original. Do not hide the mismatch with a smaller overlay. |
 
-These clips fail final-quality acceptance. The phone's 121 matte frames were measured using decoded grayscale coverage above 127/255, with zero-based frame indices. The other failures were verified in sampled frames and the authored scenes, not an exhaustive pixel audit. Earlier tracking numbers remain measurements of tracking, not evidence of correct occlusion, placement, materials or whole-shot quality. No new implementation or corrected full-length video is claimed by this plan.
+These clips fail final-quality acceptance. The phone's 121 matte frames were measured using decoded grayscale coverage above 127/255, with zero-based frame indices. The other failures were verified in sampled frames and the authored scenes, not an exhaustive pixel audit. Earlier tracking numbers remain measurements of tracking, not evidence of correct occlusion, placement, materials or whole-shot quality. Those historical verdicts describe the original exports. Current implementation and repair evidence must name the new revisions separately.
 
 ## Architecture decision: analyze, correct, cache, then render
 
