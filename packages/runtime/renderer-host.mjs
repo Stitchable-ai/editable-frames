@@ -11,7 +11,7 @@ export async function mountRenderer(scene,{root,props={},services={},timeoutMs=3
   if (!root?.ownerDocument?.createElement || !root.append || !Number.isFinite(timeoutMs) || timeoutMs<=0) throw Error('Renderer host needs a DOM root and positive deadline');
   const current=mergeProps(scene.defaultProps??{},props),readiness=new Readiness(),controller=new AbortController();
   const supplied={};
-  for (const key of ['asset','mediaFrame','captureSurface','mediaInfo','derived']) if (services[key]!==undefined) {if(typeof services[key]!=='function')throw Error(`Invalid ${key} service`);supplied[key]=services[key];}
+  for (const key of ['asset','mediaFrame','captureSurface','mediaInfo','derived','sourceFrame']) if (services[key]!==undefined) {if(typeof services[key]!=='function')throw Error(`Invalid ${key} service`);supplied[key]=services[key];}
   // Each mount owns a replaceable surface. A late async frame can only write
   // into its detached surface, never a retry's DOM. This is not a code sandbox.
   const surface=root.ownerDocument.createElement('div');

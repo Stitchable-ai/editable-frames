@@ -1,3 +1,4 @@
+import {validatePreparedAnalysis} from '../packages/plate/prepared.mjs';
 import fs from 'node:fs/promises';import path from 'node:path';import {pathToFileURL} from 'node:url';import {createHash,randomUUID} from 'node:crypto';import {build} from 'esbuild';
 import {root} from './build.mjs';import {Studio,clone} from '../packages/core/index.mjs';import {serve,sendFile} from './server.mjs';import {readAssets,prepareMedia,fileHash} from './media.mjs';
 import {normalizeClipModule} from '../packages/core/definition.mjs';import {validateDerived} from '../packages/plate/manifest.mjs';import {validateTrack} from '../packages/plate/track.mjs';import {validateCameraPath} from '../packages/plate/camera.mjs';
@@ -97,7 +98,7 @@ export async function importAsset(dir,id,source,{type,role,of,encoding}={}){
   const sha256=await fileHash(source),src='assets/'+sha256+ext;await fs.mkdir(path.join(dir,'assets'),{recursive:true});await fs.copyFile(source,path.join(dir,src));
   const manifest={version:1,assets:{...d.assetIdentity,[id]:{src,type,sha256,...(derived?{derived}:{})}}};
   // Validate the whole manifest before publishing it; a refused import leaves assets.json unchanged.
-  validateDerived(manifest.assets);if(type==='data'&&role){const json=JSON.parse(await fs.readFile(source,'utf8'));if(role==='track')validateTrack(json);if(role==='camera')validateCameraPath(json);}
+  validateDerived(manifest.assets);if(type==='data'&&role){const json=JSON.parse(await fs.readFile(source,'utf8'));if(role==='analysis')validatePreparedAnalysis(json);if(role==='track')validateTrack(json);if(role==='camera')validateCameraPath(json);}
   const file=path.join(dir,'assets.json'),tmp=file+'.'+randomUUID()+'.tmp';await fs.writeFile(tmp,JSON.stringify(manifest,null,2));await fs.rename(tmp,file);
   // Rebinding is separate and explicit; the old project/source snapshot is retained.
   return {id,sha256,next:'Run rebind to accept the added asset; set a media port to its ID.'};

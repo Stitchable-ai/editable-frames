@@ -11,3 +11,7 @@ export * from './color.mjs';
 export * from './passes.mjs';
 export * from './manifest.mjs';
 export * from './canvas.mjs';
+export * from './prepared.mjs';
+export * from './foreground.mjs';
+export * from './surface.mjs';
+export * from './typography.mjs';

@@ -13,10 +13,11 @@ export async function mount({templates,createRenderer,scene,binding,initial,medi
  if(assetIds.length)services.asset=id=>{if(!assetIds.includes(id))throw Error('Undeclared asset: '+id);return '/__ef/source/'+encodeURIComponent(id);};
  if(Object.keys(mediaCatalog).length){
   // Facts about a declared asset, and the data derived from it (matte, depth, track, camera).
-  services.mediaInfo=id=>{const a=mediaCatalog[id];if(!a)throw Error('Undeclared asset: '+id);return {type:a.type,width:a.width,height:a.height,duration:a.duration,frames:a.pts?.length??0,frameRate:a.frameRate?{...a.frameRate}:undefined,derived:a.derived?structuredClone(a.derived):undefined};};
+  services.mediaInfo=id=>{const a=mediaCatalog[id];if(!a)throw Error('Undeclared asset: '+id);return {sha256:a.sha256,pts:[...(a.pts??[])],type:a.type,width:a.width,height:a.height,duration:a.duration,frames:a.pts?.length??0,frameRate:a.frameRate?{...a.frameRate}:undefined,derived:a.derived?structuredClone(a.derived):undefined};};
   services.derived=(id,role)=>{if(!mediaCatalog[id])throw Error('Undeclared asset: '+id);return Object.keys(mediaCatalog).find(key=>mediaCatalog[key].derived?.of===id&&mediaCatalog[key].derived.role===role);};
  }
- if(Object.keys(mediaCatalog).length)services.mediaFrame=(id,time)=>{const a=mediaCatalog[id];if(!a||a.type==='audio'||a.type==='data')throw Error('Missing visual asset: '+id);const index=ptsIndex(a.pts,time);return index<0?undefined:a.url+String(index+1).padStart(6,'0')+'.png';};
+ if(Object.keys(mediaCatalog).length)services.mediaFrame=(id,time)=>{const a=mediaCatalog[id];if(!a||a.type==='audio'||a.type==='data')throw Error('Missing visual asset: '+id);const index=ptsIndex(a.derived&&mediaCatalog[a.derived.of]?.type==='video'?mediaCatalog[a.derived.of].pts:a.pts,time);return index<0?undefined:a.url+String(index+1).padStart(6,'0')+'.png';};
+ services.sourceFrame=(id,index)=>{const a=mediaCatalog[id];if(!a||!Number.isSafeInteger(index)||index<0||index>=a.pts.length)throw Error('Invalid declared source frame: '+id+':'+index);return a.url+String(index+1).padStart(6,'0')+'.png';};
  const renderer=scene?createRendererCompositor(canvas,{scene,templates,services,capture}):createCompositor(canvas,{templates,createRenderer,host}),audio=createAudioPlayback(mediaCatalog);let selection=null,selectionVersion=0;
  if(scene)canvas.addEventListener('pointerdown',async event=>{
   const ticket=++selectionVersion;

@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';import path from 'node:path';import os from 'node:os';import {createHash} from 'node:crypto';import {createReadStream} from 'node:fs';
-import {run,ffmpeg,ffprobe} from './process.mjs';import {validateDerived} from '../packages/plate/manifest.mjs';import {validateTrack} from '../packages/plate/track.mjs';import {validateCameraPath} from '../packages/plate/camera.mjs';
+import {run,ffmpeg,ffprobe} from './process.mjs';import {validateDerived} from '../packages/plate/manifest.mjs';import {validateTrack} from '../packages/plate/track.mjs';import {validatePreparedAnalysis} from '../packages/plate/prepared.mjs';import {validateCameraPath} from '../packages/plate/camera.mjs';
 export async function fileHash(file){const h=createHash('sha256');for await(const chunk of createReadStream(file))h.update(chunk);return h.digest('hex')}
 export async function readAssets(dir){
  let manifest;try{manifest=JSON.parse(await fs.readFile(path.join(dir,'assets.json'),'utf8'))}catch(e){if(e.code==='ENOENT')return {};throw e}
@@ -9,7 +9,7 @@ export async function readAssets(dir){
   const file=await fs.realpath(path.join(dir,a.src));if(!file.startsWith(dir+path.sep))throw Error('Asset escapes project: '+id);
   if(await fileHash(file)!==a.sha256)throw Error('Asset content changed: '+id+'; import it as a new immutable asset');
   // `data` is small JSON a renderer reads (a track, a camera path); it is never decoded as media.
-  if(a.type==='data'){if((await fs.stat(file)).size>8*1024**2)throw Error('Data asset exceeds 8 MiB: '+id);let json;try{json=JSON.parse(await fs.readFile(file,'utf8'))}catch{throw Error('Data asset is not JSON: '+id)}if(a.derived?.role==='track')validateTrack(json);if(a.derived?.role==='camera')validateCameraPath(json);}
+  if(a.type==='data'){if((await fs.stat(file)).size>8*1024**2)throw Error('Data asset exceeds 8 MiB: '+id);let json;try{json=JSON.parse(await fs.readFile(file,'utf8'))}catch{throw Error('Data asset is not JSON: '+id)}if(a.derived?.role==='analysis')validatePreparedAnalysis(json);if(a.derived?.role==='track')validateTrack(json);if(a.derived?.role==='camera')validateCameraPath(json);}
   assets[id]={...a,file};
  }
  // Mattes, depth, tracks and camera paths are pinned to the exact bytes they were computed from.
@@ -53,6 +53,12 @@ export async function prepareMedia(assets,{signal,maxDecodedBytes=8*1024**3,maxF
  }
  // A per-frame matte or depth map only lines up when it has exactly the plate's frames.
  for(const [id,entry]of Object.entries(catalog)){const d=entry.derived;if(!d||entry.type!=='video')continue;const parent=catalog[d.of];if(parent.type==='video'&&parent.pts.length!==entry.pts.length)throw Error(`${id} has ${entry.pts.length} frames but ${d.of} has ${parent.pts.length}; a ${d.role} must match its plate frame for frame`)}
+ for(const [id,a]of Object.entries(frozenAssets))if(a.derived?.role==='analysis'){
+  const receipt=JSON.parse(await fs.readFile(a.file,'utf8')),parent=catalog[a.derived.of];
+  validatePreparedAnalysis(receipt,{...parent,frames:parent.pts.length});
+  const mask=catalog[receipt.alpha.asset];
+  if(!mask||mask.sha256!==receipt.alpha.sha256||mask.pts.length!==parent.pts.length||mask.width!==parent.width||mask.height!==parent.height)throw Error('Prepared alpha identity/raster differs: '+id);
+ }
  return {dir,catalog,assets:frozenAssets,close:()=>fs.rm(dir,{recursive:true,force:true})};
  }catch(e){await fs.rm(dir,{recursive:true,force:true});throw e}
 }

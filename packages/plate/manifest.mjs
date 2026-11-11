@@ -9,6 +9,10 @@
  * mismatch is refused instead of being composited a few pixels off. */
 import {validateDepthEncoding} from './depth.mjs';
 export const DERIVED_ROLES = Object.freeze({
+  analysis: ['data'],               // prepared source correspondence/review receipt
+  surface: ['data'],                // UV mesh/pose correspondence
+  coverage: ['video', 'image'],      // visible target surface, not subject alpha
+  foreground: ['video', 'image'],    // decontaminated foreground color, when available
   matte: ['video', 'image'],        // white = keep (subject), black = drop
   depth: ['video', 'image'],        // see depth.mjs; needs `encoding`
   normals: ['video', 'image'],      // camera-space normals, (n+1)/2 in RGB
