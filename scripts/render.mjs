@@ -51,11 +51,13 @@ export async function render(dir,output,{fps,frames,format,background='#101922',
    if(audio.tracks)await fs.copyFile(audioPath,path.join(frameDir,'audio.wav'));result=frameDir;
   }else{
    result=path.join(temp,'output.'+format);const args=['-v','error','-n','-framerate',`${rate.num}/${rate.den}`,'-i',path.join(frameDir,'%06d.png')];if(audio.tracks)args.push('-i',audioPath);
-   const convert='scale=in_range=pc:out_range=pc:out_color_matrix=bt709,format=yuv444p,colorspace=ispace=bt709:itrc=srgb:iprimaries=bt709:irange=pc:all=bt709:range=tv:format=yuv444p';
+   // RGB to BT.709 YUV in limited range, with the transfer left as drawn and tagged as sRGB. Converting it to the BT.709
+   // camera curve made every export 10-13 levels darker (128 -> 115), footage included, and no player undoes it.
+   const convert='scale=in_range=pc:out_range=tv:out_color_matrix=bt709,format=yuv444p';
    if(format==='mp4')args.push('-f','lavfi','-i',`color=c=${background.replace('#','0x')}:s=${d.studio.doc.width}x${d.studio.doc.height}:r=${rate.num}/${rate.den}`,'-filter_complex',`[${audio.tracks?2:1}:v]format=rgba[bg];[bg][0:v]overlay=shortest=1:format=rgb,${convert},format=yuv420p[v]`,'-map','[v]','-c:v','libx264','-crf','18','-pix_fmt','yuv420p','-movflags','+faststart');
-   else args.push('-filter_complex',`[0:v]split[rgb][alpha];[alpha]alphaextract[a];[rgb]${convert}[color];[color][a]alphamerge,format=yuva444p10le[v]`,'-map','[v]','-c:v','prores_ks','-profile:v','4','-pix_fmt','yuva444p10le','-alpha_bits','16');
+   else args.push('-filter_complex',`[0:v]format=rgba,split[rgb][alpha];[alpha]alphaextract[a];[rgb]${convert}[color];[color][a]alphamerge,format=yuva444p10le[v]`,'-map','[v]','-c:v','prores_ks','-profile:v','4','-pix_fmt','yuva444p10le','-alpha_bits','16');
    if(audio.tracks)args.push('-map','1:a:0','-c:a',format==='mov'?'pcm_s16le':'aac');
-   args.push('-frames:v',String(count),'-t',String(actualDuration),'-color_primaries','bt709','-color_trc','bt709','-colorspace','bt709',result);
+   args.push('-frames:v',String(count),'-t',String(actualDuration),'-color_range','tv','-color_primaries','bt709','-color_trc','iec61966-2-1','-colorspace','bt709',result);
    onProgress({phase:'encode',progress:0});await run(ffmpeg(),args,{signal,timeout:600000});
    const info=JSON.parse((await run(ffprobe(),['-v','error','-show_streams','-show_format','-of','json',result],{signal})).toString());
    if(!info.streams.some(s=>s.codec_type==='video')||audio.tracks&&!info.streams.some(s=>s.codec_type==='audio'))throw Error('Encoded media failed stream validation');

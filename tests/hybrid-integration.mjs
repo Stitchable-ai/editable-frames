@@ -22,6 +22,25 @@ try{
  const beauty=path.join(tmp,'beauty');await render(dir,beauty,{format:'png',frames:40});
  const early=6,late=35,barAt=frame=>demo.bar.x(frame),boardAt=frame=>demo.board.x(frame);
  const a=await pixels(frameFile(beauty,early)),b=await pixels(frameFile(beauty,late));
+ // --- An MP4 keeps the levels the browser drew ---------------------------------
+ // Decoded with the matrix and range it declares, an MP4 of the starter must give the PNG frame's values: the
+ // footage in a hybrid shot is not re-graded on the way out. Converting to the BT.709 camera curve made it
+ // 10-13 levels darker (128 -> 115), which no player undoes.
+ const movie=path.join(tmp,'movie.mp4');await render(dir,movie,{format:'mp4',frames:early+1});
+ const decoded=await run(ffmpeg(),['-v','error','-i',movie,'-vf',`select=eq(n\\,${early}),scale=in_range=tv:out_range=pc:in_color_matrix=bt709,format=rgba`,'-frames:v','1','-f','rawvideo','-'],{maxOutput:64*1024**2});
+ assert.equal(decoded.length,W*H*4);
+ const shown={at:(x,y)=>[...decoded.subarray((y*W+x)*4,(y*W+x)*4+4)]};
+ const drawn=mean(a,0,0,W,H),encoded=mean(shown,0,0,W,H);
+ assert.ok(drawn.every((v,i)=>Math.abs(encoded[i]-v)<=2),`MP4 levels ${encoded.map(Math.round)} differ from the drawn frame's ${drawn.map(Math.round)}`);
+ checks.push('An MP4 export keeps the levels of the drawn frames');
+ // An opaque scene's frames have no alpha channel; the MOV (ProRes 4444) path extracted alpha from them and failed.
+ const prores=path.join(tmp,'movie.mov');await render(dir,prores,{format:'mov',frames:early+1});
+ const proresFrame=await run(ffmpeg(),['-v','error','-i',prores,'-vf',`select=eq(n\\,${early}),scale=in_range=tv:out_range=pc:in_color_matrix=bt709,format=rgba`,'-frames:v','1','-f','rawvideo','-'],{maxOutput:64*1024**2});
+ assert.equal(proresFrame.length,W*H*4);
+ const proresShown={at:(x,y)=>[...proresFrame.subarray((y*W+x)*4,(y*W+x)*4+4)]},proresLevels=mean(proresShown,0,0,W,H);
+ assert.ok(drawn.every((v,i)=>Math.abs(proresLevels[i]-v)<=2),`MOV levels ${proresLevels.map(Math.round)} differ from the drawn frame's ${drawn.map(Math.round)}`);
+ assert.equal(proresShown.at(W>>1,H>>1)[3],255,'an opaque scene stays opaque');
+ checks.push('An opaque scene exports to MOV, at the levels of the drawn frames');
  // Frame 6: the bar is far left; the product is in the clear.
  assert.ok(barAt(early)+demo.bar.width<250);
  // Label samples sit on rows 112-140: plain label above its text. The text is laid out with the platform's font, and
