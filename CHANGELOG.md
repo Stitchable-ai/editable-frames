@@ -15,6 +15,7 @@ Hybrid scenes: code-rendered elements composited with filmed or generated footag
 - Fix video frames looked up one frame early: media preparation read frame times as six-decimal seconds, so frame 1 of a 24 fps clip (0.041667) seemed to start after 1/24 s and a third of the frames of any 24 or 30 fps clip showed their predecessor. Frame times are now exact ticks in the stream's time base.
 - Fix MP4 and MOV exports coming out 10–13 levels darker than the frames drawn (128 became 115), footage included: the encoder converted sRGB to the BT.709 camera curve, which players do not undo. Exports now keep the drawn values (BT.709 matrix, limited range, transfer tagged as sRGB).
 - Fix MOV export of a scene with no transparency, which failed extracting an alpha channel the frames did not have.
+- Document a trial of the hybrid helpers on filmed footage.
 - Fix transparent DOM-root exports capturing the preview page's own header through the scene. Any transparent renderer export smaller than the header area was affected.
 
 Runtime files changed, so existing projects need their normal `rebind`.

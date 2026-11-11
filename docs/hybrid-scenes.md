@@ -164,7 +164,7 @@ None of this narrows what a renderer may draw. A scene that uses other libraries
 
 Three helpers guess from a single view. Expose their results as controls.
 
-- **`estimateKeyLight`** reads which side the light is on from the brightest 5% of the frame. A picture cannot say how far in front of or behind the subject the light is, so that part is a stated assumption: a small source is placed level with the subject, a broad one in front of it. The brightest area is not always the light: a white desk under a window reads as light from below, and a low sun behind the subject reads as light from the front. A shadow cast from the estimate then falls the wrong way, so let the author set the direction.
+- **`estimateKeyLight`** reads which side the light is on from the brightest 5% of the frame. A picture cannot say how far in front of or behind the subject the light is, so that part is a stated assumption: a small source is placed level with the subject, a broad one in front of it. The brightest area is not always the light: a white desk under a window reads as light from below, and a low sun behind the subject reads as light from the front. A shadow cast from the estimate then falls the wrong way, so let the author set the direction. Its colour is the brightest area's colour, which can be an object's (blue components read as a blue light) rather than the light's.
 - **`createPlateEnvironment`** has only what the camera saw. It puts the plate in front and a mirrored copy behind the camera, and pushes clipped highlights above 1 so they can act as light sources. The result is plausible. It is not a measurement of the real surroundings, and the highlight boost is not recovered data. Use a real `environment` asset when you have one. Keep `scene.environmentIntensity` at 1, as the starter does: the light is then the plate's own pixel values with no gain, and a material should have its real reflectance (aluminium is about 0.91, `#f5f6f6`).
 - **Depth `near` and `far`** are yours to tune, as above.
 
@@ -179,6 +179,7 @@ Video models emit a fixed rate: commonly 24 fps, sometimes 16 or 30. Two things 
 
 - `render DIR OUT --pass NAME` renders a declared pass. The receipt records it.
 - `render DIR OUT --motion-blur ANGLE [--samples N]` opens a shutter of `ANGLE` degrees (0–360, default samples 8, range 2–64) centred on each frame. Samples are averaged as premultiplied colour, so a half-covered pixel keeps its hue. The mean is taken on encoded values, not linear light. Preview shows no motion blur.
+- MP4 and MOV keep the values the browser drew: BT.709 matrix, limited range, transfer tagged as sRGB. Footage in a hybrid shot comes out at the levels it went in.
 - An export re-encodes its inputs. Content credentials or other provenance metadata carried by a generated plate are not copied to the output. If a law or a platform requires you to disclose AI-generated content, that remains your responsibility.
 
 ## Compared with a full compositing checklist
@@ -196,7 +197,7 @@ Professional compositing uses more steps than this. Stated plainly:
 | Black and white point match | Measured by `plateStats` / `matchLevels`. Applying it is left to the scene. |
 | Grain match | Measured by `estimateNoise`; `drawGrain` adds seeded grain. Not applied by the starter. |
 | Motion blur | Done at export, for code layers. |
-| Shadow of the object on the plate | `fitGroundPlane` and `createShadowCatcher` exist. Not exercised by the starter or the integration test. |
+| Shadow of the object on the plate | `fitGroundPlane` and `createShadowCatcher` exist. Not exercised by the starter or the integration test. The catcher is a plane with no depth: a shadow it catches is also drawn over a real object standing on that plane. |
 | Camera match | Replay only. No solver. |
 | Depth of field, lens distortion, chromatic aberration, light wrap, atmospheric haze | Not provided. |
 | Reflection or shadow of the object in the plate's own surfaces | Not provided. It needs the plate's normals and roughness. |
@@ -219,6 +220,17 @@ The helpers were tried on twelve 5–6 second plates from four video models (See
 | Placing a 3D object without a camera solve | A real stand-in object in the plate (a plain can), tracked as a plane, gave position and scale for a code object beside it through a slow push-in. It also shows what the plate's own light and shadow look like on that object. |
 
 Two things made pinned graphics read as part of the surface: a `mix-blend-mode` chosen for the material (`screen` for chalk on a dark board, `multiply` for print on paper), and the plate's own frame rate for the whole project.
+
+## On filmed footage
+
+Two clips from a real camera (1920 × 1080, 25 fps, on a slow motion-control dolly) were tried the same way. It is a smaller trial than the one on generated plates, and it had no mattes or depth maps, so occlusion is not covered.
+
+| Journey | What was found |
+|---|---|
+| Screen or label on a surface | A card pinned to the blank side panel of a box held within 2 px of the panel for 30 frames. Then the dolly's orbit brought the box's next face into view, and the track slid onto it. The tracking tool reported confidence of 0.70–0.85 and no lost frames. A blank surface is tracked by the detail around its edges, and on a solid object an orbit changes what is there. Check the pinned element at several frames, not only the first. |
+| Lit by the footage | `estimateKeyLight` chose the side that the real shadow shows (front-left) but placed the light too low, so a cast shadow came out too long. Its colour came from bright blue components, not from the light. A light set by hand from the real shadow matched its direction. The shadow catcher drew the can's shadow across a real object standing on the table. Beside real metal, the plain aluminium can read as dull grey. |
+
+The same trial found that MP4 and MOV exports came out 10–13 levels darker than the frames drawn (128 became 115), footage included, and that a scene with no transparency could not be exported to MOV. Both are fixed.
 
 ## Limits
 
