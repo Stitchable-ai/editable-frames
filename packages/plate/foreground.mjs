@@ -10,14 +10,27 @@ export function createForegroundHoldout({root,width,height,document:doc=root.own
   content.style.cssText='position:absolute;inset:0;overflow:hidden';root.append(content);
   const canvas=doc.createElement('canvas');canvas.width=width;canvas.height=height;
   const c=canvas.getContext('2d',{willReadFrequently:true});
-  let disposed=false;
+  let disposed=false,directMask=null;
   return {
     root:content,
+    diagnosticMask(){
+      if(directMask){c.globalCompositeOperation='copy';c.drawImage(directMask,0,0,width,height);}
+      const image=c.getImageData(0,0,width,height);
+      for(let i=0;i<image.data.length;i+=4){image.data[i]=0;image.data[i+1]=255;image.data[i+2]=120;image.data[i+3]=Math.round((directMask?image.data[i+3]:255-image.data[i+3])*.4);}
+      return image;
+    },
     update(mask,{channel='luminance',corrections,frame=0,sourceSha256,subject}={}) {
       if(disposed)throw Error('Holdout disposed');
       if(!mask)throw Error(`Required foreground mask missing at source frame ${frame}`);
       if((mask.naturalWidth??mask.width)!==width||(mask.naturalHeight??mask.height)!==height)throw Error('Holdout mask does not match the source raster');
       if(!['luminance','alpha'].includes(channel))throw Error('Unknown foreground channel');
+      if(channel==='alpha'&&!corrections&&typeof mask.src==='string'&&globalThis.CSS?.supports?.('mask-composite','exclude')){
+        directMask=mask;
+        const layers=`linear-gradient(#fff,#fff),url("${mask.src}")`;
+        Object.assign(content.style,{maskImage:layers,webkitMaskImage:layers,maskMode:'alpha,alpha',maskComposite:'exclude',webkitMaskComposite:'xor',maskSize:'100% 100%,100% 100%',webkitMaskSize:'100% 100%,100% 100%',maskRepeat:'no-repeat',webkitMaskRepeat:'no-repeat'});
+        return;
+      }
+      directMask=null;
       c.globalCompositeOperation='copy';c.drawImage(mask,0,0,width,height);
       const image=c.getImageData(0,0,width,height),d=image.data;
       for(let i=0;i<d.length;i+=4){const a=channel==='alpha'?d[i+3]:(d[i]*54+d[i+1]*183+d[i+2]*19)>>8;d[i]=d[i+1]=d[i+2]=255;d[i+3]=a;}
@@ -35,7 +48,7 @@ export function createForegroundHoldout({root,width,height,document:doc=root.own
       for(let i=3;i<corrected.data.length;i+=4)corrected.data[i]=255-corrected.data[i];
       c.putImageData(corrected,0,0);c.globalCompositeOperation='source-over';
       const url=`url("${canvas.toDataURL('image/png')}")`;
-      Object.assign(content.style,{maskImage:url,webkitMaskImage:url,maskSize:'100% 100%',webkitMaskSize:'100% 100%',maskRepeat:'no-repeat',webkitMaskRepeat:'no-repeat'});
+      Object.assign(content.style,{maskComposite:'add',webkitMaskComposite:'source-over',maskMode:'alpha',maskImage:url,webkitMaskImage:url,maskSize:'100% 100%',webkitMaskSize:'100% 100%',maskRepeat:'no-repeat',webkitMaskRepeat:'no-repeat'});
     },
     dispose(){disposed=true;content.remove();canvas.width=canvas.height=0;},
   };

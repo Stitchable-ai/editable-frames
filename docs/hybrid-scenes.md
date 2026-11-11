@@ -13,6 +13,8 @@ Stacking one on top of the other is easy and already worked. This document cover
 
 *The hybrid starter, frames 7 and 34. The plate is a synthetic diagnostic pattern, not footage. The can, its label, the price screen and the headline are code.*
 
+See [prepared foreground and surface artwork](prepared-plates.md) for the implemented receipt, correction, holdout and motion APIs, and their verification limits.
+
 ## Goal
 
 Make a code-rendered element belong to the footage it is placed in, while keeping what EditableFrames is for: the code part stays an editable document. Changing the label, the price or the language re-renders the same frames with only that change. Nothing is regenerated and the footage is not touched.

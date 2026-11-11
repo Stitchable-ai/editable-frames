@@ -1,3 +1,4 @@
+import {rasterizeSurface} from './raster-surface.mjs';
 import {solveHomography,applyHomography,rectQuad,quadArea} from './homography.mjs';
 const point=p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite);
 
@@ -39,20 +40,19 @@ export function sampleSurface(track,frame) {
 
 /** Triangulated UV artwork warp. The caller supplies surface coverage and
  * foreground holdouts. Lids/contact shadows remain in the unmodified plate. */
+const scratchCanvases=new WeakMap();
 export function drawSurfaceArtwork(context,artwork,mesh,{wrap=false}={}) {
   validateSurfaceMesh(mesh);
   const w=artwork.naturalWidth??artwork.width,h=artwork.naturalHeight??artwork.height;
   if(!(w>0&&h>0))throw Error('Artwork has no decoded dimensions');
-  for(const triangle of mesh.triangles){
-    const to=triangle.map(i=>mesh.vertices[i]),from=triangle.map(i=>[mesh.uv[i][0]*w,mesh.uv[i][1]*h]);
-    const [[x0,y0],[x1,y1],[x2,y2]]=from,det=(x1-x0)*(y2-y0)-(x2-x0)*(y1-y0);
-    if(Math.abs(det)<1e-8)continue;
-    const coeff=axis=>{const [v0,v1,v2]=to.map(p=>p[axis]);const a=((v1-v0)*(y2-y0)-(v2-v0)*(y1-y0))/det,b=((x1-x0)*(v2-v0)-(x2-x0)*(v1-v0))/det;return[a,b,v0-a*x0-b*y0];};
-    const [a,c,e]=coeff(0),[b,d,f]=coeff(1);
-    context.save();context.beginPath();to.forEach(([x,y],i)=>i?context.lineTo(x,y):context.moveTo(x,y));context.closePath();context.clip();context.transform(a,b,c,d,e,f);
-    if(wrap){context.fillStyle=context.createPattern(artwork,'repeat-x');context.fillRect(-w*4,0,w*9,h);}else context.drawImage(artwork,0,0);
-    context.restore();
-  }
+  let scratch=scratchCanvases.get(context);
+  if(!scratch){const doc=context.canvas.ownerDocument;scratch={source:doc.createElement('canvas'),target:doc.createElement('canvas')};scratchCanvases.set(context,scratch);}
+  scratch.source.width=w;scratch.source.height=h;
+  const input=scratch.source.getContext('2d',{willReadFrequently:true});input.drawImage(artwork,0,0);
+  const width=context.canvas.width,height=context.canvas.height;
+  scratch.target.width=width;scratch.target.height=height;
+  const target=scratch.target.getContext('2d'),image=target.createImageData(width,height);
+  image.data.set(rasterizeSurface(input.getImageData(0,0,w,h).data,w,h,mesh,width,height,{wrap}));target.putImageData(image,0,0);context.drawImage(scratch.target,0,0);
 }
 
 /** Preserve observed shading on a neutral original body. `reference` is the

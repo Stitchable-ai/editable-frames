@@ -49,7 +49,8 @@
     "build:scene": "node examples/scene-editor/build.mjs",
     "dev:scene": "node examples/scene-editor/serve.mjs",
     "test:scene": "node tests/scene-editor-browser.mjs",
-    "test:hybrid": "node tests/hybrid-integration.mjs"
+    "test:hybrid": "node tests/hybrid-integration.mjs",
+    "test:prepared": "node tests/prepared-integration.mjs"
   },
   "dependencies": {
     "esbuild": "0.25.10",

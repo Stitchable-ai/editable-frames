@@ -15,3 +15,5 @@ export * from './prepared.mjs';
 export * from './foreground.mjs';
 export * from './surface.mjs';
 export * from './typography.mjs';
+export * from './correction-session.mjs';
+export * from './raster-surface.mjs';

@@ -9,6 +9,8 @@ A hybrid scene combines two kinds of picture in one shot:
 
 Stacking one on top of the other is easy and already worked. This document covers the harder case, where the two must agree with each other: a hand passes in front of a code-rendered product, a headline sits behind a presenter, a price stays stuck to a moving sign, the product is lit by the room it stands in.
 
+See [prepared foreground and surface artwork](prepared-plates.md) for the implemented receipt, correction, holdout and motion APIs, and their verification limits.
+
 ## Goal
 
 Make a code-rendered element belong to the footage it is placed in, while keeping what EditableFrames is for: the code part stays an editable document. Changing the label, the price or the language re-renders the same frames with only that change. Nothing is regenerated and the footage is not touched.

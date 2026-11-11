@@ -83,7 +83,7 @@ export async function rebind(dir,{reset=false}={}){
  }finally{await fd.close();await fs.rm(lock,{force:true})}
 }
 
-export async function importAsset(dir,id,source,{type,role,of,encoding}={}){
+export async function importAsset(dir,id,source,{type,role,of,encoding,subject}={}){
  if(['__proto__','constructor','prototype'].includes(id)||!/^[a-zA-Z0-9_-]{1,80}$/.test(id))throw Error('Invalid asset ID');
  dir=await fs.realpath(dir);const lock=path.join(dir,'.editableframe-edit.lock'),fd=await fs.open(lock,'wx');
  try{
@@ -94,7 +94,7 @@ export async function importAsset(dir,id,source,{type,role,of,encoding}={}){
   if(!['image','audio','video','data'].includes(type)||!/^\.[a-z0-9]{1,8}$/.test(ext))throw Error('Invalid asset type/extension');
   // A derived asset records the hash of the take it describes, so a regenerated take cannot reuse it.
   if((role===undefined)!==(of===undefined))throw Error('Use --role and --of together');
-  let derived;if(role){if(!Object.hasOwn(d.assets,of))throw Error('Unknown --of asset: '+of);derived={of,role,sourceSha256:d.assets[of].sha256,...(encoding?{encoding}:{})};}
+  let derived;if(role){if(!Object.hasOwn(d.assets,of))throw Error('Unknown --of asset: '+of);derived={of,role,sourceSha256:d.assets[of].sha256,...(subject?{subject}:{}),...(encoding?{encoding}:{})};}
   const sha256=await fileHash(source),src='assets/'+sha256+ext;await fs.mkdir(path.join(dir,'assets'),{recursive:true});await fs.copyFile(source,path.join(dir,src));
   const manifest={version:1,assets:{...d.assetIdentity,[id]:{src,type,sha256,...(derived?{derived}:{})}}};
   // Validate the whole manifest before publishing it; a refused import leaves assets.json unchanged.

@@ -9,6 +9,7 @@
  * mismatch is refused instead of being composited a few pixels off. */
 import {validateDepthEncoding} from './depth.mjs';
 export const DERIVED_ROLES = Object.freeze({
+  alpha: ['video','image'],         // explicit fractional alpha channel
   analysis: ['data'],               // prepared source correspondence/review receipt
   surface: ['data'],                // UV mesh/pose correspondence
   coverage: ['video', 'image'],      // visible target surface, not subject alpha
@@ -33,9 +34,11 @@ export function validateDerived(assets) {
     if (d.sourceSha256 !== assets[d.of].sha256) throw Error(`${id} was made from different bytes than the current ${d.of}; regenerate the ${d.role} for this take`);
     if (d.role === 'depth') validateDepthEncoding(d.encoding);
     else if (d.encoding !== undefined) throw Error(`Only depth assets carry an encoding: ${id}`);
+    if(d.subject!==undefined && (typeof d.subject!=='string'||!/^[a-zA-Z0-9_.-]{1,80}$/.test(d.subject)))throw Error('Invalid derived subject: '+id);
+    const slot=d.subject===undefined?d.role:d.role+':'+d.subject;
     index[d.of] ??= {};
-    if (index[d.of][d.role]) throw Error(`${d.of} has two ${d.role} assets (${index[d.of][d.role]}, ${id}); keep one`);
-    index[d.of][d.role] = id;
+    if (index[d.of][slot]) throw Error(`${d.of} has two ${d.role} assets (${index[d.of][slot]}, ${id}); keep one`);
+    index[d.of][slot] = id;
   }
   return index;
 }

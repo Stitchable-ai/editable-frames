@@ -29,7 +29,7 @@ export function validatePreparedAnalysis(data, source) {
 }
 
 /** Explicit source mapping handles trim/reverse; out-of-range never holds a tail. */
-export function preparedFrame(data, seconds, {start = 0, speed = 1, requireReviewed = true} = {}) {
+export function preparedFrame(data, seconds, {start = 0, speed = 1, requireReviewed = true, allowInvalid = false} = {}) {
   if (![seconds,start,speed].every(finite)) throw Error('Prepared sampling needs finite time, trim and speed');
   const time = start + seconds * speed, pts = data.source.pts;
   const end = pts.at(-1) + data.source.frameRate.den / data.source.frameRate.num;
@@ -37,7 +37,7 @@ export function preparedFrame(data, seconds, {start = 0, speed = 1, requireRevie
   let lo=0, hi=pts.length;
   while (lo+1<hi) { const mid=(lo+hi)>>1; if(pts[mid]<=time+1e-9)lo=mid;else hi=mid; }
   const f=data.frames[lo];
-  if (!f.valid || (requireReviewed && !f.reviewed)) throw Error(`Prepared subject ${data.subject} needs correction/review at source frame ${lo}${f.issues?.length ? ': '+f.issues.join(', ') : ''}`);
+  if ((!f.valid && !allowInvalid) || (requireReviewed && !f.reviewed)) throw Error(`Prepared subject ${data.subject} needs correction/review at source frame ${lo}${f.issues?.length ? ': '+f.issues.join(', ') : ''}`);
   return {...f, seconds:pts[lo], maskSeconds:pts[f.maskFrame]};
 }
 
@@ -96,4 +96,24 @@ export async function loadPreparedAnalysis({asset,mediaInfo}, id) {
   const mask=mediaInfo(data.alpha.asset);
   if(mask.sha256!==data.alpha.sha256 || mask.frames!==data.source.frames || mask.width!==data.source.width || mask.height!==data.source.height)throw Error('Prepared mask bytes, dimensions or frame count changed');
   return data;
+}
+
+const ordered=value=>Array.isArray(value)?value.map(ordered):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,ordered(value[k])])):value;
+/** Canonical masks already contain approved corrections. Live strokes are
+ * provisional; only an append-only delta can be previewed without raw input. */
+export function pendingMaskCorrections(book,applied){
+ if(!book)return null;
+ validateMaskCorrections(book);
+ const equal=(a,b)=>JSON.stringify(ordered(a))===JSON.stringify(ordered(b));
+ if(equal(book,applied))return null;
+ if(!applied)return book.keys.some(k=>k.polygons.length)?structuredClone(book):null;
+ validateMaskCorrections(applied);
+ if(book.sourceSha256!==applied.sourceSha256||book.subject!==applied.subject)throw Error('Correction identity changed');
+ const pending=structuredClone(book);pending.keys=[];
+ for(const old of applied.keys)if(!book.keys.some(k=>k.frame===old.frame))throw Error('Re-prepare from the original mask to remove baked corrections');
+ for(const key of book.keys){const old=applied.keys.find(k=>k.frame===key.frame);const count=old?.polygons.length??0;
+  if(old&&(!equal(key.polygons.slice(0,count),old.polygons)||key.interpolation!==old.interpolation))throw Error('Re-prepare from the original mask to change baked corrections');
+  if(key.polygons.length>count)pending.keys.push({...structuredClone(key),polygons:structuredClone(key.polygons.slice(count))});
+ }
+ return pending.keys.length?pending:null;
 }

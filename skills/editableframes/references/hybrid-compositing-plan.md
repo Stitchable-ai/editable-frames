@@ -2,6 +2,8 @@
 
 Status: proposed next work, 2026-11-11. This is a design and acceptance plan, not an implemented API. It supersedes any inference that a successful render or a few attractive frames establish a usable hybrid clip. Existing primitives and their tested scope remain documented in [hybrid guide](hybrid.md).
 
+Implementation update: the [prepared-media primitives](prepared-plates.md) now implement receipts, exact frame access, holdouts, corrections, cylinder/mesh replay and kinetic text. These mechanisms have synthetic regression coverage; the real-shot acceptance gates below still require full visual QA. Automatic geometry solving and production model selection remain research.
+
 ## What the failed shots teach us
 
 | Observed failure | Diagnosis supported by the authored scenes | Required correction |
