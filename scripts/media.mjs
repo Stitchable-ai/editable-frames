@@ -26,12 +26,18 @@ export async function prepareMedia(assets,{signal,maxDecodedBytes=8*1024**3,maxF
   if(a.type!=='audio'){
    if(!v)throw Error('Asset has no video/image stream: '+id);
    if(v.width>4096||v.height>4096)throw Error('Media exceeds 4096-pixel decode limit');
-   const data=JSON.parse((await run(ffprobe(),['-v','error','-select_streams','v:0','-show_frames','-show_entries','frame=best_effort_timestamp_time,pkt_duration_time','-of','json',a.file],{signal})).toString());
+   // Integer ticks in the stream's time base, not `*_time` seconds: ffprobe prints those to six
+   // decimals, so 1/24 s reads 0.041667, later than the frame really is, and a third of the
+   // frames of a 24 or 30 fps clip were looked up as their predecessor.
+   const [tn,td]=String(v.time_base??'').split('/').map(Number);
+   if(!(Number.isSafeInteger(tn)&&Number.isSafeInteger(td)&&tn>0&&td>0))throw Error('Media has no stream time base: '+id);
+   const data=JSON.parse((await run(ffprobe(),['-v','error','-select_streams','v:0','-show_frames','-show_entries','frame=best_effort_timestamp,duration,pkt_duration','-of','json',a.file],{signal})).toString());
    const frames=data.frames??[];if(!frames.length||frames.length>maxFrames)throw Error('Media frame budget exceeded: '+id);
-   const first=Number(frames[0].best_effort_timestamp_time??0);
-   pts=frames.map(f=>Number(f.best_effort_timestamp_time??0)-first);
+   const first=Number(frames[0].best_effort_timestamp??0);
+   pts=frames.map(f=>(Number(f.best_effort_timestamp??0)-first)*tn/td);
    if(pts.some((t,i)=>!Number.isFinite(t)||(i&&t<pts[i-1])))throw Error('Invalid media PTS: '+id);
-   duration=Math.max(duration,pts.at(-1)+Number(frames.at(-1).pkt_duration_time||1/30));
+   const last=frames.at(-1),lastTicks=Number(last.duration??last.pkt_duration);
+   duration=Math.max(duration,pts.at(-1)+(lastTicks>0?lastTicks*tn/td:1/30));
    budget+=v.width*v.height*4*frames.length;if(budget>maxDecodedBytes)throw Error('Decoded media budget exceeded; trim/proxy sources or raise maxDecodedBytes');
    const dest=path.join(dir,id);await fs.mkdir(dest);
    await run(ffmpeg(),['-v','error','-i',a.file,'-map','0:v:0','-fps_mode','passthrough','-frames:v',String(frames.length),path.join(dest,'%06d.png')],{signal,timeout:300000});

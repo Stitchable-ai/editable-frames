@@ -12,6 +12,7 @@ Hybrid scenes: code-rendered elements composited with filmed or generated footag
 - Add `init --hybrid`, a starter with a synthetic plate, and `npm run test:hybrid`.
 - Document a trial of the hybrid helpers on generated footage, and how to conform mattes and depth maps made by other tools.
 - The hybrid starter lights its can from the footage at environment intensity 1 (was 1.5, set while half of the panorama was empty), with aluminium lids at aluminium's reflectance. Measured against real cans in generated plates.
+- Fix video frames looked up one frame early: media preparation read frame times as six-decimal seconds, so frame 1 of a 24 fps clip (0.041667) seemed to start after 1/24 s and a third of the frames of any 24 or 30 fps clip showed their predecessor. Frame times are now exact ticks in the stream's time base.
 - Fix transparent DOM-root exports capturing the preview page's own header through the scene. Any transparent renderer export smaller than the header area was affected.
 
 Runtime files changed, so existing projects need their normal `rebind`.
