@@ -118,6 +118,13 @@ try{
  checks.push('Several derived assets can be added before one rebind, as docs/hybrid-scenes.md shows');
 
  // --- Motion blur ------------------------------------------------------------------
+ // The bundled hybrid scene must freeze its footage and attached pin too.
+ const hybridSoft=path.join(tmp,'hybrid-shutter');
+ await render(seqDir,hybridSoft,{format:'png',frames:3,motionBlur:{angle:180,samples:8}});
+ const hybridSharp=await pixels(frameFile(beauty,2)),hybridBlurred=await pixels(frameFile(hybridSoft,2));
+ assert.ok(hybridSharp.data.subarray(10*W*4,11*W*4).equals(hybridBlurred.data.subarray(10*W*4,11*W*4)),'the moving foreground stays on one footage frame');
+ for(let y=50;y<140;y++)assert.ok(hybridSharp.data.subarray((y*W+430)*4,(y*W+620)*4).equals(hybridBlurred.data.subarray((y*W+430)*4,(y*W+620)*4)),'the screen pin stays locked to the fixed plate');
+ checks.push('The hybrid starter keeps footage and its tracked card fixed during shutter sampling');
  const blurDir=path.join(tmp,'blur-clip');await init(blurDir,{template:'renderer'});
  await fs.writeFile(path.join(blurDir,'clip.mjs'),`import {defineRenderer} from 'editableframes/renderer';export default defineRenderer({id:'mover',renderer:'dom',width:160,height:90,fps:24,durationInFrames:24,async create({root}){const box=document.createElement('div');box.style.cssText='position:absolute;top:30px;width:30px;height:30px;background:#00ff00';root.append(box);return {render(clock){box.style.left=(clock.frame*20)+'px';},dispose(){box.remove();}};}});`);
  await rebind(blurDir,{reset:true});
@@ -132,5 +139,30 @@ try{
  assert.equal(soft.filter(p=>p[3]>0).length-sharp.filter(p=>p[3]>0).length,8);
  assert.ok(partial.every(p=>p[1]>=245&&p[0]<=10&&p[2]<=10),'a half-covered pixel keeps the pure colour: samples are averaged premultiplied');
  checks.push('Shutter motion blur averages sub-frame samples with correct edge colour');
+
+ // A real moving plate stays on its output frame, while code still smears.
+ // Use the same fixture at a tiny angle too: previously any positive angle
+ // mixed the previous/current plate 50/50, regardless of the shutter width.
+ const plateFile=path.join(tmp,'moving-plate.mp4');
+ await run(ffmpeg(),['-v','error','-f','lavfi','-i','testsrc2=size=160x90:rate=24:duration=1','-c:v','libx264','-qp','0',plateFile]);
+ await importAsset(blurDir,'moving-plate',plateFile);
+ await fs.writeFile(path.join(blurDir,'clip.mjs'),`import {defineRenderer} from 'editableframes/renderer';
+ import {createFrameLoader} from 'editableframes/plate';
+ export default defineRenderer({id:'mover',renderer:'dom',width:160,height:90,fps:24,durationInFrames:24,async create({root,mediaFrame}){
+ const canvas=document.createElement('canvas');canvas.width=160;canvas.height=90;root.append(canvas);const ctx=canvas.getContext('2d'),loader=createFrameLoader();
+ const box=document.createElement('div');box.style.cssText='position:absolute;top:30px;width:30px;height:30px;background:#00ff00';root.append(box);
+ return {async render(clock){ctx.drawImage(await loader.load(mediaFrame('moving-plate',clock.mediaTime)),0,0);box.style.left=(clock.frame*20)+'px';},dispose(){loader.dispose();canvas.remove();box.remove();}};}});`);
+ await rebind(blurDir,{reset:true});
+ const footageSharp=path.join(tmp,'footage-sharp');await render(blurDir,footageSharp,{format:'png',frames:4});
+ const decode=folder=>run(ffmpeg(),['-v','error','-i',frameFile(folder,2),'-pix_fmt','rgba','-f','rawvideo','-']);
+ const sharpPixels=await decode(footageSharp);
+ for(const angle of [180,1]){
+  const folder=path.join(tmp,'footage-blur-'+angle);await render(blurDir,folder,{format:'png',frames:4,motionBlur:{angle,samples:8}});
+  const blurred=await decode(folder);
+  // Every pixel outside the code's rows must be byte-identical to the sharp export.
+  for(let y=0;y<90;y++)if(y<30||y>=60)assert.ok(blurred.subarray(y*160*4,(y+1)*160*4).equals(sharpPixels.subarray(y*160*4,(y+1)*160*4)),`footage changed at row ${y}, shutter ${angle}`);
+  if(angle===180)assert.ok(!blurred.subarray(40*160*4,50*160*4).equals(sharpPixels.subarray(40*160*4,50*160*4)),'code still blurs over the fixed plate');
+ }
+ checks.push('Shutter samples hold actual footage fixed while code blurs');
  console.log(JSON.stringify({checks},null,2));
 }finally{await fs.rm(tmp,{recursive:true,force:true});}

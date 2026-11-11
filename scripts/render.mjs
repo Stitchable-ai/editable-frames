@@ -31,17 +31,21 @@ export async function render(dir,output,{fps,frames,format,background='#101922',
    const times=shutter?shutterSamples(frame,shutter):[frame];
    for(let sample=0;sample<times.length;sample++){
     const seconds=times[sample]*rate.den/rate.num;let bytes;
-    if(d.kind==='renderer'){await page.evaluate(([t,pass])=>window.editableframe.seek(t,{timeline:true,pass}),[seconds,pass]);bytes=await page.locator('#screen').screenshot({omitBackground:true,timeout:30000});}
-    else{const png=await page.evaluate(async t=>{await window.editableframe.seek(t,{timeline:true});return window.editableframe.png()},seconds);bytes=Buffer.from(png.split(',')[1],'base64');}
+    // Footage already has a shutter. Keep its output-frame time separate from
+    // code's sub-frame sample, including through source trims and retiming.
+    const mediaTime=frame*rate.den/rate.num;
+    if(d.kind==='renderer'){await page.evaluate(([t,pass,mediaTime])=>window.editableframe.seek(t,{timeline:true,pass,mediaTime}),[seconds,pass,mediaTime]);bytes=await page.locator('#screen').screenshot({omitBackground:true,timeout:30000});}
+    else{const png=await page.evaluate(async ([t,mediaTime])=>{await window.editableframe.seek(t,{timeline:true,mediaTime});return window.editableframe.png()},[seconds,mediaTime]);bytes=Buffer.from(png.split(',')[1],'base64');}
     await fs.writeFile(shutter?path.join(sampleDir,String(frame*shutter.samples+sample+1).padStart(8,'0')+'.png'):path.join(frameDir,String(frame+1).padStart(6,'0')+'.png'),bytes);
    }
    onProgress({phase:'frames',frame:frame+1,total:count,progress:(frame+1)/count});
   }
   if(shutter){
    // Average each frame's samples as premultiplied colour, so a half-covered pixel keeps its hue instead of darkening.
+   // Float intermediates avoid losing a code value even when every sample is identical.
    // The mean is taken on encoded (display) values, not linear light.
    onProgress({phase:'shutter',progress:0});
-   await run(ffmpeg(),['-v','error','-n','-framerate','1','-i',path.join(sampleDir,'%08d.png'),'-vf',`format=gbrap,premultiply=inplace=1,tmix=frames=${shutter.samples},select='not(mod(n+1\\,${shutter.samples}))',unpremultiply=inplace=1,format=rgba`,'-fps_mode','passthrough','-frames:v',String(count),path.join(frameDir,'%06d.png')],{signal,timeout:600000});
+   await run(ffmpeg(),['-v','error','-n','-framerate','1','-i',path.join(sampleDir,'%08d.png'),'-vf',`format=gbrapf32le,premultiply=inplace=1,tmix=frames=${shutter.samples},select='not(mod(n+1\\,${shutter.samples}))',unpremultiply=inplace=1,format=rgba`,'-fps_mode','passthrough','-frames:v',String(count),path.join(frameDir,'%06d.png')],{signal,timeout:600000});
    if((await fs.readdir(frameDir)).length!==count)throw Error('Motion blur produced the wrong number of frames');
    await fs.rm(sampleDir,{recursive:true,force:true});
   }

@@ -154,7 +154,7 @@ export function renderPass(renderer, scene, camera, pass, {ids = [], encoding} =
   const passId = object => { for (let o = object; o; o = o.parent) if (typeof o.userData?.passId === 'string') return o.userData.passId; return object.name; };
   const use = (mesh, material) => { swapped.push([mesh, mesh.material]); mesh.material = material; };
   try {
-    scene.background = null; renderer.setClearColor(0x000000, 0);
+    scene.background = null; scene.overrideMaterial = null; renderer.setClearColor(0x000000, 0);
     const shared = pass === 'clay' ? new T.MeshStandardMaterial({color: 0xb8b8b8, roughness: 0.85, metalness: 0})
       : pass === 'normal' ? new T.MeshNormalMaterial()
       : pass === 'matte' ? rawColor([1, 1, 1])
@@ -168,7 +168,7 @@ export function renderPass(renderer, scene, camera, pass, {ids = [], encoding} =
       if (object.userData.plateHelper || object.userData.passExclude || !object.isMesh) { if (object.visible) { hidden.push(object); object.visible = false; } return; }
       if (shared) { use(object, shared); return; }
       const index = ids.indexOf(passId(object));
-      if (index < 0) { hidden.push(object); object.visible = false; return; }
+      if (index < 0) { if (object.visible) { hidden.push(object); object.visible = false; } return; }
       if (!byId.has(index)) { const material = rawColor(idColor(index).map(v => v / 255)); byId.set(index, material); made.push(material); }
       use(object, byId.get(index));
     });

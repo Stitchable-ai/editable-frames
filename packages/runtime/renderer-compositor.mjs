@@ -8,10 +8,10 @@ export function createRendererCompositor(stage,{scene,templates,services={},capt
   const residents=new Map();let chain=Promise.resolve(),disposed=false,lastRequest,renderVersion=0,pickVersion=0,activeJob,pendingJob,disposal;
   stage.style.position=capture?'fixed':'relative';stage.style.overflow='hidden';
   if(capture){stage.style.left='0';stage.style.top='0';stage.style.zIndex='2147483647';}
-  async function draw(studio,time,{selected,timeline=false,playing=false,pass='beauty'}={}) {
+  async function draw(studio,time,{selected,timeline=false,playing=false,pass='beauty',mediaTime=time}={}) {
     if(disposed)throw Error('Compositor disposed');
     if(pass!=='beauty'&&!(scene.passes??[]).includes(pass))throw Error(`This scene does not declare a ${pass} pass`);
-    if(!Number.isFinite(time)||time<0)throw Error('Invalid source time');
+    if(!Number.isFinite(time)||time<0||!Number.isFinite(mediaTime)||mediaTime<0)throw Error('Invalid source time');
     const clips=timeline?studio.doc.clips.filter(c=>time>=c.start/HZ&&time<(c.start+c.duration)/HZ):[studio.clip(selected)];
     const active=new Set(clips.map(c=>c.id));
     for(const [id,r] of residents)if(!active.has(id)){await r.instance.dispose();r.layer.remove();residents.delete(id);}
@@ -32,7 +32,8 @@ export function createRendererCompositor(stage,{scene,templates,services={},capt
       const tr=clip.transform;resident.layer.style.opacity=String(tr.opacity);resident.layer.style.transform=`translate(${tr.x/width*100}%,${tr.y/height*100}%) scale(${tr.scale})`;
       resident.root.style.transform=`scale(${stage.clientWidth/scene.width},${stage.clientHeight/scene.height})`;
       const evaluated=evaluateClip(studio,clip,timeline?time:clip.start/HZ+time);
-      const clock={frame:evaluated.sourceTime*scene.fps,fps:scene.fps,frameRate:rendererFrameRate(scene),width:scene.width,height:scene.height,durationInFrames:scene.durationInFrames,capture,playing,pass};
+      const mediaSourceTime=evaluateClip(studio,clip,timeline?mediaTime:clip.start/HZ+mediaTime).sourceTime;
+      const clock={frame:evaluated.sourceTime*scene.fps,mediaTime:mediaSourceTime,fps:scene.fps,frameRate:rendererFrameRate(scene),width:scene.width,height:scene.height,durationInFrames:scene.durationInFrames,capture,playing,pass};
       resident.clock=clock;
       try {await resident.instance.render(clock,sampledRendererProps(scene,templates[clip.template],clip,evaluated.nodes));}
       catch(error){residents.delete(clip.id);resident.layer.remove();await resident.instance.dispose().catch(()=>{});throw error;}

@@ -76,7 +76,7 @@ export default defineRenderer({
    async render(clock){
     const pass=clock.pass??'beauty',seconds=clock.frame/clock.fps;
     // Anything locked to the footage moves on the footage's own frame grid.
-    const plateTime=conformSeconds(Math.min(seconds,plate.duration-1e-6),plate.frameRate);
+    const plateTime=conformSeconds(Math.min(clock.mediaTime??seconds,plate.duration-1e-6),plate.frameRate);
     const [plateImage,matteImage,depthImage]=await Promise.all([plateTime,plateTime,plateTime].map((t,i)=>frames.load(mediaFrame(['plate',matteId,depthId][i],t))));
     paintLabel();
     can.position.set(props.offset,-.12,-props.distance);can.rotation.y=seconds*.9+.6;

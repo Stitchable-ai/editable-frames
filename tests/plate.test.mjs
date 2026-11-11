@@ -182,3 +182,37 @@ test('the plate panorama fills both halves: as shot in front, mirrored behind', 
   paintPlatePanorama(context, {}, 256);
   assert.deepEqual(draws, [[0, 128, 1], [128, 256, -1]]);
 });
+
+test('control passes restore visibility and override materials, even when rendering throws', async () => {
+  const T = await import('three');
+  const {renderPass} = await import('../packages/three/plate.mjs');
+  for (const fail of [false, true]) for (const pass of ['id', 'matte', 'depth', 'normal', 'clay']) {
+    const scene = new T.Scene(), camera = new T.PerspectiveCamera();
+    const original = new T.MeshBasicMaterial(), override = new T.MeshBasicMaterial({color: 0xff0000});
+    scene.overrideMaterial = override;
+    const visible = new T.Mesh(new T.BoxGeometry(), original); visible.name = 'included';
+    const hidden = new T.Mesh(new T.BoxGeometry(), original); hidden.visible = false;
+    const excluded = new T.Mesh(new T.BoxGeometry(), original);
+    scene.add(visible, hidden, excluded);
+    let calls = 0;
+    const renderer = {toneMapping: T.NeutralToneMapping, getClearColor: c => c.set(0x123456), getClearAlpha: () => .5, setClearColor() {},
+      render(s) {
+        calls++;
+        assert.equal(s.overrideMaterial, null, 'the pass material must reach Three.js');
+        assert.notEqual(visible.material, original);
+        assert.equal(hidden.visible, false);
+        if (pass === 'id') assert.equal(excluded.visible, false);
+        if (fail) throw Error('GPU failure');
+      }};
+    const draw = () => renderPass(renderer, scene, camera, pass, {ids: ['included']});
+    if (fail) assert.throws(draw, /GPU failure/); else draw();
+    assert.equal(calls, 1);
+    assert.equal(hidden.visible, false, 'an invisible mesh stays invisible after the pass');
+    assert.equal(excluded.visible, true);
+    assert.equal(scene.overrideMaterial, override);
+    assert.equal(visible.material, original);
+    assert.equal(renderer.toneMapping, T.NeutralToneMapping);
+    for (const mesh of [visible, hidden, excluded]) mesh.geometry.dispose();
+    original.dispose(); override.dispose();
+  }
+});

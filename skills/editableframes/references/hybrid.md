@@ -164,7 +164,7 @@ Three helpers guess from a single view. Expose their results as controls.
 
 Video models emit a fixed rate: commonly 24 fps, sometimes 16 or 30. Two things follow.
 
-- Anything locked to the footage should move on the footage's frame grid. `conformSeconds(seconds, plate.frameRate)` gives the time of the plate frame on screen; sample tracks, mattes and depth at that time. Otherwise a pinned element slides against the picture between plate frames.
+- Anything locked to the footage should move on the footage's frame grid. Use `seconds = clock.mediaTime ?? clock.frame / clock.fps` for footage and its derived data: this clock stays at the output frame during shutter sampling. `conformSeconds(seconds, plate.frameRate)` gives the time of the plate frame on screen; sample tracks, mattes and depth at that time. Otherwise a pinned element slides against the picture between plate frames.
 - A plate inside a timeline of another rate repeats frames unevenly. `cadence({num: 24, den: 1}, {num: 30, den: 1})` reports the pattern `2,1,1,1`, which is visible as judder on any move. Render the project at the plate's rate, or interpolate the plate before importing it.
 
 ## Export

@@ -177,3 +177,15 @@ These tests do not establish a native application's integration or agent reliabi
 For optional object parents, locked/hidden policy and bounded direct-manipulation
 proposals, read [the interaction contract](interaction-contract.md). The renderer
 hook returns sparse control values; a host owns one atomic commit and cancellation.
+
+### Footage during shutter sampling
+
+`clock.mediaTime` is source seconds at the output frame's time, after the clip's
+trim and playback rate. Without a shutter it equals `clock.frame / clock.fps`.
+During motion blur, `clock.frame` advances through the shutter samples while
+`clock.mediaTime` stays fixed. Use `clock.mediaTime ?? clock.frame / clock.fps`
+for footage, mattes, depth and tracks attached to it; use `clock.frame` for code
+animation. `mediaFrame(id, seconds)` still honors the exact time requested, so
+custom scenes must choose the appropriate clock. Legacy renderers receive
+`mediaTime` alongside `time`; pass `mediaTime` to `host.portFrame` for footage.
+The media starter uses this clock too; authored media offsets remain explicit.
