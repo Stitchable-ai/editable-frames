@@ -40,7 +40,7 @@ export default defineRenderer({id:'surface-reskin',renderer:'canvas+dom',width:1
     if(pending)throw Error('Corrections changed; prepare and review a new mask revision before rendering');
     if(!props.foregroundSource||!props.foregroundMask||!track)throw Error('Reskin needs the original source, foreground and original-body track');
     if(track.sourceSha256&&track.sourceSha256!==s.sha256)throw Error('Surface track belongs to a different take');
-    const at=preparedFrame(receipt,clock.frame/clock.fps,{start:Number(props.plateStartFrame)*s.frameRate.den/s.frameRate.num,speed:Number(props.plateSpeed)});
+    const at=preparedFrame(receipt,clock.mediaTime??clock.frame/clock.fps,{start:Number(props.plateStartFrame)*s.frameRate.den/s.frameRate.num,speed:Number(props.plateSpeed)});
     const w=root.clientWidth||clock.width,h=root.clientHeight||clock.height;
     for(const c of [plate,ink])if(c.width!==w||c.height!==h){c.width=w;c.height=h;}
     if(identity!==s.sha256){identity=s.sha256;holdout?.dispose();holdout=createForegroundHoldout({root:stage,width:s.width,height:s.height});holdout.root.append(ink,title);}
