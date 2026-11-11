@@ -29,9 +29,11 @@ export function validatePreparedAnalysis(data, source) {
 }
 
 /** Explicit source mapping handles trim/reverse; out-of-range never holds a tail. */
-export function preparedFrame(data, seconds, {start = 0, speed = 1, requireReviewed = true, allowInvalid = false} = {}) {
+export function preparedFrame(data, seconds, {start = 0, startFrame, speed = 1, requireReviewed = true, allowInvalid = false} = {}) {
   if (![seconds,start,speed].every(finite)) throw Error('Prepared sampling needs finite time, trim and speed');
-  const time = start + seconds * speed, pts = data.source.pts;
+  const pts = data.source.pts;
+  if (startFrame !== undefined && (!integer(startFrame) || startFrame >= pts.length)) throw Error('Prepared trim needs a source frame inside the plate');
+  const time = (startFrame === undefined ? start : pts[startFrame]) + seconds * speed;
   const end = pts.at(-1) + data.source.frameRate.den / data.source.frameRate.num;
   if (time < -1e-9 || time >= end - 1e-9) throw Error(`Prepared source time ${time} is outside 0..${end}`);
   let lo=0, hi=pts.length;

@@ -29,7 +29,13 @@ const mix = (a, b, t) => a + (b - a) * t;
  * nearest tracked frame is held and `held` says so. */
 export function sampleTrack(track, seconds) {
   if (!finite(seconds)) throw Error('Track sample needs finite seconds');
-  const frames = track.frames, position = seconds * track.frameRate.num / track.frameRate.den;
+  return sampleTrackFrame(track, seconds * track.frameRate.num / track.frameRate.den);
+}
+/** Sample a known decoded source frame without converting its quantized PTS
+ * back through nominal fps. Fractional positions remain available to authors. */
+export function sampleTrackFrame(track, position) {
+  if (!finite(position)) throw Error('Track sample needs a finite frame');
+  const frames = track.frames;
   let lo = 0, hi = frames.length - 1;
   if (position <= frames[0].frame) hi = 0;
   else if (position >= frames[hi].frame) lo = hi;

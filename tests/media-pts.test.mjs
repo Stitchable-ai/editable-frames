@@ -1,5 +1,22 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs/promises';import os from 'node:os';import path from 'node:path';import {createHash} from 'node:crypto';
 import {prepareMedia} from '../scripts/media.mjs';import {run,ffmpeg,ffprobe} from '../scripts/process.mjs';import {ptsIndex} from '../packages/media/ports.mjs';
+import {mediaFrameUrl} from '../packages/media/frames.mjs';
+test('a static derived matte stays available throughout its moving parent',async()=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'ef-static-matte-'));let media;
+ try{
+  const plate=path.join(dir,'plate.mp4'),mask=path.join(dir,'mask.png');
+  await run(ffmpeg(),['-v','error','-f','lavfi','-i','testsrc2=size=64x48:rate=24:duration=1','-c:v','libx264',plate]);
+  await run(ffmpeg(),['-v','error','-f','lavfi','-i','color=c=white:s=64x48','-frames:v','1',mask]);
+  const sha=async file=>createHash('sha256').update(await fs.readFile(file)).digest('hex'),source=await sha(plate);
+  media=await prepareMedia({plate:{file:plate,type:'video',sha256:source},mask:{file:mask,type:'image',sha256:await sha(mask),derived:{of:'plate',role:'matte',sourceSha256:source}}});
+  assert.equal(mediaFrameUrl(media.catalog,'mask',-1),undefined,'a still retains its own presentation clock');
+  for(const frame of [0,1,12,23]){
+   const url=mediaFrameUrl(media.catalog,'mask',frame/24);
+   assert.ok(url.endsWith('/000001.png'));await fs.access(path.join(media.dir,'mask',path.basename(url)));
+   assert.ok(mediaFrameUrl(media.catalog,'plate',frame/24).endsWith(String(frame+1).padStart(6,'0')+'.png'));
+  }
+ }finally{await media?.close();await fs.rm(dir,{recursive:true,force:true});}
+});
 // ffprobe prints `*_time` values to six decimals, so frame 1 of a 24 fps clip reads 0.041667: later than
 // 1/24 s. Looked up at the frame's own time, a third of the frames of a 24 or 30 fps clip resolved to
 // their predecessor, so a plate showed frame n-1 while a track sampled on the plate's grid used frame n.

@@ -1,5 +1,5 @@
 import {defineRenderer} from 'editableframes/renderer';
-import {createFrameLoader,createForegroundHoldout,validatePreparedAnalysis,preparedFrame,sampleTrack,scalePoints,cylinderMesh,sampleSurface,drawSurfaceArtwork,relightArtwork,createKineticText,loadPreparedAnalysis,pendingMaskCorrections} from 'editableframes/plate';
+import {createFrameLoader,createForegroundHoldout,validatePreparedAnalysis,preparedFrame,sampleTrackFrame,scalePoints,cylinderMesh,sampleSurface,drawSurfaceArtwork,relightArtwork,createKineticText,loadPreparedAnalysis,pendingMaskCorrections} from 'editableframes/plate';
 
 export const controls={version:1,fields:[
  {key:'foregroundSource',anchor:'surface',path:'/foregroundSource',type:'media',mediaKind:'video',default:'plate',label:'Original object footage'},
@@ -40,7 +40,7 @@ export default defineRenderer({id:'surface-reskin',renderer:'canvas+dom',width:1
     if(pending)throw Error('Corrections changed; prepare and review a new mask revision before rendering');
     if(!props.foregroundSource||!props.foregroundMask||!track)throw Error('Reskin needs the original source, foreground and original-body track');
     if(track.sourceSha256&&track.sourceSha256!==s.sha256)throw Error('Surface track belongs to a different take');
-    const at=preparedFrame(receipt,clock.mediaTime??clock.frame/clock.fps,{start:Number(props.plateStartFrame)*s.frameRate.den/s.frameRate.num,speed:Number(props.plateSpeed)});
+    const at=preparedFrame(receipt,clock.mediaTime??clock.frame/clock.fps,{startFrame:Number(props.plateStartFrame),speed:Number(props.plateSpeed)});
     const w=root.clientWidth||clock.width,h=root.clientHeight||clock.height;
     for(const c of [plate,ink])if(c.width!==w||c.height!==h){c.width=w;c.height=h;}
     if(identity!==s.sha256){identity=s.sha256;holdout?.dispose();holdout=createForegroundHoldout({root:stage,width:s.width,height:s.height});holdout.root.append(ink,title);}
@@ -49,7 +49,7 @@ export default defineRenderer({id:'surface-reskin',renderer:'canvas+dom',width:1
     const pc=plate.getContext('2d',{willReadFrequently:true});pc.drawImage(image,0,0,w,h);
     const key=JSON.stringify([props.label,props.detail,props.color]);
     if(key!==labelKey){labelKey=key;const c=art.getContext('2d');c.fillStyle=props.color;c.fillRect(0,0,2048,1024);c.fillStyle='white';c.textAlign='center';c.textBaseline='middle';c.font='900 190px system-ui';c.fillText(String(props.label),1024,470,900);c.font='700 38px system-ui';c.fillText(String(props.detail),1024,650,900);}
-    const pin=sampleTrack(track,at.seconds);if(pin.held||pin.confidence<=0)throw Error('Original body track is missing at source frame '+at.sourceFrame);
+    const pin=sampleTrackFrame(track,at.sourceFrame);if(pin.held||pin.confidence<=0)throw Error('Original body track is missing at source frame '+at.sourceFrame);
     const fitted=props.meshTrack?sampleSurface(props.meshTrack,at.sourceFrame):null;
     const quad=scalePoints(pin.quad,track,w,h),inset=Number(props.bodyInset),curve=Number(props.rimCurve);
     if(!Number.isFinite(inset)||inset<0||inset>.1||!Number.isFinite(curve)||curve<0||curve>.1)throw Error('Invalid body inset/curvature');

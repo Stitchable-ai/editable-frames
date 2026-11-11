@@ -1,8 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {validatePreparedAnalysis,preparedFrame,analyzeMask,sampleMaskCorrections,assertSurfaceLayout,cylinderMesh,sampleSurface,surfaceError,typeMotion,createMaskCorrectionSession,rasterizeSurface,validateDerived,pendingMaskCorrections} from '../packages/plate/index.mjs';
+import {validatePreparedAnalysis,preparedFrame,sampleTrackFrame,analyzeMask,sampleMaskCorrections,assertSurfaceLayout,cylinderMesh,sampleSurface,surfaceError,typeMotion,createMaskCorrectionSession,rasterizeSurface,validateDerived,pendingMaskCorrections} from '../packages/plate/index.mjs';
 const hash='a'.repeat(64),maskHash='b'.repeat(64);
 const receipt=()=>({version:1,kind:'prepared-plate',subject:'hand',revision:'c'.repeat(64),source:{asset:'plate',sha256:hash,width:100,height:80,frames:3,frameRate:{num:24,den:1},pts:[0,1/24,2/24],orientation:0,crop:[0,0,100,80]},alpha:{asset:'mask',sha256:maskHash,channel:'luminance',semantics:'segmentation'},provenance:{method:'manual','preprocess':'test/1'},frames:[0,1,2].map(i=>({sourceFrame:i,maskFrame:i,valid:true,reviewed:true}))});
+test('quantized container times retain exact tracked corners through trim and reverse',()=>{
+ const r=receipt();r.source.pts=[0,.042,.083];
+ const track={kind:'planar',frameRate:r.source.frameRate,frames:[0,1,2].map(frame=>({frame,quad:[[frame,0],[frame+5,0],[frame+5,5],[frame,5]],confidence:1}))};
+ for(const [time,options,expected] of [[1/24,{},0],[.042,{},1],[.1,{},2],[0,{startFrame:1},1],[.042,{startFrame:1,speed:-1},0],[1,{startFrame:2,speed:0},2]]){
+  const selected=preparedFrame(r,time,options),pin=sampleTrackFrame(track,selected.sourceFrame);
+  assert.equal(selected.sourceFrame,expected);assert.equal(pin.quad[0][0],expected);assert.equal(pin.held,false);
+ }
+ assert.throws(()=>preparedFrame(r,0,{startFrame:3}),/trim/);
+});
 test('prepared source identity, correspondence and review survive trims/reverse/random seeks',()=>{
  const r=validatePreparedAnalysis(receipt());
  assert.equal(preparedFrame(r,1/24).sourceFrame,1);

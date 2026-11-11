@@ -1,5 +1,5 @@
 import {normalizeObjectHierarchy,selectableObject,parentObjectId} from '../core/objects.mjs';
-import {createRendererCompositor} from './renderer-compositor.mjs';import {ptsIndex} from '../media/ports.mjs';
+import {createRendererCompositor} from './renderer-compositor.mjs';import {mediaFrameUrl} from '../media/frames.mjs';
 import {Studio,clone,HZ} from '../core/index.mjs';import {createMediaHost} from '../media/browser.mjs';import {createAudioPlayback} from '../media/playback.mjs';import {createCompositor} from './compositor.mjs';
 export async function mount({templates,createRenderer,scene,binding,initial,mediaCatalog={},assetIds=[],persistence=null,capture=false}){
  const $=s=>document.querySelector(s);let canvas=$('#screen');
@@ -16,7 +16,7 @@ export async function mount({templates,createRenderer,scene,binding,initial,medi
   services.mediaInfo=id=>{const a=mediaCatalog[id];if(!a)throw Error('Undeclared asset: '+id);return {sha256:a.sha256,pts:[...(a.pts??[])],type:a.type,width:a.width,height:a.height,duration:a.duration,frames:a.pts?.length??0,frameRate:a.frameRate?{...a.frameRate}:undefined,derived:a.derived?structuredClone(a.derived):undefined};};
   services.derived=(id,role,subject)=>{if(!mediaCatalog[id])throw Error('Undeclared asset: '+id);return Object.keys(mediaCatalog).find(key=>mediaCatalog[key].derived?.of===id&&mediaCatalog[key].derived.role===role&&mediaCatalog[key].derived.subject===subject);};
  }
- if(Object.keys(mediaCatalog).length)services.mediaFrame=(id,time)=>{const a=mediaCatalog[id];if(!a||a.type==='audio'||a.type==='data')throw Error('Missing visual asset: '+id);const index=ptsIndex(a.derived&&mediaCatalog[a.derived.of]?.type==='video'?mediaCatalog[a.derived.of].pts:a.pts,time);return index<0?undefined:a.url+String(index+1).padStart(6,'0')+'.png';};
+ if(Object.keys(mediaCatalog).length)services.mediaFrame=(id,time)=>mediaFrameUrl(mediaCatalog,id,time);
  services.sourceFrame=(id,index)=>{const a=mediaCatalog[id];if(!a||!Number.isSafeInteger(index)||index<0||index>=a.pts.length)throw Error('Invalid declared source frame: '+id+':'+index);return a.url+String(index+1).padStart(6,'0')+'.png';};
  const renderer=scene?createRendererCompositor(canvas,{scene,templates,services,capture}):createCompositor(canvas,{templates,createRenderer,host}),audio=createAudioPlayback(mediaCatalog);let selection=null,selectionVersion=0;
  if(scene)canvas.addEventListener('pointerdown',async event=>{
