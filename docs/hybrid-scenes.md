@@ -1,5 +1,7 @@
 # Hybrid scenes: code inside footage
 
+**Quality correction, 2026-11-11:** later review found erased fingers/heads, incorrect can placement and mismatched generated geometry in the example videos. Successful rendering and tracking do not establish whole-shot quality. See the [revised compositing and motion-design plan](hybrid-compositing-plan.md) for diagnoses, model/runtime research and proposed release gates. Those new features are planned, not implemented.
+
 A hybrid scene combines two kinds of picture in one shot:
 
 - **Footage** (a "plate"): filmed, or made by a video model. It supplies what only has to look real: people, places, weather, light.
@@ -96,12 +98,12 @@ Rules, each refused with a message that says what to do:
 
 **Conforming data from other tools.** A derived video is read by frame number: frame 40 of a matte describes frame 40 of the plate. Tools do not always return that.
 
-- *Fewer frames at the plate's own rate* means frames were dropped, usually at the end. Keep the frames where they are and hold the last one (or trim the plate). Stretching the video over the plate's length moves every frame in time; a depth map stretched from 112 to 121 frames ran up to five frames early.
+- *Fewer frames at the plate's own rate* means correspondence is incomplete; do not assume the missing frames are all at the end. Verify which source frame each output describes, then recompute/correct missing data or trim the shot to a verified range. Do not hold the tail of a moving matte/depth map to satisfy the frame-count check. Stretching the video over the plate's length moves every frame in time; a depth map stretched from 112 to 121 frames ran up to five frames early.
 - *Another frame rate* has to be resampled onto the plate's frame times.
 - *A depth video must be grey.* Several hosted depth models return a false-colour picture. Ask for grayscale output, or map the colours back to values before importing.
-- Check the result against something that moves: compare a moving edge in the plate with the same edge in the matte or depth map at a few frames.
+- Check the result against moving edges throughout each crossing. Inspect every decoded frame of short final clips, including full-resolution crossing crops and normal/slow playback. A few matching frames are only a smoke test.
 
-**Depth encoding** is `{kind, near, far, packing}`. `kind` is `inverse` (what monocular depth models emit; precision is spent close to the camera) or `linear`. `near` and `far` are the distances white and black stand for, in scene units. `packing` is `gray8`, or `rg16` for 16 bits across red and green. Relative depth has no true scale, so `near` and `far` are values you tune until occlusion lands. They are not measurements.
+**Depth encoding** is `{kind, near, far, packing}`. `kind` is `inverse` (what monocular depth models emit; precision is spent close to the camera) or `linear`. `near` and `far` are the distances white and black stand for, in scene units. `packing` is `gray8`, or `rg16` for 16 bits across red and green. Relative depth has no true scale: tuning `near` and `far` can create a plausible ordering in some frames, but does not establish shared geometry or correct hand/face edges. They are not measurements. Prefer an explicit subject holdout for a known foreground crossing.
 
 **Track** files are `{version: 1, kind: "planar" | "point", width, height, frameRate: {num, den}, frames: [{frame, quad | point, confidence?}]}`. Coordinates are plate pixels from the top-left. Quads are ordered top-left, top-right, bottom-right, bottom-left. Frames may be sparse; samples between them are interpolated, and samples outside them hold the nearest frame and say so.
 
@@ -207,17 +209,17 @@ Professional compositing uses more steps than this. Stated plainly:
 
 The helpers were tried on twelve 5–6 second plates from four video models (Seedance 1 Pro Fast, Kling 2.5 Turbo Pro, Veo 3.1 Fast, Wan 2.2), with mattes and depth maps from hosted models and tracks from a classical planar tracker. Each scene was a renderer scene of the kind the starter shows. This is one trial, not a benchmark.
 
-![Four frames: an app screen pinned to a phone in a hand, with the thumb passing in front of it, and a code-rendered can on a desk beside a real can, with an arm passing in front of it.](media/hybrid-generated-plates.jpg)
+![Historical sampled frames from the phone and inserted-can experiments; later full-shot review found foreground and placement failures.](media/hybrid-generated-plates.jpg)
 
-*Generated plates with code inside them. Left: an HTML screen pinned to a tracked phone; the thumb is the plate's, cut out again from a matte. Right: a code-rendered can beside the plate's own can; the arm hides it where the plate's depth map is nearer.*
+*Historical samples, not passing clips. The phone matte collapses during the tap/lift, and the added can has inconsistent hand ordering and does not reskin the original can. Retained to document the experiment; see the corrected verdicts below.*
 
 | Journey | What was found |
 |---|---|
-| Screen or label on a surface | Holds on rigid surfaces. A screen pinned to a phone in a moving hand stayed within 3 px of where it started on the screen, at 1088 × 1920, while the phone moved 24 px. A sheet of paper that curled is not a plane: with all four corners right, its edges missed the pin by up to 15 px. |
-| Headline behind a subject | Works with a hosted matte. Hair over dark letters shows a 1–2 px light fringe. |
-| Footage in front of a 3D object | Works once `near` and `far` are tuned by eye. The edge is as rough as the depth map's own edge, a few pixels. A depth model that normalises each frame separately changes an object's value when something new enters the shot; prefer one that is consistent over time. |
+| Screen or label on a surface | Tracking held the phone within 3 px at 1088 × 1920 while it moved 24 px, but the composite fails: its thumb matte collapses at frames 60–70 of 121. The café menu also fails because no foreground matte protects the person and the footer overflows. A curled sheet missed the planar pin by up to 15 px. |
+| Headline behind a subject | Sampled frames demonstrate the layer effect, with a 1–2 px light fringe at hair. Whole-shot acceptance was not established by those samples. |
+| Footage in front of a 3D object | Fails final quality in the can example: the hand is split across the inserted object. Hand-tuned relative depth does not share its scale/camera, and no mask resolves a hand moving through the volume chosen for the new object. |
 | Lit by the footage | The plate's colour carries over. Under strongly coloured light a bare metal object takes too much of it (aluminium read as brass in a warm kitchen). At environment intensity 1, a plain aluminium can was 5–6% brighter over its body than a real can standing beside it, on the two plates lit from the front. On a plate lit from behind (a low sun in the shot) it was 1.6 times too bright, because the mirrored half puts that sun in front of the object too. `estimateKeyLight` chose the wrong side on two of three plates, as described above. |
-| Placing a 3D object without a camera solve | A real stand-in object in the plate (a plain can), tracked as a plane, gave position and scale for a code object beside it through a slow push-in. It also shows what the plate's own light and shadow look like on that object. |
+| Placing a 3D object without a camera solve | A tracked stand-in provides an approximate screen anchor, not a metric camera/pose solve. The example adds a second can; it fails the intended original-can reskin. A separate code-first take also exposes a larger generated can beneath the code object: one conditioning still did not preserve geometry. |
 
 Two things made pinned graphics read as part of the surface: a `mix-blend-mode` chosen for the material (`screen` for chalk on a dark board, `multiply` for print on paper), and the plate's own frame rate for the whole project.
 
@@ -229,7 +231,7 @@ Three clips from a real camera (1920 × 1080, 25 fps; two on a slow motion-contr
 |---|---|
 | Screen or label on a surface | A card pinned to the blank side panel of a box held within 2 px of the panel for 30 frames. Then the dolly's orbit brought the box's next face into view, and the track slid onto it. The tracking tool reported confidence of 0.70–0.85 and no lost frames. A blank surface is tracked by the detail around its edges, and on a solid object an orbit changes what is there. Check the pinned element at several frames, not only the first. |
 | Lit by the footage | `estimateKeyLight` chose the side that the real shadow shows (front-left) but placed the light too low, so a cast shadow came out too long. Its colour came from bright blue components, not from the light. A light set by hand from the real shadow matched its direction. The shadow catcher drew the can's shadow across a real object standing on the table. Beside real metal, the plain aluminium can read as dull grey. |
-| Headline behind a subject | Works with a hosted matte, except while a fast arm enters the shot (up to 460 px per frame): the matte lagged it by 1–2 frames, and the headline showed through the arm on those frames. The matte's edge along the forearm was soft, about 10 px from 10% to 90%. |
+| Headline behind a subject | Fails whole-shot acceptance: while a fast arm enters (up to 460 px per frame), the matte lags by 1–2 frames and the headline shows through it. Its forearm edge is about 10 px wide from 10% to 90%. Other frames demonstrate the layer effect. |
 | Footage in front of a 3D object | Failed with the hosted depth map as delivered: the model normalised each frame separately, so the board read as near until the arm came in and as far after it, and hid the object until then. Rescaled per frame against parts of the shot that do not move (the wall and the board), the arm hid the object with an edge 3–4 px wide and nothing leaked onto the arm. |
 
 The same trial found three export defects, all fixed:
@@ -245,4 +247,4 @@ The same trial found three export defects, all fixed:
 - `createDepthOccluder` assumes the plate and the scene share one camera. A depth map from a monocular model is consistent with itself, not with your scene units.
 - Antialiased edges mix values, so `id` and `depth` passes are exact only away from silhouettes. `renderPass` does not handle skinned or instanced meshes.
 - Results differ slightly across GPUs and browsers, as elsewhere in this framework.
-- The tests use a synthetic plate. They prove that pixels land where the inputs say. They do not prove that a particular matting, depth or tracking tool gives good inputs on real footage; the trial above is the only evidence of that so far.
+- The tests use a synthetic plate. They prove that pixels land where the inputs say. They do not prove that a particular matting, depth or tracking tool gives good inputs on real footage. The trials and subsequent failure audit above establish current limitations; all-frame quality gates remain proposed work.
