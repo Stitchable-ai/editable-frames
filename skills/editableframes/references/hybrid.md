@@ -131,7 +131,7 @@ The host then supplies `clock.pass` (`'beauty'` unless a pass was requested). A 
 | Area | Functions |
 |---|---|
 | Corner pin | `solveHomography`, `applyHomography`, `invertHomography`, `cornerPinTransform`, `cssMatrix3d`, `quadArea` |
-| Tracks | `validateTrack`, `sampleTrack`, `scalePoints` |
+| Tracks | `validateTrack`, `sampleTrack`, `sampleTrackFrame`, `scalePoints` |
 | Camera | `validateCameraPath`, `sampleCameraPath`, `slerp` |
 | Frame rate | `plateFrameIndex`, `conformSeconds`, `cadence` |
 | Depth | `validateDepthEncoding`, `decodeDepth`, `encodeDepth`, `packDepth`, `unpackDepth`, `depthGlsl`, `unprojectDepth`, `fitGroundPlane` |
