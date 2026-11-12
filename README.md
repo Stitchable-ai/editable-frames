@@ -10,7 +10,7 @@ EditableFrames is an open-source framework for human and AI video creators. Your
 
 **Beta 0.1 · MIT framework · Runs locally · Model-neutral**
 
-Built by parent company [Stitchable](https://stitchable.ai). For a complete video editing application, explore **[Stitchable Bots →](https://stitchable.ai)**.
+Built by parent company [Stitchable](https://stitchable.ai). For a complete video editing application, explore **[Stitch Bots →](https://stitchable.ai)**.
 
 [Get started](#try-it) · [Agent setup](docs/agents.md) · [Architecture](docs/architecture.md) · [Beta scope](docs/beta.md) · [Website & Cloudflare setup](docs/cloudflare-setup.md)
 

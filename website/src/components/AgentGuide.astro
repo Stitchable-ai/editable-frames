@@ -6,11 +6,11 @@ import { STITCHABLE_PREVIEW } from '../data/stitchable-preview';
 <section class="agent-guide section" id="use-with-ai" aria-labelledby="agent-guide-heading" data-agent-guide>
   <div class="section-heading">
     <div><span class="eyebrow">YOUR IDEA + YOUR AI TOOL</span><h2 id="agent-guide-heading">Bring your agent.<br/><em>Make your next video.</em></h2></div>
-    <p>Start with Stitchable Bots or your own AI tool.<br/>Make the video. Keep the details editable.</p>
+    <p>Start with Stitch Bots or your own AI tool.<br/>Make the video. Keep the details editable.</p>
   </div>
   <div class="agent-workbench">
     <div class="agent-tabs" role="tablist" aria-label="Choose your AI tool">
-      <button type="button" role="tab" id="agent-tab-stitchable" aria-controls="agent-panel-stitchable" aria-selected="true" tabindex="0" data-agent-tab="stitchable"><img src="/tool-logos/stitchable.svg" width="27" height="27" alt=""/>Stitchable Bots</button>
+      <button type="button" role="tab" id="agent-tab-stitchable" aria-controls="agent-panel-stitchable" aria-selected="true" tabindex="0" data-agent-tab="stitchable"><img src="/tool-logos/stitchable.svg" width="27" height="27" alt=""/>Stitch Bots</button>
       {AGENT_GUIDES.map((guide,i)=><button type="button" role="tab" id={`agent-tab-${guide.id}`} aria-controls={`agent-panel-${guide.id}`} aria-selected="false" tabindex="-1" data-agent-tab={guide.id}><img src={`/tool-logos/${guide.logo}.svg`} width="27" height="27" alt=""/>{guide.name}</button>)}
     </div>
     <div class="agent-brief" hidden><label for="agent-creative-brief">01 / YOUR CREATIVE BRIEF</label><textarea id="agent-creative-brief" rows="3" maxlength="2500" placeholder={DEFAULT_BRIEF} data-agent-brief>{DEFAULT_BRIEF}</textarea><p>Make this yours. The prompt updates as you type.</p></div>
@@ -21,9 +21,9 @@ import { STITCHABLE_PREVIEW } from '../data/stitchable-preview';
     </div>)}
     <div class="agent-panel stitchable-panel" id="agent-panel-stitchable" role="tabpanel" aria-labelledby="agent-tab-stitchable" tabindex="0" data-agent-panel="stitchable">
       <StitchableStudio client:visible/>
-      <div class="agent-instructions stitchable-download"><div><span class="eyebrow">STITCHABLE BOTS · DESKTOP APP</span><h3>Point to a detail. Make it yours.</h3><p>Fine-tune a scene with direct controls.<br/>Preview what’s next: point to an object, add a note, and turn it into an edit.</p></div><div class="stitchable-download-action"><a class="agent-open" href={STITCHABLE_PREVIEW.download} target="_blank" rel="noopener">Download Stitchable Bots <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 15v5h16v-5"/></svg></a><p class="stitchable-download-note">Guided demo · annotation is an upcoming feature.</p></div></div>
+      <div class="agent-instructions stitchable-download"><div><span class="eyebrow">STITCH BOTS · DESKTOP APP</span><h3>Point to a detail. Make it yours.</h3><p>Fine-tune a scene with direct controls.<br/>Preview what’s next: point to an object, add a note, and turn it into an edit.</p></div><div class="stitchable-download-action"><a class="agent-open" href={STITCHABLE_PREVIEW.download} target="_blank" rel="noopener">Download Stitch Bots <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 15v5h16v-5"/></svg></a><p class="stitchable-download-note">Guided demo · annotation is an upcoming feature.</p></div></div>
     </div>
-    <p class="agent-copy-status" role="status" aria-live="polite" aria-atomic="true" data-agent-status>The Stitchable Bots demo runs here. The download opens in a new tab.</p>
+    <p class="agent-copy-status" role="status" aria-live="polite" aria-atomic="true" data-agent-status>The Stitch Bots demo runs here. The download opens in a new tab.</p>
     <noscript><p class="no-script">Read the <a href={`${REPOSITORY}/blob/main/docs/agents.md`}>agent setup guide</a> for Claude, ChatGPT, Grok Build and Codex prompts.</p></noscript>
   </div>
   <div class="agent-source"><p>Open-source, model-neutral, and ready for new creative libraries.<br/>For local EditableFrames projects: Node.js, Chromium and FFmpeg.</p><a href={REPOSITORY} target="_blank" rel="noopener"><img src="/tool-logos/github.svg" width="23" height="23" alt=""/> Explore the MIT source <span aria-hidden="true">↗</span></a></div>
@@ -48,7 +48,7 @@ import { STITCHABLE_PREVIEW } from '../data/stitchable-preview';
       tabs.forEach((tab,i) => { tab.setAttribute('aria-selected',String(i===index)); tab.tabIndex=i===index?0:-1; });
       panels.forEach(panel => { panel.hidden=panel.dataset.agentPanel!==tabs[index].dataset.agentTab; });
       root.querySelectorAll<HTMLButtonElement>('[data-agent-copy]').forEach(button => { button.textContent=button.dataset.agentCopy==='prompt'?'Copy prompt ⧉':'Copy setup commands ⧉'; });
-      status.textContent=isStitchable?'The Stitchable Bots demo runs here. The download opens in a new tab.':'Your prompt stays here. You choose where to paste.';
+      status.textContent=isStitchable?'The Stitch Bots demo runs here. The download opens in a new tab.':'Your prompt stays here. You choose where to paste.';
       if(focus)tabs[index].focus();
     }
     tabs.forEach((tab,i) => {
