@@ -2,6 +2,7 @@ import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
 const originals = import.meta.glob<{ default: ImageMetadata }>('../../public/demos/*.jpg', { eager: true });
+const lightStudyOriginals = import.meta.glob<{ default: ImageMetadata }>('../../public/studies-video/*.jpg', { eager: true });
 export type StudyPosters = Record<string, { src: string; srcSet: string }>;
 
 // Astro emits and caches these static assets; swapping scenes needs no image service.
@@ -13,4 +14,12 @@ export async function getStudyPosters(): Promise<StudyPosters> {
     return [scene, { src: variants.at(-1)!.src, srcSet: variants.map((image, i) => `${image.src} ${widths[i]}w`).join(', ') }] as const;
   }));
   return Object.fromEntries(entries);
+}
+
+// A <video> poster takes a single URL, so each rendered clip gets one WebP sized for its layout slot.
+export async function getLightStudyPosters(widthOf: (clip: string) => number): Promise<Record<string, string>> {
+  return Object.fromEntries(await Promise.all(Object.entries(lightStudyOriginals).map(async ([path, image]) => {
+    const clip = path.split('/').at(-1)!.replace(/\.jpg$/, '');
+    return [clip, (await getImage({ src: image.default, width: widthOf(clip), format: 'webp', quality: 80 })).src] as const;
+  })));
 }
