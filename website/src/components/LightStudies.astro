@@ -10,7 +10,7 @@ const posters = await getLightStudyPosters(clip => clip === LIGHT_STUDIES[0].id 
     <p>Concept products built in code, lit by photographed CC0 light.<br/>Their controls live in the source projects. Here, they play as plain video.</p>
   </div>
   <div class="light-grid">
-    {LIGHT_STUDIES.map((study, i) => <figure class="light-card" data-light-card>
+    {LIGHT_STUDIES.map((study, i) => <figure class="light-card" data-light-card style={`--light-d: ${i === 0 ? 0 : ((i - 1) % 2) * 130}ms`}>
       <div class="light-frame">
         <video data-light-video src={`/studies-video/${study.id}.mp4`} poster={posters[study.id]} width="1280" height="720" muted loop playsinline preload="none" disablepictureinpicture aria-label={`${study.title}, ${study.duration}-second rendered video`} aria-describedby={`light-${study.id}-description`}></video>
         <button class="light-toggle" type="button" data-light-toggle data-title={study.title} aria-label={`Play ${study.title}`} hidden>
@@ -29,7 +29,17 @@ const posters = await getLightStudyPosters(clip => clip === LIGHT_STUDIES[0].id 
 </section>
 
 <script>
- // Clips play only while on screen. Reduced motion and data saving keep the poster until a visitor presses Play.
+ // Cards rise into place as they scroll into view (only once scripts run, so the section stays visible without them).
+ // Clips play while any part of them is on screen. Reduced motion and data saving keep the poster until a visitor presses Play.
+ const section = document.querySelector<HTMLElement>('.light-studies');
+ const cards = [...document.querySelectorAll<HTMLElement>('[data-light-card]')];
+ if (section && 'IntersectionObserver' in window) {
+  section.classList.add('light-reveal');
+  const reveal = new IntersectionObserver(entries => {
+   for (const entry of entries) if (entry.isIntersecting) { entry.target.classList.add('is-revealed'); reveal.unobserve(entry.target); }
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  cards.forEach(card => reveal.observe(card));
+ }
  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
  type Clip = { video: HTMLVideoElement; toggle: HTMLButtonElement; title: string; visible: boolean; choice: 'auto' | 'play' | 'pause' };
@@ -64,7 +74,7 @@ const posters = await getLightStudyPosters(clip => clip === LIGHT_STUDIES[0].id 
     const clip = clips.find(item => item.video === entry.target);
     if (clip) { clip.visible = entry.isIntersecting; sync(clip); }
    }
-  }, { threshold: 0.35 });
+  }, { threshold: 0.15 });
   clips.forEach(clip => observer.observe(clip.video));
  } else clips.forEach(sync);
  document.addEventListener('visibilitychange', () => clips.forEach(sync));

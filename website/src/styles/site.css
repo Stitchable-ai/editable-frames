@@ -101,3 +101,13 @@
 @media(prefers-reduced-motion:reduce){.stage-play-icon{transition:none}}
 .light-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:36px 24px;margin-top:10px}.light-card{margin:0;min-width:0}.light-card:first-child{grid-column:1/-1}.light-frame{position:relative;overflow:hidden;border-radius:7px;background:#d9e2dc}.light-frame video{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:7px}.light-toggle{position:absolute;right:12px;bottom:12px;display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:var(--paper);color:var(--ink);box-shadow:0 4px 14px -6px #10271f80}.light-toggle[hidden]{display:none}.light-toggle:hover{background:var(--blue);color:#fffefa}.light-toggle .light-icon-pause,.light-toggle[data-state=playing] .light-icon-play{display:none}.light-toggle[data-state=playing] .light-icon-pause{display:block}.light-card h3{font-weight:550;font-size:22px;letter-spacing:-.6px;margin:8px 0}.light-card p{font-size:13px;line-height:1.6;color:var(--muted);margin:6px 0;max-width:640px}.light-note{font-size:13px;line-height:1.7;color:var(--muted);margin:34px 0 0}.light-note .text-link{color:var(--ink);font-weight:600;white-space:nowrap}
 @media(max-width:700px){.light-grid{grid-template-columns:minmax(0,1fr);gap:28px}.light-card h3{font-size:19px}.light-card p,.light-note{font-size:12px;line-height:1.5}.light-toggle{width:30px;height:30px;right:8px;bottom:8px}}
+
+/* Light studies: cards fade and rise into place, staggered by their position in the grid. */
+.light-reveal .light-card{opacity:0;transform:translateY(28px) scale(.985);transition:opacity .75s ease,transform .9s cubic-bezier(.2,.75,.2,1);transition-delay:var(--light-d,0ms)}
+.light-reveal .light-card.is-revealed{opacity:1;transform:none}
+.light-reveal .light-card .light-frame video{transition:transform 1.2s cubic-bezier(.2,.75,.2,1)}
+.light-reveal .light-card:not(.is-revealed) .light-frame video{transform:scale(1.04)}
+@media (prefers-reduced-motion: reduce){
+ .light-reveal .light-card,.light-reveal .light-card .light-frame video{opacity:1;transform:none;transition:none}
+}
+
