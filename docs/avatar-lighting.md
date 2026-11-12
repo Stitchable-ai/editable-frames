@@ -39,6 +39,26 @@ Do not interpret zero background change, equal frame counts or deterministic out
 
 Use a short alpha-capable talking clip with head turns, blink, open/closed mouth and a hand near the face. Compare unchanged source, conservative harmonisation and any stronger relighter against a fixed warm/cool background pair. Inspect every transition and alpha edge, speech timing, hair, headphones, teeth, skin texture, hands and clothing. Test a second person with overlaps independently. Export and native preview must agree on source mapping and approved revisions. A slideshow of supplied screenshots cannot pass this gate.
 
+## A presenter who handles a product (proposed)
+
+A generated presenter clip is one flattened picture. Imported as media it takes layer edits only: timing, crop, position, an overall grade, and code drawn over it. Her pose, the product in her hand, the grip, the room's light and the camera cannot be changed separately, because they are not separate in the file. Pilots on 2026-11-12 with hosted avatar and video models confirmed the useful half and the missing half:
+
+- **A model can perform the action.** From a supplied still of the presenter in a room, one take pointed and swept a hand toward the product, and another approached a table, gripped headphones by the headband, lifted them and stepped while holding them.
+- **The first frame controls the shot; the prompt does not.** Pose, framing and product orientation followed the supplied image. A take started from an explicitly composed standing frame gave the best result. Text instructions to lock the camera or stand were ignored in other takes.
+- **The product does not survive.** The generated headphones drifted toward generic ones. For an exact product, treat the generated performance as a reference and draw the product in code.
+- **Timing needs its own stage.** Speech meant to announce the lift started after it. Sliding audio against a face that is already speaking does not fix lip sync.
+
+To draw an exact product into such a shot, a scene needs inputs that do not exist yet:
+
+| Input | Why |
+|---|---|
+| Background, presenter colour + alpha, and hand holdout as separate source-bound layers | A product held in front of the torso but behind the fingers; a room that can change independently |
+| Product pose for every frame, with an anchor that changes | A pickup has phases: on the table (anchored to it, with contact shadow), grip, lift (anchor moves from table to hand with no jump), carry (follows the hand through changing light) |
+| A 3D or multi-view product asset | A lifted product shows sides a single photograph does not have |
+| Narration aligned before generation, or a tested lip-sync stage | Speech that names the action has to happen with it |
+
+Bad anatomy in a grip is repaired by another take or a reference performance, not by compositing. Until these exist, a generated pickup is a reference, not an editable shot.
+
 ## Provider and research notes
 
 - [HeyGen transparent output](https://developers.heygen.com/transparent-background-videos): the documented avatar route requests WebM using a matting-enabled avatar look. Verify eligibility and actual decoded alpha. This supplies a foreground, not relighting passes. Keep provider-specific requests in the host, outside the rendering library.
