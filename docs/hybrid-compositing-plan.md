@@ -1,5 +1,7 @@
 # Reliable hybrid compositing and motion design
 
+Human foreground extension: [avatar lighting](avatar-lighting.md) records the representation-dependent routing, still-image findings and pending video acceptance. This is a design addition, not a claim of shipped portrait relighting.
+
 Status: implementation and acceptance plan, 2026-11-11. Implemented APIs are documented separately below; research gates remain explicit. It supersedes any inference that a successful render or a few attractive frames establish a usable hybrid clip. Existing primitives and their tested scope remain documented in [hybrid-scenes.md](hybrid-scenes.md).
 
 Implementation update: the [prepared-media primitives](prepared-plates.md) now implement receipts, exact frame access, holdouts, corrections, cylinder/mesh replay and kinetic text. These mechanisms have synthetic regression coverage and retained real-shot QA in progress for people, close-up hands, original-object reskin and clean-background code composition. Automatic geometry solving and production model selection remain research.
