@@ -1,0 +1,72 @@
+---
+import { LIGHT_STUDIES } from '../data/light-studies';
+import { getLightStudyPosters } from '../data/posters';
+// The first clip spans the full row; the rest sit two to a row.
+const posters = await getLightStudyPosters(clip => clip === LIGHT_STUDIES[0].id ? 1280 : 960);
+---
+<section class="light-studies section" id="light-studies" aria-labelledby="light-studies-heading">
+  <div class="section-heading">
+    <div><span class="eyebrow">LIGHT STUDIES / RENDERED WITH EDITABLEFRAMES</span><h2 id="light-studies-heading">Product light, in motion.<br/><em>Rendered, not filmed.</em></h2></div>
+    <p>Concept products built in code, lit by photographed CC0 light.<br/>Their controls live in the source projects. Here, they play as plain video.</p>
+  </div>
+  <div class="light-grid">
+    {LIGHT_STUDIES.map((study, i) => <figure class="light-card" data-light-card>
+      <div class="light-frame">
+        <video data-light-video src={`/studies-video/${study.id}.mp4`} poster={posters[study.id]} width="1280" height="720" muted loop playsinline preload="none" disablepictureinpicture aria-label={`${study.title}, ${study.duration}-second rendered video`} aria-describedby={`light-${study.id}-description`}></video>
+        <button class="light-toggle" type="button" data-light-toggle data-title={study.title} aria-label={`Play ${study.title}`} hidden>
+          <svg class="light-icon-play" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 1.2v9.6L10.5 6z" fill="currentColor"/></svg>
+          <svg class="light-icon-pause" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 1.5h2.4v9H2.5zM7.1 1.5h2.4v9H7.1z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <figcaption>
+        <div class="card-meta"><span class="mono">{String(i + 1).padStart(2, '0')} / {study.kind} · {study.light}</span><span class="mono">{study.duration}s</span></div>
+        <h3>{study.title}</h3>
+        <p id={`light-${study.id}-description`}>{study.line}<span class="sr-only"> On-screen text: {study.onScreen}</span></p>
+      </figcaption>
+    </figure>)}
+  </div>
+  <p class="light-note">Every product and brand here is an invented concept. The scenes are code; the croissant scan, wood texture and photographed light are CC0 assets. <a class="text-link" href="/credits/#light-studies">Asset credits ↗</a></p>
+</section>
+
+<script>
+ // Clips play only while on screen. Reduced motion and data saving keep the poster until a visitor presses Play.
+ const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+ const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+ type Clip = { video: HTMLVideoElement; toggle: HTMLButtonElement; title: string; visible: boolean; choice: 'auto' | 'play' | 'pause' };
+ const clips: Clip[] = [...document.querySelectorAll<HTMLElement>('[data-light-card]')].flatMap(card => {
+  const video = card.querySelector<HTMLVideoElement>('[data-light-video]'), toggle = card.querySelector<HTMLButtonElement>('[data-light-toggle]');
+  return video && toggle ? [{ video, toggle, title: toggle.dataset.title ?? '', visible: !('IntersectionObserver' in window), choice: 'auto' as const }] : [];
+ });
+ const wanted = (clip: Clip) => clip.visible && !document.hidden && (clip.choice === 'play' || (clip.choice === 'auto' && !motion.matches && !saveData));
+ const label = (clip: Clip) => {
+  const playing = !clip.video.paused;
+  clip.toggle.dataset.state = playing ? 'playing' : 'paused';
+  clip.toggle.setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} ${clip.title}`);
+ };
+ const sync = (clip: Clip) => {
+  if (wanted(clip)) { if (clip.video.paused) clip.video.play().catch(() => label(clip)); }
+  else if (!clip.video.paused) clip.video.pause();
+ };
+ for (const clip of clips) {
+  clip.toggle.hidden = false;
+  clip.video.addEventListener('play', () => label(clip));
+  clip.video.addEventListener('pause', () => label(clip));
+  clip.toggle.addEventListener('click', () => {
+   clip.choice = clip.video.paused ? 'play' : 'pause';
+   if (clip.choice === 'play') clip.visible = true;
+   sync(clip);
+  });
+  label(clip);
+ }
+ if ('IntersectionObserver' in window) {
+  const observer = new IntersectionObserver(entries => {
+   for (const entry of entries) {
+    const clip = clips.find(item => item.video === entry.target);
+    if (clip) { clip.visible = entry.isIntersecting; sync(clip); }
+   }
+  }, { threshold: 0.35 });
+  clips.forEach(clip => observer.observe(clip.video));
+ } else clips.forEach(sync);
+ document.addEventListener('visibilitychange', () => clips.forEach(sync));
+ motion.addEventListener('change', () => clips.forEach(sync));
+</script>

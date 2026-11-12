@@ -10,6 +10,7 @@ The homepage includes a Q&A and tool-specific starter prompts for Claude, ChatGP
 
 ## Authoritative pages
 - [Playground and collection](https://editableframes.stitchable.ai/): 12 interactive code-generated scenes.
+- [Light studies](https://editableframes.stitchable.ai/#light-studies): Five short rendered videos of invented concept products lit by CC0 photographed environments. Plain video, not live-editable on the site.
 - [Use with AI](https://editableframes.stitchable.ai/#use-with-ai): Copyable creative briefs, SDK setup, and shared skill workflows.
 - [Q&A](https://editableframes.stitchable.ai/#faq): Exports, accounts, editable controls, commercial licensing and agent usage.
 - [Browser guide](https://editableframes.stitchable.ai/guide/): Playback, controls, history and saved settings.

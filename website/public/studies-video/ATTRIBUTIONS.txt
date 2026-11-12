@@ -1,0 +1,27 @@
+EditableFrames light studies: rendered example videos
+=====================================================
+
+The five clips in this folder (cafe-breakfast, ginger-ale, lemon-lime,
+ai-notebook, ai-desktop) and their poster frames were rendered with
+EditableFrames. Product shapes, labels, typography layouts and motion are
+built in code for these studies. Every product and brand shown is an invented
+concept; any resemblance to a real product is unintended. On the website they
+are plain H.264 video; their editable controls live in the source projects.
+
+Third-party assets visible in the renders (all CC0 1.0, via Poly Haven,
+https://polyhaven.com/license):
+
+Croissant (3D scan) - scanned by Dario Barresi, processed by Greg Zaal / Poly Haven
+https://polyhaven.com/a/croissant
+
+Comfy Cafe HDRI - Sergej Majboroda / Poly Haven
+https://polyhaven.com/a/comfy_cafe
+
+Wood Table 001 (texture) - photographed by Dimitrios Savva, processed by Rico Cilliers / Poly Haven
+https://polyhaven.com/a/wood_table_001
+
+Studio Small 09 HDRI - Sergej Majboroda / Poly Haven
+https://polyhaven.com/a/studio_small_09
+
+Lighting is an artistic treatment, not a measured color reference.
+No endorsement by Poly Haven or the artists is implied.

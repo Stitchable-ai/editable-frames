@@ -12,3 +12,5 @@
   Cache-Control: public, max-age=86400
 /devices/*
   Cache-Control: public, max-age=86400
+/studies-video/*
+  Cache-Control: public, max-age=86400

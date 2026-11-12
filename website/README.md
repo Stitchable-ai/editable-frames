@@ -70,6 +70,14 @@ their properties are edited.
 Collection thumbnails reveal as they enter view; they remain visible without
 JavaScript and with reduced motion.
 
+The light studies section after the collection shows five short rendered videos
+(`public/studies-video/`, H.264 without audio, posters converted to WebP at build
+time). They are plain video: their controls live in the source projects, not on
+this site. A clip plays muted while it is on screen and pauses when it leaves the
+view or the page is hidden. Reduced motion and data saving show the poster until
+the visitor presses Play; every clip has its own pause control. Asset credits are
+on `/credits/` and in `public/studies-video/ATTRIBUTIONS.txt`.
+
 The last AI-tool tab contains an authored Studio interface, backed by the actual
 MIT-licensed `A small act of care` Canvas study from the Stitchable recipe
 collection. `vendor/studio-paper/ATTRIBUTIONS.md` records source provenance and
