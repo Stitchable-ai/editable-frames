@@ -1,5 +1,7 @@
 # Reusable cast across three styles — 2026-11-14
 
+> **Second-brief follow-up:** [Carry, turn, set down and release](hybrid-story-second-brief-2026-11-14.md) now tests the cast in two styles on a different action. Cast/rig/look transfer; action, grip and probes needed new code. This first-brief report is retained as the earlier result.
+
 ST2–ST3 advances from quota-blocked to **partial, with rendered evidence**. Three 12.5-second films reuse the original fantasy cast in a sci-fi repair bay, a cel-shaded village and a toy/clay workshop. Each is 1280×720 at 24 fps, with 300 frames, captions and local synthesized voices. No hosted-model calls were made.
 
 ## What actually transfers
