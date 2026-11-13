@@ -1,3 +1,4 @@
+import {chromiumOptions} from './browser.mjs';
 import fs from 'node:fs/promises';import path from 'node:path';import {randomUUID} from 'node:crypto';import {chromium} from 'playwright';
 import {preview,readProject} from './project.mjs';import {mixAudio} from './audio.mjs';import {run,ffmpeg,ffprobe} from './process.mjs';import {HZ} from '../packages/core/index.mjs';import {shutterSamples,validateShutter} from '../packages/plate/motion-blur.mjs';
 export function frameRate(value={num:24,den:1}){
@@ -22,7 +23,7 @@ export async function render(dir,output,{fps,frames,format,background='#101922',
  const abort=()=>browser?.close().catch(()=>{});signal?.addEventListener('abort',abort,{once:true});
  try{
   onProgress({phase:'media',progress:0});host=await preview(dir,{port:0,editable:false,signal,snapshot:d});
-  browser=await chromium.launch({headless:true,args:['--enable-webgl',process.platform==='darwin'?'--use-angle=metal':'--use-angle=swiftshader']});
+  browser=await chromium.launch({...chromiumOptions(),headless:true,args:['--enable-webgl',process.platform==='darwin'?'--use-angle=metal':'--use-angle=swiftshader']});
   const page=await browser.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(host.url);await page.waitForFunction(()=>window.editableframe?.ready,{},{timeout:30000});
   const frameDir=path.join(temp,'frames'),sampleDir=path.join(temp,'samples');await fs.mkdir(frameDir);if(shutter)await fs.mkdir(sampleDir);
   for(let frame=0;frame<count;frame++){
@@ -67,7 +68,7 @@ export async function render(dir,output,{fps,frames,format,background='#101922',
    if(!info.streams.some(s=>s.codec_type==='video')||audio.tracks&&!info.streams.some(s=>s.codec_type==='audio'))throw Error('Encoded media failed stream validation');
   }
   signal?.throwIfAborted();
-  const receipt={version:1,engine:'editableframe',binding:d.binding,projectRevision:d.revision,fps:rate,frames:count,duration:actualDuration,format,alpha:format!=='mp4',pass,motionBlur:shutter,runtime:d.runtimeIdentity,browser:browser.version(),ffmpeg:(await run(ffmpeg(),['-version'])).toString().split('\n')[0],platform:process.platform,background:format==='mp4'?background:null,audio:audio.tracks>0,audioTracks:audio.tracks,assets:Object.fromEntries(Object.entries(d.assets).map(([id,a])=>[id,a.sha256]))};
+  const receipt={configuredBrowser:Boolean(process.env.EDITABLEFRAMES_CHROMIUM_EXECUTABLE),version:1,engine:'editableframe',binding:d.binding,projectRevision:d.revision,fps:rate,frames:count,duration:actualDuration,format,alpha:format!=='mp4',pass,motionBlur:shutter,runtime:d.runtimeIdentity,browser:browser.version(),ffmpeg:(await run(ffmpeg(),['-version'])).toString().split('\n')[0],platform:process.platform,background:format==='mp4'?background:null,audio:audio.tracks>0,audioTracks:audio.tracks,assets:Object.fromEntries(Object.entries(d.assets).map(([id,a])=>[id,a.sha256]))};
   // Reserve the receipt path, and publish a complete file without overwriting another writer.
   const receiptFile=output+'.json',fd=await fs.open(receiptFile,'wx');let published=false;
   try{await fd.writeFile(JSON.stringify(receipt,null,2));await fd.sync();if(format==='png'){await absent(output);await fs.rename(result,output)}else await fs.link(result,output);published=true}finally{await fd.close();if(!published)await fs.rm(receiptFile,{force:true})}

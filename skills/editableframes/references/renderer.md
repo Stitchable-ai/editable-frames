@@ -72,6 +72,13 @@ SVG and WebGL descendants. PNG and ProRes preserve alpha; MP4 flattens over the
 requested background. `window.editableframes.captureTarget` describes the capture
 selector for browser harnesses. `png()` remains the legacy Canvas-only shortcut.
 This is trusted local browser execution, not isolation from malicious authored code.
+The CLI normally uses Playwright's managed Chromium. To use an already installed,
+compatible Chromium explicitly, set `EDITABLEFRAMES_CHROMIUM_EXECUTABLE` to its
+absolute executable path. `doctor` checks that configured file; `render` verifies
+it can actually launch. This opt-in does not download a browser or silently fall
+back. Record the browser version with visual evidence; cross-version pixel
+identity is not promised.
+
 For WebGL, retain the rendered drawing buffer for capture (for example,
 `preserveDrawingBuffer: true`) and await required GPU work.
 Cross-browser/GPU/font pixel identity is not promised.

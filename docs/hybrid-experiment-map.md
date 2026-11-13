@@ -1,5 +1,7 @@
 # What we tried, and where code-generated video fits
 
+> **2026-11-14 follow-up:** the original Fable worker resumed, repaired camera/gaze state dependence and completed the film. Independent checks reproduce 1,152 frames, 228 new seek samples and all 12 controls; a three-frame CLI edit/undo specimen also passes. Earlier unfinished-draft failures below are historical. Acting/contact, native integration and style reuse remain open. See [current evidence](hybrid-gap-closure-2026-11-14.md).
+
 Checkpoint: 2026-11-13. [Interactive experiment map](hybrid-experiment-map.html) · [Static infographic](media/hybrid-experiment-map.svg).
 
 **41 grouped trial entries across 8 areas.** These are an inventory of related attempts, not 41 independent jobs, equal-sized experiments or a success-rate benchmark. They include the local browser/HTML scene studies and the model/preparation steps used by those compositions. Superseded failures stay visible beside later repairs. This is not a claim to enumerate every frame or revision.

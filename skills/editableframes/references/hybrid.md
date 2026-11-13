@@ -1,6 +1,32 @@
 # Hybrid scenes: code inside footage
 
-**Latest decisions (2026-11-13):** the user accepts the full-pickup and two-person handoff examples and prefers Fable 5.2’s visual direction for the 48-second code-generated fantasy story. [Results, technical comparison and story track ST1–ST4](code-generated-story-results-2026-11-13.md). The Fable draft is unfinished and fails a random-seek check; cross-style reuse is a planned experiment. Realistic joint generation and explicitly authored stylized animation are separate routes.
+## Start here: what we tried, and which tool fits the shot
+
+[![Eight areas of video experiments: tracking, layers, masks, lighting, products, actors, stories and workflow. Build with code, make actions together, or combine pieces.](media/hybrid-experiment-map.svg)](hybrid-experiment-map.html)
+
+**[Open the interactive HTML map](hybrid-experiment-map.html)** · **[Read the full inventory and debate](hybrid-experiment-map.md)**. The HTML file opens locally in a browser; GitHub shows this static infographic and the Markdown evidence. No server or model call is needed.
+
+The map records **41 grouped trial entries in eight areas**, including failed attempts and later repairs. “Worked” means only the stated check or user judgment succeeded. It is not a production-readiness score. Ten remaining research/integration areas are listed separately.
+
+**Current position:** code-authored game-like storytelling is a promising, expandable route. Future LLM capability is a forecast; the preferred Fable fantasy draft is evidence of one short style, not every genre or a general provider ranking. Choose by the shot’s required accuracy, editability and shared action—not simply cartoon versus realistic. Exact graphics and authored worlds favour code; realistic handling trials favour staged joint generation; genuine testimony requires recorded evidence. Independent masks cannot create a shared performance.
+
+The HTML includes simple route illustrations, searchable trial cards, the strongest arguments on both sides, a category map and an illustrative mixed-route advert. This synthesis draws on existing Fable reviews; no fresh Fable endorsement was obtained during its recorded provider-limit window.
+
+---
+
+**Gap closure checkpoint (2026-11-14):** [Verified subchecks, retained failures and remaining gates](hybrid-gap-closure-2026-11-14.md). The completed Fable film now passes independent seeking/control checks and a three-frame CLI edit/undo specimen. Target-texture warnings and a local recovery prototype add safeguards; tracking geometry, native integration and visual acting remain open.
+
+**Latest decisions (2026-11-13):** the user accepts the full-pickup and two-person handoff examples and prefers Fable 5.2’s visual direction for the 48-second code-generated fantasy story. [Results, technical comparison and story track ST1–ST4](code-generated-story-results-2026-11-13.md). At that checkpoint the Fable draft was unfinished and failed a random-seek check. The resumed film now passes the scoped runtime checks above; cross-style reuse remains a planned experiment. Realistic joint generation and explicitly authored stylized animation are separate routes.
+
+**Generated trials completed (2026-11-13):** [staged camera-left pickup and completed two-person handoff](staged-generation-results-2026-11-13.md), both returned to editable finishing. One take per case; exact product fidelity and native integration remain open. Estimated total US$1.90 under the fresh US$2 cap; account ledger unverified.
+
+**Local acceptance follow-up (2026-11-13):** [snapshot preparation, full-clip masks, tracker counterexample and continuous lighting](hybrid-acceptance-round1-2026-11-13.md). That earlier local checkpoint preceded the generated trials now recorded separately; camera solve (feature 6) and generated worlds (feature 13) remain untested.
+
+**Scene staging decision (2026-11-13):** object–object, living thing–object and living thing–living thing interactions default to **stage → approved snapshot + reference images → joint video generation → editable finishing**. Independent masks do not create a coupled performance. See [workflow, evidence and remaining integration](interaction-staging-workflow.md). A staged-snapshot pickup and a two-person handoff now have local evidence; native integration, broader interactions and exact product fidelity remain open.
+
+**Interaction policy (2026-11-13):** realistic avatar/product looking, pointing and physical handling use a reference-conditioned whole-shot generation route. Explicitly authored stylized rigs are a separate route, with their own contact and seek acceptance. See [the interaction decision](avatar-lighting.md#interaction-routing-decision-2026-11-13). Independent masks are not a substitute for coherent gaze, gesture, product support or contact.
+
+Research update (2026-11-13): [video segmentation and tracking findings](hybrid-analysis-study-2026-11-13.md) and [reference-conditioned handling shots](avatar-lighting.md#reference-conditioned-handling-shots-2026-11-13) define the next experiments and the editability boundary of flattened footage. These do not claim new implemented renderer services.
 
 **Quality correction, 2026-11-11:** later review found erased fingers/heads, incorrect can placement and mismatched generated geometry in the example videos. Successful rendering and tracking do not establish whole-shot quality. See the [revised compositing and motion-design plan](hybrid-compositing-plan.md) for diagnoses, model/runtime research and proposed release gates. Those new features are planned, not implemented.
 
@@ -33,6 +59,7 @@ Each journey says what the author does, what EditableFrames does, and how far it
 | 6 | **Many versions from one take.** The same shot in twenty prices, five languages, three label colours. | One plate and its data, then control edits. | Re-renders each version from the same pinned inputs. If the plate is replaced, its old matte, depth and track are refused instead of being composited slightly wrong. | Integration test for the refusals; edits use the existing revision-checked history. |
 | 7 | **Fast motion.** Code elements that move quickly should smear like the footage does. | A shutter angle. | Renders several sub-frame samples per output frame and averages them. | Integration test: smear width and edge colour. |
 | 8 | **A moving camera.** The product stays put in a shot whose camera travels. | A camera path solved elsewhere. | Replays the path on a Three.js camera, with rotation interpolated correctly. | Unit tests only. Not yet tried on a real solve; solves of generated footage are approximate. |
+| 9 | **An authored stylized story.** Characters move and speak in a code-built world. | Character/set assets or procedural source, rigs, shot/action/light tracks and prepared speech. | Renders authored geometry and sampled animation with exposed controls; no implicit model call. | Two 48-second local SDK films; Fable visual direction user-preferred; resumed film passes same-machine sequential/seek/control checks and a three-frame CLI specimen. [Story findings and next tests](code-generated-story-results-2026-11-13.md). No native story editor or cross-style portability claim. |
 
 The integration tests use a synthetic plate. [On generated footage](#on-generated-footage) says what a trial on plates from video models found.
 

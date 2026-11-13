@@ -1,5 +1,7 @@
 # Interaction acceptance and code-generated story films — 2026-11-13
 
+> **2026-11-14 follow-up:** the original Fable worker resumed, repaired camera/gaze state dependence and completed the film. Independent checks reproduce 1,152 frames, 228 new seek samples and all 12 controls; a three-frame CLI edit/undo specimen also passes. Earlier unfinished-draft failures below are historical. Acting/contact, native integration and style reuse remain open. See [current evidence](hybrid-gap-closure-2026-11-14.md).
+
 ## Decisions from the latest outputs
 
 The user accepts the visual direction of the full-pickup and two-person handoff outputs and prefers the Fable 5.2 story film as closer to the supplied fantasy-game references. These are **user visual acceptance and preference**, not independent certification of every frame, exact product fidelity, or a completed Fable review. The two model implementations are one creative exercise, with different refinement histories; they are not a general model benchmark.
