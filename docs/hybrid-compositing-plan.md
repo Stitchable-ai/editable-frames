@@ -1,5 +1,7 @@
 # Reliable hybrid compositing and motion design
 
+**Interaction policy, 2026-11-13:** generate intended human–object interaction as a reference-conditioned whole shot, including looking and pointing. Masking and non-overlap do not establish gaze, natural support, gesture or contact. Keep screen-space cards outside person holdouts. Unrelated avatar footage plus an independently placed product image is rejected for an interaction shot; the code compositor remains responsible for editable overlays and non-interacting layouts. This is a routing decision, not a new implemented renderer API.
+
 Human foreground extension: [avatar lighting](avatar-lighting.md) records the representation-dependent routing, still-image findings and pending video acceptance. This is a design addition, not a claim of shipped portrait relighting.
 
 Status: implementation and acceptance plan, 2026-11-11. Implemented APIs are documented separately below; research gates remain explicit. It supersedes any inference that a successful render or a few attractive frames establish a usable hybrid clip. Existing primitives and their tested scope remain documented in [hybrid-scenes.md](hybrid-scenes.md).

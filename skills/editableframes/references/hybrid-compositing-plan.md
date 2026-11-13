@@ -1,5 +1,7 @@
 # Reliable hybrid compositing and motion design
 
+**Interaction policy, 2026-11-13:** generate intended human–object interaction as a reference-conditioned whole shot, including looking and pointing. Masking and non-overlap do not establish gaze, natural support, gesture or contact. Keep screen-space cards outside person holdouts. Unrelated avatar footage plus an independently placed product image is rejected for an interaction shot; the code compositor remains responsible for editable overlays and non-interacting layouts. This is a routing decision, not a new implemented renderer API.
+
 Status: proposed next work, 2026-11-11. This is a design and acceptance plan, not an implemented API. It supersedes any inference that a successful render or a few attractive frames establish a usable hybrid clip. Existing primitives and their tested scope remain documented in [hybrid guide](hybrid.md).
 
 Implementation update: the [prepared-media primitives](prepared-plates.md) now implement receipts, exact frame access, holdouts, corrections, cylinder/mesh replay and kinetic text. These mechanisms have synthetic regression coverage; the real-shot acceptance gates below still require full visual QA. Automatic geometry solving and production model selection remain research.

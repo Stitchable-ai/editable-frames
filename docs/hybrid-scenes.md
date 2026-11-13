@@ -1,5 +1,7 @@
 # Hybrid scenes: code inside footage
 
+**Interaction policy (2026-11-13):** looking, pointing and physical handling use a reference-conditioned whole-shot generation route. See [the interaction decision](avatar-lighting.md#interaction-routing-decision-2026-11-13). Independent masks are not a substitute for coherent gaze, gesture, product support or contact.
+
 Research update (2026-11-13): [video segmentation and tracking findings](hybrid-analysis-study-2026-11-13.md) and [reference-conditioned handling shots](avatar-lighting.md#reference-conditioned-handling-shots-2026-11-13) define the next experiments and the editability boundary of flattened footage. These do not claim new implemented renderer services.
 
 **Quality correction, 2026-11-11:** later review found erased fingers/heads, incorrect can placement and mismatched generated geometry in the example videos. Successful rendering and tracking do not establish whole-shot quality. See the [revised compositing and motion-design plan](hybrid-compositing-plan.md) for diagnoses, model/runtime research and proposed release gates. Those new features are planned, not implemented.
