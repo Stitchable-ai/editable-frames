@@ -44,8 +44,8 @@ Use a short alpha-capable talking clip with head turns, blink, open/closed mouth
 A generated presenter clip is one flattened picture. Imported as media it takes layer edits only: timing, crop, position, an overall grade, and code drawn over it. Her pose, the product in her hand, the grip, the room's light and the camera cannot be changed separately, because they are not separate in the file. Pilots on 2026-11-12 with hosted avatar and video models confirmed the useful half and the missing half:
 
 - **A model can perform the action.** From a supplied still of the presenter in a room, one take pointed and swept a hand toward the product, and another approached a table, gripped headphones by the headband, lifted them and stepped while holding them.
-- **The first frame controls the shot; the prompt does not.** Pose, framing and product orientation followed the supplied image. A take started from an explicitly composed standing frame gave the best result. Text instructions to lock the camera or stand were ignored in other takes.
-- **The product does not survive.** The generated headphones drifted toward generic ones. For an exact product, treat the generated performance as a reference and draw the product in code.
+- **Explicit first-frame composition helped in these takes.** Pose, framing and product orientation followed the supplied image. A take started from an explicitly composed standing frame gave the best result. Text instructions to lock the camera or stand were ignored in other takes.
+- **The product does not survive.** The generated headphones drifted toward generic ones. Exact code replacement is one fallback; it needs the additional inputs below. The default experiment now tests a richer reference set first, without claiming exact product preservation.
 - **Timing needs its own stage.** Speech meant to announce the lift started after it. Sliding audio against a face that is already speaking does not fix lip sync.
 
 To draw an exact product into such a shot, a scene needs inputs that do not exist yet:
@@ -57,7 +57,7 @@ To draw an exact product into such a shot, a scene needs inputs that do not exis
 | A 3D or multi-view product asset | A lifted product shows sides a single photograph does not have |
 | Narration aligned before generation, or a tested lip-sync stage | Speech that names the action has to happen with it |
 
-Bad anatomy in a grip is repaired by another take or a reference performance, not by compositing. Until these exist, a generated pickup is a reference, not an editable shot.
+Bad anatomy in a grip is repaired by another take or a reference performance, not by compositing. Without these inputs, a generated pickup supports edits to the footage layer and code overlays, not independent edits to the product or grip.
 
 ## Provider and research notes
 
@@ -66,3 +66,13 @@ Bad anatomy in a grip is repaired by another take or a reference performance, no
 - [RVM](https://github.com/PeterL1n/RobustVideoMatting) provides recurrent foreground/matte inference, with GPL-3.0 licensing. Licence review and benchmark evidence are required before distribution.
 - [IC-Light](https://github.com/lllyasviel/IC-Light) is an image relighting candidate. Independent image inference is not a temporally validated video relighter.
 - [Beeble](https://developer.beeble.ai/) offers hosted transformation; account-gated product passes and a generative output are different contracts. No hosted pass/relight was tested in this evaluation. Assess output fidelity and current access before choosing it.
+
+## Reference-conditioned handling shots (2026-11-13)
+
+The next experiment generates presenter, product, hands and room together from multi-angle references, then prepares subject masks and suitable surface tracks for editable code. The shared visual context may improve contact, lighting and identity; those remain measured acceptance criteria. A whole-shot output is flattened footage. Code can expose timing, crop, transform, grade and overlay controls, but cannot independently change the generated grip, product pose, physical light or camera. Changing a generation reference means a new take and invalidates derived data.
+
+Use separate foreground generation when an exact or code-driven background is required. Compare native alpha where verified, neutral-background matting and suitable chroma-key acquisition; none automatically supplies shadows, uncontaminated hair or relightable geometry. Preserve separate subject IDs and corrections. Segmentation is not fractional alpha or surface depth.
+
+Product fidelity must be checked against references through the entire turn and grip. A tracked label can repair print only on a supported surface with valid visibility; a planar pin is not a solver for arbitrary curved products. Bad anatomy needs another take or reference performance. Audio references may influence speech or rhythm but do not guarantee lip sync, verbatim speech or action timing. Do not slide speech against an already-speaking face as a repair.
+
+Keep model jobs outside the rendering clock and provider-specific APIs outside the framework. Record actual decoded frame correspondence instead of requested duration, and retain the prior reviewed take until its replacement passes acceptance. The optional exact replacement contract above remains necessary when independent product geometry is required. See [video segmentation and tracking findings](hybrid-analysis-study-2026-11-13.md). These experiments are not new renderer APIs or a production approval.
