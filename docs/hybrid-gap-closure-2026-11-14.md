@@ -9,7 +9,7 @@ This is an active research checkpoint. The [experiment dashboard](hybrid-experim
 | TRACK1: misleading confidence | Target-interior texture diagnostic flags all 49 frames of the retained synthetic wrong-track case. Six new regressions and 13 existing plate tests pass. | Geometry is unchanged: worst error 6.861 px at correlation 0.956. Wrong textured planes can evade this warning. Original real-footage failures remain unavailable. |
 | FLOW1: recoverable generation | Network-free local prototype passes 11 crash/concurrency/input/output fault tests using retained real pickup and handoff media. | Native transport/UI, actual provider reconciliation and atomic managed-asset import. No claim of provider idempotency or prevented real charges. |
 | ST2–3: reusable cast / contrasting styles | New Fable worker read source/APIs, then hit provider usage limit before creating a new style artifact. | Resume when available. Quota failure is not a failed visual method and provides no style-quality evidence. |
-| LIGHT1: moving product illumination | Separate Opus study assigned current corrected assets and matched before/after acceptance. | Await delivered evidence and independent verification; do not count a running task as success. |
+| LIGHT1: moving product illumination | Opus retained copied current scene sources, one reproduction frame and seven key-direction/colour probe stills, then hit its provider usage limit. | No corrected-after clip, motion comparison or seek acceptance. Baseline captures are not a lighting improvement; resume the requested provider when available. |
 
 ## Story: the earlier failed draft is historical
 
