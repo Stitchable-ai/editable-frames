@@ -14,7 +14,9 @@ The HTML includes simple route illustrations, searchable trial cards, the strong
 
 ---
 
-**Mask audit (2026-11-14):** [Same foreground on five backgrounds](hybrid-mask-audit-2026-11-14.md). Dark backgrounds conceal alpha errors; temporal repair trades stability against real edge changes. Keep raw mattes and adjustable repair strength. Independent review and the glass comparison were interrupted by provider limits; neither is approved.
+**Glass follow-up (2026-11-14):** [Verified nested-transparency limits](hybrid-glass-study-2026-11-14.md). The resumed study supports an experimental cylinder-only raster route and a slower Cycles quality candidate for this drink. Submerged ice, general shapes, moving-light response and native integration remain open.
+
+**Mask audit (2026-11-14):** [Same foreground on five backgrounds](hybrid-mask-audit-2026-11-14.md). Dark backgrounds conceal alpha errors; temporal repair trades stability against real edge changes. Keep raw mattes and adjustable repair strength. Independent hair review was interrupted by provider limits. The glass comparison subsequently resumed; see the follow-up above. Neither is production-approved.
 
 **Gap closure checkpoint (2026-11-14):** [Verified subchecks, retained failures and remaining gates](hybrid-gap-closure-2026-11-14.md). The completed Fable film now passes independent seeking/control checks and a three-frame CLI edit/undo specimen. Target-texture warnings and a local recovery prototype add safeguards; tracking geometry, native integration and visual acting remain open.
 

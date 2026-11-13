@@ -30,3 +30,5 @@ An analytic counterexample tests the exact temporal correction formula with perf
 Keep soft mattes independent of hard SAM support at fine hair. Validate each replacement on light and dark backgrounds. Keep repair strength editable and retain the unfiltered matte. Do not silently choose aggressive temporal smoothing from its own stability score. Before closing MASK1, use annotated fast curls/disocclusions and compare detail, lag and false opacity separately; isolate inference context/resolution/source preparation, and review normal-speed clips. No new general grasp/pointing claim follows from this work.
 
 The glass worker also reached its rate limit. Its raster and Cycles stills and diagnostic sources were retained, but it stopped while diagnosing dark submerged ice. There is no completed calibrated comparison, motion clip acceptance or approved transparency route from that interrupted study.
+
+**Subsequent glass update:** the interrupted study resumed and was independently checked. See [nested-transparency follow-up](hybrid-glass-study-2026-11-14.md); its status is now partial, not awaiting a first result. The mask findings above are unchanged.

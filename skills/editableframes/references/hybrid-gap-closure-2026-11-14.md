@@ -42,3 +42,7 @@ Hair/contact whole-clip evidence, mixed human/product directional lighting, nest
 ## Mask audit and provider interruption
 
 [Controlled five-background hair audit](hybrid-mask-audit-2026-11-14.md): same foreground RGB,96 frames and four alpha variants. Repair reduces measured temporal residual by37.6%, but an analytic visibility counterexample demonstrates why smoothing is not accuracy. MASK1 remains partial. Fable reached its provider limit before this review; Opus reached the same limit while diagnosing dark submerged ice. Glass stills/sources are retained but unverified; GLASS1 now needs resumption and verification, rather than remaining shown as actively running. No new hosted calls.
+
+## Resumed glass study
+
+The earlier interruption is historical. [Verified nested-transparency follow-up](hybrid-glass-study-2026-11-14.md) changes GLASS1 to partial: 54 fresh frame comparisons and five control restorations pass; sixteen clip files decode. Source and isolated layers explain why stock capture hides contents. R2 restores cylinder inversion but omits submerged ice; the matched Cycles candidate preserves stronger nested detail at substantial cost. General transparent-material support remains open.
