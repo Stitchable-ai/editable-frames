@@ -38,3 +38,7 @@ Limits: this local SQLite prototype assumes one transport owner has stopped befo
 ## Remaining gates
 
 Hair/contact whole-clip evidence, mixed human/product directional lighting, nested transparent materials, real additional computers, SAM 3 access/runtime, camera solve (feature 6), and reconstructed worlds (feature 13) remain open. Authored fantasy scenes do not complete camera solve or world reconstruction. Neither a completed worker nor passing integrity tests establishes visual production readiness.
+
+## Mask audit and provider interruption
+
+[Controlled five-background hair audit](hybrid-mask-audit-2026-11-14.md): same foreground RGB,96 frames and four alpha variants. Repair reduces measured temporal residual by37.6%, but an analytic visibility counterexample demonstrates why smoothing is not accuracy. MASK1 remains partial. Fable reached its provider limit before this review; Opus reached the same limit while diagnosing dark submerged ice. Glass stills/sources are retained but unverified; GLASS1 now needs resumption and verification, rather than remaining shown as actively running. No new hosted calls.

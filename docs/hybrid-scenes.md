@@ -14,6 +14,8 @@ The HTML includes simple route illustrations, searchable trial cards, the strong
 
 ---
 
+**Mask audit (2026-11-14):** [Same foreground on five backgrounds](hybrid-mask-audit-2026-11-14.md). Dark backgrounds conceal alpha errors; temporal repair trades stability against real edge changes. Keep raw mattes and adjustable repair strength. Independent review and the glass comparison were interrupted by provider limits; neither is approved.
+
 **Gap closure checkpoint (2026-11-14):** [Verified subchecks, retained failures and remaining gates](hybrid-gap-closure-2026-11-14.md). The completed Fable film now passes independent seeking/control checks and a three-frame CLI edit/undo specimen. Target-texture warnings and a local recovery prototype add safeguards; tracking geometry, native integration and visual acting remain open.
 
 **Lighting correction (2026-11-14):** [Verified glare/shadow refinement and corrected measurement regions](hybrid-lighting-refinement-2026-11-14.md). Fixed-pose improvements are real; whole-scene realism and moving-product acceptance remain open.
