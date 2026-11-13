@@ -1,5 +1,7 @@
 # Reliable hybrid compositing and motion design
 
+**Scene staging decision (2026-11-13):** object–object, living thing–object and living thing–living thing interactions default to **stage → approved snapshot + reference images → joint video generation → editable finishing**. Independent masks do not create a coupled performance. See [workflow, evidence and remaining integration](interaction-staging-workflow.md). The latest pickup improved, but the snapshot handoff and broader interaction categories remain untested.
+
 **Interaction policy, 2026-11-13:** generate intended human–object interaction as a reference-conditioned whole shot, including looking and pointing. Masking and non-overlap do not establish gaze, natural support, gesture or contact. Keep screen-space cards outside person holdouts. Unrelated avatar footage plus an independently placed product image is rejected for an interaction shot; the code compositor remains responsible for editable overlays and non-interacting layouts. This is a routing decision, not a new implemented renderer API.
 
 Status: proposed next work, 2026-11-11. This is a design and acceptance plan, not an implemented API. It supersedes any inference that a successful render or a few attractive frames establish a usable hybrid clip. Existing primitives and their tested scope remain documented in [hybrid guide](hybrid.md).

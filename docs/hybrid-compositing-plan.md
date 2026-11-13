@@ -1,5 +1,7 @@
 # Reliable hybrid compositing and motion design
 
+**Scene staging decision (2026-11-13):** object–object, living thing–object and living thing–living thing interactions default to **stage → approved snapshot + reference images → joint video generation → editable finishing**. Independent masks do not create a coupled performance. See [workflow, evidence and remaining integration](interaction-staging-workflow.md). The latest pickup improved, but the snapshot handoff and broader interaction categories remain untested.
+
 **Interaction policy, 2026-11-13:** generate intended human–object interaction as a reference-conditioned whole shot, including looking and pointing. Masking and non-overlap do not establish gaze, natural support, gesture or contact. Keep screen-space cards outside person holdouts. Unrelated avatar footage plus an independently placed product image is rejected for an interaction shot; the code compositor remains responsible for editable overlays and non-interacting layouts. This is a routing decision, not a new implemented renderer API.
 
 Human foreground extension: [avatar lighting](avatar-lighting.md) records the representation-dependent routing, still-image findings and pending video acceptance. This is a design addition, not a claim of shipped portrait relighting.

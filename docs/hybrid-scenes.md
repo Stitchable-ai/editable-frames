@@ -1,5 +1,7 @@
 # Hybrid scenes: code inside footage
 
+**Scene staging decision (2026-11-13):** object–object, living thing–object and living thing–living thing interactions default to **stage → approved snapshot + reference images → joint video generation → editable finishing**. Independent masks do not create a coupled performance. See [workflow, evidence and remaining integration](interaction-staging-workflow.md). The latest pickup improved, but the snapshot handoff and broader interaction categories remain untested.
+
 **Interaction policy (2026-11-13):** looking, pointing and physical handling use a reference-conditioned whole-shot generation route. See [the interaction decision](avatar-lighting.md#interaction-routing-decision-2026-11-13). Independent masks are not a substitute for coherent gaze, gesture, product support or contact.
 
 Research update (2026-11-13): [video segmentation and tracking findings](hybrid-analysis-study-2026-11-13.md) and [reference-conditioned handling shots](avatar-lighting.md#reference-conditioned-handling-shots-2026-11-13) define the next experiments and the editability boundary of flattened footage. These do not claim new implemented renderer services.
