@@ -1,5 +1,19 @@
 # Hybrid scenes: code inside footage
 
+## Start here: what we tried, and which tool fits the shot
+
+[![Eight areas of video experiments: tracking, layers, masks, lighting, products, actors, stories and workflow. Build with code, make actions together, or combine pieces.](media/hybrid-experiment-map.svg)](hybrid-experiment-map.html)
+
+**[Open the interactive HTML map](hybrid-experiment-map.html)** · **[Read the full inventory and debate](hybrid-experiment-map.md)**. The HTML file opens locally in a browser; GitHub shows this static infographic and the Markdown evidence. No server or model call is needed.
+
+The map records **41 grouped trial entries in eight areas**, including failed attempts and later repairs. “Worked” means only the stated check or user judgment succeeded. It is not a production-readiness score. Ten remaining research/integration areas are listed separately.
+
+**Current position:** code-authored game-like storytelling is a promising, expandable route. Future LLM capability is a forecast; the preferred Fable fantasy draft is evidence of one short style, not every genre or a general provider ranking. Choose by the shot’s required accuracy, editability and shared action—not simply cartoon versus realistic. Exact graphics and authored worlds favour code; realistic handling trials favour staged joint generation; genuine testimony requires recorded evidence. Independent masks cannot create a shared performance.
+
+The HTML includes simple route illustrations, searchable trial cards, the strongest arguments on both sides, a category map and an illustrative mixed-route advert. This synthesis draws on existing Fable reviews; no fresh Fable endorsement was obtained during its recorded provider-limit window.
+
+---
+
 **Latest decisions (2026-11-13):** the user accepts the full-pickup and two-person handoff examples and prefers Fable 5.2’s visual direction for the 48-second code-generated fantasy story. [Results, technical comparison and story track ST1–ST4](code-generated-story-results-2026-11-13.md). The Fable draft is unfinished and fails a random-seek check; cross-style reuse is a planned experiment. Realistic joint generation and explicitly authored stylized animation are separate routes.
 
 **Generated trials completed (2026-11-13):** [staged camera-left pickup and completed two-person handoff](staged-generation-results-2026-11-13.md), both returned to editable finishing. One take per case; exact product fidelity and native integration remain open. Estimated total US$1.90 under the fresh US$2 cap; account ledger unverified.
