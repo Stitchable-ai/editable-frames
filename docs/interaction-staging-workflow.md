@@ -1,5 +1,7 @@
 # Stage the scene, then generate the interaction
 
+**Latest decisions (2026-11-13):** the user accepts the full-pickup and two-person handoff examples and prefers Fable 5.2’s visual direction for the 48-second code-generated fantasy story. [Results, technical comparison and story track ST1–ST4](code-generated-story-results-2026-11-13.md). The Fable draft is unfinished and fails a random-seek check; cross-style reuse is a planned experiment. Realistic joint generation and explicitly authored stylized animation are separate routes.
+
 **Generated trials completed (2026-11-13):** [staged camera-left pickup and completed two-person handoff](staged-generation-results-2026-11-13.md), both returned to editable finishing. One take per case; exact product fidelity and native integration remain open. Estimated total US$1.90 under the fresh US$2 cap; account ledger unverified.
 
 **Local acceptance follow-up (2026-11-13):** [snapshot preparation, full-clip masks, tracker counterexample and continuous lighting](hybrid-acceptance-round1-2026-11-13.md). That earlier local checkpoint preceded the generated trials now recorded separately; camera solve (feature 6) and generated worlds (feature 13) remain untested.

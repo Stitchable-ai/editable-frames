@@ -1,5 +1,7 @@
 # Hybrid scenes: code inside footage
 
+**Latest decisions (2026-11-13):** the user accepts the full-pickup and two-person handoff examples and prefers Fable 5.2’s visual direction for the 48-second code-generated fantasy story. [Results, technical comparison and story track ST1–ST4](code-generated-story-results-2026-11-13.md). The Fable draft is unfinished and fails a random-seek check; cross-style reuse is a planned experiment. Realistic joint generation and explicitly authored stylized animation are separate routes.
+
 **Quality correction, 2026-11-11:** later review found erased fingers/heads, incorrect can placement and mismatched generated geometry in the example videos. Successful rendering and tracking do not establish whole-shot quality. See the [revised compositing and motion-design plan](hybrid-compositing-plan.md) for diagnoses, model/runtime research and proposed release gates. Those new features are planned, not implemented.
 
 A hybrid scene combines two kinds of picture in one shot:

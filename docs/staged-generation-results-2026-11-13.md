@@ -1,5 +1,7 @@
 # Staged generation tests — 2026-11-13
 
+**User visual acceptance (2026-11-13):** the user says the full-pickup and two-person handoff outputs look good. Treat these takes as accepted demonstrations of the staged joint-generation direction and proceed with the planned host workflow. This does not certify exact product fidelity, requested heft, repeatability, all-frame anatomy or native delivery, and is not a new independent Fable review. The original measurements below remain unchanged. [Combined conclusions and the separate authored-story experiment](code-generated-story-results-2026-11-13.md).
+
 Follow-up to the local acceptance report. The user authorized a fresh US$2 total generation cap. Two sequential tests use the same provider/model and retain all inputs, raw outputs and failed-quality observations. This is a local preparation/finishing workflow, not completed native provider integration or an independent reviewer approval.
 
 ## Test A: authored snapshot → pickup

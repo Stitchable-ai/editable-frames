@@ -1,12 +1,14 @@
 # Hybrid scenes: code inside footage
 
+**Latest decisions (2026-11-13):** the user accepts the full-pickup and two-person handoff examples and prefers Fable 5.2’s visual direction for the 48-second code-generated fantasy story. [Results, technical comparison and story track ST1–ST4](code-generated-story-results-2026-11-13.md). The Fable draft is unfinished and fails a random-seek check; cross-style reuse is a planned experiment. Realistic joint generation and explicitly authored stylized animation are separate routes.
+
 **Generated trials completed (2026-11-13):** [staged camera-left pickup and completed two-person handoff](staged-generation-results-2026-11-13.md), both returned to editable finishing. One take per case; exact product fidelity and native integration remain open. Estimated total US$1.90 under the fresh US$2 cap; account ledger unverified.
 
 **Local acceptance follow-up (2026-11-13):** [snapshot preparation, full-clip masks, tracker counterexample and continuous lighting](hybrid-acceptance-round1-2026-11-13.md). That earlier local checkpoint preceded the generated trials now recorded separately; camera solve (feature 6) and generated worlds (feature 13) remain untested.
 
 **Scene staging decision (2026-11-13):** object–object, living thing–object and living thing–living thing interactions default to **stage → approved snapshot + reference images → joint video generation → editable finishing**. Independent masks do not create a coupled performance. See [workflow, evidence and remaining integration](interaction-staging-workflow.md). A staged-snapshot pickup and a two-person handoff now have local evidence; native integration, broader interactions and exact product fidelity remain open.
 
-**Interaction policy (2026-11-13):** looking, pointing and physical handling use a reference-conditioned whole-shot generation route. See [the interaction decision](avatar-lighting.md#interaction-routing-decision-2026-11-13). Independent masks are not a substitute for coherent gaze, gesture, product support or contact.
+**Interaction policy (2026-11-13):** realistic avatar/product looking, pointing and physical handling use a reference-conditioned whole-shot generation route. Explicitly authored stylized rigs are a separate route, with their own contact and seek acceptance. See [the interaction decision](avatar-lighting.md#interaction-routing-decision-2026-11-13). Independent masks are not a substitute for coherent gaze, gesture, product support or contact.
 
 Research update (2026-11-13): [video segmentation and tracking findings](hybrid-analysis-study-2026-11-13.md) and [reference-conditioned handling shots](avatar-lighting.md#reference-conditioned-handling-shots-2026-11-13) define the next experiments and the editability boundary of flattened footage. These do not claim new implemented renderer services.
 
@@ -45,6 +47,7 @@ Each journey says what the author does, what EditableFrames does, and how far it
 | 6 | **Many versions from one take.** The same shot in twenty prices, five languages, three label colours. | One plate and its data, then control edits. | Re-renders each version from the same pinned inputs. If the plate is replaced, its old matte, depth and track are refused instead of being composited slightly wrong. | Integration test for the refusals; edits use the existing revision-checked history. |
 | 7 | **Fast motion.** Code elements that move quickly should smear like the footage does. | A shutter angle. | Renders several sub-frame samples per output frame and averages them. | Integration test: smear width and edge colour. |
 | 8 | **A moving camera.** The product stays put in a shot whose camera travels. | A camera path solved elsewhere. | Replays the path on a Three.js camera, with rotation interpolated correctly. | Unit tests only. Not yet tried on a real solve; solves of generated footage are approximate. |
+| 9 | **An authored stylized story.** Characters move and speak in a code-built world. | Character/set assets or procedural source, rigs, shot/action/light tracks and prepared speech. | Renders authored geometry and sampled animation with exposed controls; no implicit model call. | Two 48-second local SDK films; Fable visual direction user-preferred, interrupted draft has a seek defect. [Story findings and next tests](code-generated-story-results-2026-11-13.md). No native story editor or cross-style portability claim. |
 
 The integration tests use a synthetic plate. [On generated footage](#on-generated-footage) says what a trial on plates from video models found.
 
