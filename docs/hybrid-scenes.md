@@ -1,5 +1,7 @@
 # Hybrid scenes: code inside footage
 
+**Local acceptance follow-up (2026-11-13):** [snapshot preparation, full-clip masks, tracker counterexample and continuous lighting](hybrid-acceptance-round1-2026-11-13.md). No new generated take yet; camera solve (feature 6) and generated worlds (feature 13) remain untested.
+
 **Scene staging decision (2026-11-13):** object–object, living thing–object and living thing–living thing interactions default to **stage → approved snapshot + reference images → joint video generation → editable finishing**. Independent masks do not create a coupled performance. See [workflow, evidence and remaining integration](interaction-staging-workflow.md). The latest pickup improved, but the snapshot handoff and broader interaction categories remain untested.
 
 **Interaction policy (2026-11-13):** looking, pointing and physical handling use a reference-conditioned whole-shot generation route. See [the interaction decision](avatar-lighting.md#interaction-routing-decision-2026-11-13). Independent masks are not a substitute for coherent gaze, gesture, product support or contact.

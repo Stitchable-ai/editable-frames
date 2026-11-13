@@ -1,5 +1,7 @@
 # Stage the scene, then generate the interaction
 
+**Local acceptance follow-up (2026-11-13):** [snapshot preparation, full-clip masks, tracker counterexample and continuous lighting](hybrid-acceptance-round1-2026-11-13.md). No new generated take yet; camera solve (feature 6) and generated worlds (feature 13) remain untested.
+
 Decision and evidence checkpoint: 2026-11-13. This is the selected authoring workflow and remaining delivery plan, not a claim of a completed provider integration.
 
 ## The boundary
