@@ -1,6 +1,8 @@
 # Stage the scene, then generate the interaction
 
-**Local acceptance follow-up (2026-11-13):** [snapshot preparation, full-clip masks, tracker counterexample and continuous lighting](hybrid-acceptance-round1-2026-11-13.md). No new generated take yet; camera solve (feature 6) and generated worlds (feature 13) remain untested.
+**Generated trials completed (2026-11-13):** [staged camera-left pickup and completed two-person handoff](staged-generation-results-2026-11-13.md), both returned to editable finishing. One take per case; exact product fidelity and native integration remain open. Estimated total US$1.90 under the fresh US$2 cap; account ledger unverified.
+
+**Local acceptance follow-up (2026-11-13):** [snapshot preparation, full-clip masks, tracker counterexample and continuous lighting](hybrid-acceptance-round1-2026-11-13.md). That earlier local checkpoint preceded the generated trials now recorded separately; camera solve (feature 6) and generated worlds (feature 13) remain untested.
 
 Decision and evidence checkpoint: 2026-11-13. This is the selected authoring workflow and remaining delivery plan, not a claim of a completed provider integration.
 
@@ -8,7 +10,7 @@ Decision and evidence checkpoint: 2026-11-13. This is the selected authoring wor
 
 Independent compositing can position layers, preserve exact artwork and resolve reviewed visibility. It does not infer a shared physical performance. Masks and depth alone cannot make a hand grip an object, two people exchange it, an animal respond to a person, or two objects collide convincingly. Good edges and zero overlap do not establish gaze, support, contact, force or coordinated motion.
 
-For **object–object, living thing–object, and living thing–living thing interactions**, default to staging the intended scene in EditableFrames and generating the coupled action together. This includes coordinated attention and gestures as well as contact. The broader categories are a workflow decision inferred from the human/headphone exercise; animal, multi-person and object-collision shots have not yet been validated. Fully authored animation, rigging or physics can still solve an interaction when explicitly supplied and reviewed; this is a limitation of assembling independent plates, not a claim that code cannot animate interaction.
+For **object–object, living thing–object, and living thing–living thing interactions**, default to staging the intended scene in EditableFrames and generating the coupled action together. This includes coordinated attention and gestures as well as contact. The broader categories are a workflow decision inferred from the human/headphone exercise; a two-person transfer now has one local demonstration, while animal and object-collision shots remain untested and broader multi-person reliability remains unvalidated. Fully authored animation, rigging or physics can still solve an interaction when explicitly supplied and reviewed; this is a limitation of assembling independent plates, not a claim that code cannot animate interaction.
 
 ## Author and agent workflow
 
@@ -27,7 +29,7 @@ The standalone Scene Studio example already exposes placement, camera/light cont
 
 Proposed acceptance for that handoff: agent and human paths capture the same committed revision/frame; active gesture drafts and helpers never leak; stale scene edits are detected before submission; submitted reference bytes/order match the receipt; failed/ambiguous jobs never silently duplicate spend or overwrite an accepted take; imported media uses decoded timing rather than provider billing metrics. These are delivery gates, not new CLI flags.
 
-## Retained experiments and conclusions
+## Earlier experiments and conclusions (before the staged trial)
 
 The mask-based headphone presentation improved hair and measured overlap but still looked awkward: a product placed beside unrelated avatar motion did not establish convincing attention or support.
 
@@ -41,4 +43,4 @@ At the recorded provider rate, the successful video edit was estimated at about 
 
 After generation, coupled action, pose, physical light and product appearance are baked. Expose only genuine controls: footage selection, timing where appropriate, crop, grade and separate code layers. A new pose, grip, placement or background geometry usually needs a new take. Regeneration invalidates dependent masks, tracks and acceptance; a matte does not recover independently editable 3D objects.
 
-Retain scene JSON/source binding, clean snapshot, all reference bytes/hashes, exact prompt and role mapping, endpoint/schema/pricing snapshot, request/job/terminal receipts, estimate versus actual billing when available, raw download/hash, decoded timing, derived-data revisions, final render and review verdicts including failures. Keep secrets, private paths and signed URLs out of public documentation. Record reused assets honestly. Future tests must cover each untested interaction category and the actual snapshot handoff before broad quality claims.
+Retain scene JSON/source binding, clean snapshot, all reference bytes/hashes, exact prompt and role mapping, endpoint/schema/pricing snapshot, request/job/terminal receipts, estimate versus actual billing when available, raw download/hash, decoded timing, derived-data revisions, final render and review verdicts including failures. Keep secrets, private paths and signed URLs out of public documentation. Record reused assets honestly. Future tests must cover each untested interaction category, repeat the snapshot handoff and validate native host integration before broad quality claims.
