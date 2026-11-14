@@ -1,6 +1,6 @@
 # Hybrid scenes: code inside footage
 
-> Reflection review: flat-deck self-reflection and local bounce improve, but broad highlights, curved surfaces and a cross-renderer penumbra mismatch remain open. [Corrections, measured limits and routing](hybrid-reflection-review-2026-11-14.md).
+> Lighting calibration: direct café shadows now match the offline reference in two arrangements, and one GGX direct reference is checked. Nearby reflections, mixed bounce order and temporal anti-aliasing remain open. Offline rendering is still code generation; diffusion is for joint performance when suitable assets/motion are missing. [Measured limits and routing](hybrid-light-calibration-2026-11-14.md).
 
 
 > Import/export reliability: private-copy validation and expected-revision export gates are implemented in the library. Numbered locks and bounded CLI render recovery now pass fresh crash/concurrency tests on this Mac. Automatic recovery sends no signals; native and cross-platform integration remain open. [Evidence and remaining work](hybrid-concurrent-recovery-2026-11-14.md).

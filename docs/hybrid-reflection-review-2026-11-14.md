@@ -1,5 +1,7 @@
 # Reflection review: better flat surfaces, incomplete light transport
 
+> Follow-up: the penumbra mismatch is now explained and repaired for direct light, and a narrow glossy direct reference is checked. Indirect transport remains incomplete. [Current calibration](hybrid-light-calibration-2026-11-14.md).
+
 2026-11-14 · LIGHT1 remains partial · research implementation, not a library default
 
 The independent review corrects three earlier interpretations: hiding the notebook from its own reflection capture caused the larger palm-rest error; the brighter café cup was partly justified bounce light and partly a sampling error; and nearby-product reflections were not negligible merely because the approximation failed to draw them. No finished-advert or general hardware approval follows.

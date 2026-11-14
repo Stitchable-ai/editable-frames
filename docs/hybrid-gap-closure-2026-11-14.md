@@ -78,3 +78,7 @@ LIGHT1 remains partial; 30 scoped checks remain resolved and 0 whole items are c
 ## Concurrent recovery adoption checkpoint
 
 33 scoped checks are resolved, with 0 whole work items closed. Fresh verification passes 147 unit tests, build/browser/beta, 19 import/edit faults, 21 render faults and 30 rounds of six contenders. Numbered locks and private CLI render records replace the rejected stale-unlink design. Automatic recovery sends no signals; explicit browser termination is opt-in. The coordinator also repaired mutating dry-run behavior. Native/provider integration, other platforms, network filesystems and power-loss durability remain open. [Implementation, evidence and limits](hybrid-concurrent-recovery-2026-11-14.md).
+
+## Direct-light calibration checkpoint
+
+35 scoped research subchecks are resolved, with 0 whole work items closed. The café point-shadow bias mismatch is explained and direct light repaired in A/I. A single-scatter GGX direct reference agrees with separate CPU integration across three retained poses. Coordinator recomputation and 48-frame decode confirm the recorded evidence, not fresh-render or motion approval. No default shader changes are adopted. Mixed bounces, nearby reflections and a bright horizon band remain; offline rendering remains a code-based route, not a reason to regenerate known geometry with diffusion. [Evidence and next motion/proxy test](hybrid-light-calibration-2026-11-14.md).
