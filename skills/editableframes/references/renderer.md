@@ -72,6 +72,13 @@ SVG and WebGL descendants. PNG and ProRes preserve alpha; MP4 flattens over the
 requested background. `window.editableframes.captureTarget` describes the capture
 selector for browser harnesses. `png()` remains the legacy Canvas-only shortcut.
 This is trusted local browser execution, not isolation from malicious authored code.
+The CLI normally uses Playwright's managed Chromium. To use an already installed,
+compatible Chromium explicitly, set `EDITABLEFRAMES_CHROMIUM_EXECUTABLE` to its
+absolute executable path. `doctor` checks that configured file; `render` verifies
+it can actually launch. This opt-in does not download a browser or silently fall
+back. Record the browser version with visual evidence; cross-version pixel
+identity is not promised.
+
 For WebGL, retain the rendered drawing buffer for capture (for example,
 `preserveDrawingBuffer: true`) and await required GPU work.
 Cross-browser/GPU/font pixel identity is not promised.
@@ -125,9 +132,25 @@ returns a URL for a pinned manifest ID. `context.mediaFrame(id, sourceSeconds)` 
 available with prepared media and returns a PTS-selected frame URL or undefined.
 Load/decode that image before finishing the render; this API does not return a
 borrowed Canvas. The CLI supports image/video/audio manifests; its default renderer
-path does not mix arbitrary DOM audio automatically. Legacy media-port audio keeps
-its existing mixing path. `captureSurface` is absent in this host. Feature-check
+path does not mix arbitrary DOM audio automatically. Explicit static `scene.media` ports use
+the same mixing path as legacy media ports. `captureSurface` is absent in this host. Feature-check
 optional services; do not invent layer, depth, simulation or screen services.
+
+`context.mediaInfo(id)` returns `{type, width, height, duration, frames, frameRate,
+derived}` for a declared asset. `context.derived(id, role)` returns the ID of the
+asset computed from `id` with that role (`matte`, `depth`, `normals`, `track`,
+`camera`, `environment`), or undefined. Both exist only when the project declares
+media. A `data` asset is JSON: fetch `asset(id)` and parse it. See
+[hybrid scenes](hybrid-scenes.md) for compositing code with footage.
+
+## Optional control passes
+
+A scene may declare `passes: ['clay', 'depth', …]`: other ways it can draw
+itself, for conditioning a video model or compositing elsewhere. Names are open
+lowercase identifiers; `beauty` is implied and cannot be declared. The host
+supplies `clock.pass`, which is `'beauty'` unless a pass was requested, and never
+requests a pass the scene did not declare. `render DIR OUT --pass NAME` exports
+one. Draw nothing but the pass: hide footage and DOM layers.
 
 When exposing controls for separate components, use distinct stable semantic
 anchors and matching properties. Connect controlled DOM nodes to those IDs, or
@@ -161,3 +184,34 @@ These tests do not establish a native application's integration or agent reliabi
 For optional object parents, locked/hidden policy and bounded direct-manipulation
 proposals, read [the interaction contract](interaction-contract.md). The renderer
 hook returns sparse control values; a host owns one atomic commit and cancellation.
+
+### Footage during shutter sampling
+
+`clock.mediaTime` is source seconds at the output frame's time, after the clip's
+trim and playback rate. Without a shutter it equals `clock.frame / clock.fps`.
+During motion blur, `clock.frame` advances through the shutter samples while
+`clock.mediaTime` stays fixed. Use `clock.mediaTime ?? clock.frame / clock.fps`
+for footage, mattes, depth and tracks attached to it; use `clock.frame` for code
+animation. `mediaFrame(id, seconds)` still honors the exact time requested, so
+custom scenes must choose the appropriate clock. Legacy renderers receive
+`mediaTime` alongside `time`; pass `mediaTime` to `host.portFrame` for footage.
+The media starter uses this clock too; authored media offsets remain explicit.
+
+### Static audio on portable renderer scenes
+
+A `defineRenderer` descriptor may declare `media` ports just like a template:
+
+```js
+media: {
+  firstTake: {asset: 'pickup', offset: 0, end: 'transparent'},
+  secondTake: {asset: 'handoff', offset: 121 / 24, end: 'transparent'},
+}
+```
+
+The editing adapter preserves this declaration for the existing audio scheduler.
+Audio follows clip trim, playback rate and port offsets; pictures must still sample
+those sources explicitly. At unchanged speed, the mixer uses a passthrough filter
+instead of time-stretching. This does not imply dynamic audio automation, arbitrary
+renderer-prop bindings, or sample-identical AAC encoding. Source/runtime changes
+still require an explicit project rebind. `npm run test:audio` exercises PCM trim,
+delay and 1× sample alignment through the real mixer and requires FFmpeg.

@@ -20,6 +20,9 @@ export function defineRenderer(scene) {
   if(!Number.isFinite(scene.fps)||scene.fps<=0)throw Error('Invalid renderer fps');
   if(scene.frameRate&&(!Number.isSafeInteger(scene.frameRate.num)||scene.frameRate.num<1||!Number.isSafeInteger(scene.frameRate.den)||scene.frameRate.den<1||Math.abs(scene.frameRate.num/scene.frameRate.den-scene.fps)>1e-7))throw Error('Renderer frameRate disagrees with fps');
   if(scene.animationPolicy!==undefined&&!['clock','authored'].includes(scene.animationPolicy))throw Error('Invalid animation policy');
+  // Optional control passes (clay, depth, id...) the scene can draw besides its picture.
+  // A host passes clock.pass and never asks for one that is not declared here.
+  if(scene.passes!==undefined&&(!Array.isArray(scene.passes)||scene.passes.length>16||new Set(scene.passes).size!==scene.passes.length||scene.passes.some(p=>typeof p!=='string'||!/^[a-z][a-z0-9-]{0,31}$/.test(p)||p==='beauty')))throw Error('Invalid renderer passes');
   return Object.freeze({...scene,protocol:RENDERER_PROTOCOL});
 }
 /** Optional picking result; not a grammar for scene objects. Coordinates are

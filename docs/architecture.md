@@ -38,13 +38,13 @@ not imply depth, layer, simulation, device or audio-automation services. See the
 
 `AdapterRegistry` supports versioned adapters with `create(context)` returning `render(frame)`. An adapter can declare required host services. `createEffectHost` supplies only real implementations; missing services produce an explicit error. The initial demos include direct rendering paths as well as this optional registry. They do not yet all route through a single scheduler.
 
-The beta media host supplies `frameAt` and editable `portFrame`. General `layerAt`, `audioAt`, `maskAt`, `depthAt`, and `simulationAt` services remain extension work. Frame identity must include source revision, time, quality, color and effect order. Temporal effects must define whether they sample original source or upstream composition. Do not fake frame history by repeatedly drawing the same current frame.
+The beta media host supplies `frameAt` and editable `portFrame`. Mattes, depth maps, tracks and camera paths reach a renderer as ordinary pinned assets linked to the footage they were computed from (`mediaInfo`, `derived`; see [hybrid scenes](hybrid-scenes.md)). General `layerAt`, `audioAt` and `simulationAt` services, and depth ordering between separate clips, remain extension work. Frame identity must include source revision, time, quality, color and effect order. Temporal effects must define whether they sample original source or upstream composition. Do not fake frame history by repeatedly drawing the same current frame.
 
 ## Implemented and proposed
 
-Implemented: authoring core, disk-backed panel editor, revision-checked agent proposals, procedural Canvas/Three/WebGL2 studies, floating-point effects, device lighting, shared clip compositor, PTS-indexed local media frames, static audio-port mixing, rational frame exports and RGBA/ProRes transparency. See beta.md for the exact supported contract.
+Implemented: authoring core, disk-backed panel editor, revision-checked agent proposals, procedural Canvas/Three/WebGL2 studies, floating-point effects, device lighting, shared clip compositor, PTS-indexed local media frames, static audio-port mixing, rational frame exports and RGBA/ProRes transparency. See beta.md for the exact supported contract. Since beta 1: derived plate assets, depth occlusion, matte cut-outs, corner pins, lighting from a plate, declared control passes and shutter motion blur at export (hybrid-scenes.md).
 
-Proposed: streaming/hardware media decode, depth/ID sources, audio automation, untrusted-code sandboxing, distributed scheduling, EffectCraft/WASM bridge, broader DOM/media conformance, device-profile unification and explicit schema migration maps.
+Proposed: streaming/hardware media decode, depth ordering between clips, audio automation, untrusted-code sandboxing, distributed scheduling, EffectCraft/WASM bridge, broader DOM/media conformance, device-profile unification and explicit schema migration maps.
 
 New custom code remains supported even when it exposes no editable controls. Unknown capabilities must not be discarded or converted to a smaller primitive vocabulary. In this beta, unknown template adapters prevent loading rather than mutating the saved document.
 
