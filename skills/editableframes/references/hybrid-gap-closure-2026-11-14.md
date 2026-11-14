@@ -58,3 +58,7 @@ The provider interruption is historical. [Completed mask follow-up](hybrid-mask-
 ## Local CLI round trip and audio repair
 
 [Verified replay workflow](hybrid-roundtrip-workflow-2026-11-14.md) adds two scoped subchecks, bringing the checkpoint to 28 resolved subchecks and zero whole items closed. The coordinator fixes portable-renderer audio loss and unity-rate stretching in the SDK, verifies full film/trim exports and repairs a separate reference-descriptor mismatch in the research ledger. Native import, provider reconciliation, audio listening and normal-speed visual acceptance remain open.
+
+## Moving reflections checkpoint
+
+LIGHT1 stays partial. New worker evidence is under independent review; the total remains 28 scoped checks resolved and 0 whole work items closed. [Results and remaining defects](hybrid-moving-reflections-2026-11-14.md).

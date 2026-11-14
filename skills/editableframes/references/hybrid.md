@@ -1,5 +1,8 @@
 # Hybrid scenes: code inside footage
 
+> Moving-reflection checkpoint: camera/product motion improves screen and emitter placement, but self-reflection and café brightness remain open. [Evidence and limits](hybrid-moving-reflections-2026-11-14.md).
+
+
 ## Start here: what we tried, and which tool fits the shot
 
 [![Eight areas of video experiments: tracking, layers, masks, lighting, products, actors, stories and workflow. Build with code, make actions together, or combine pieces.](media/hybrid-experiment-map.svg)](hybrid-experiment-map.html)
