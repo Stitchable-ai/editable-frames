@@ -1,5 +1,8 @@
 # Hybrid scenes: code inside footage
 
+> Shared human/product light: one continuous track works, but footage correction is experimental. Half-house light plus front direction is not a sufficient acceptance rule. [Evidence and routing boundaries](hybrid-shared-human-light-2026-11-14.md).
+
+
 > Moving-reflection checkpoint: camera/product motion improves screen and emitter placement, but self-reflection and café brightness remain open. [Evidence and limits](hybrid-moving-reflections-2026-11-14.md).
 
 

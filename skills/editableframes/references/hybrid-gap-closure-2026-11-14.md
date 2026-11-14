@@ -62,3 +62,7 @@ The provider interruption is historical. [Completed mask follow-up](hybrid-mask-
 ## Moving reflections checkpoint
 
 LIGHT1 stays partial. New worker evidence is under independent review; the total remains 28 scoped checks resolved and 0 whole work items closed. [Results and remaining defects](hybrid-moving-reflections-2026-11-14.md).
+
+## Shared human/product light checkpoint
+
+HUMAN1 moves from working to partial. No new independently resolved subcheck: 28 remain. Broad relighting and the proposed simple guard are not validated. [Evidence](hybrid-shared-human-light-2026-11-14.md). Follow-up reflection repair and import recovery hit the Claude API rate limit; no completed result is claimed.
