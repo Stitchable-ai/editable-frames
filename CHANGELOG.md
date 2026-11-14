@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased
+
+Hybrid scenes: code-rendered elements composited with filmed or generated footage. See [hybrid scenes](docs/hybrid-scenes.md).
+
+- Add derived assets: a matte, depth map, normals, track, camera path or environment is pinned to the hash of the footage it was computed from. A replaced take, a second asset for one role, or a derived video with a different frame count is refused. `asset-add` gains `--role`, `--of` and depth-encoding flags; JSON `data` assets are accepted.
+- Add `editableframes/plate`: corner-pin homographies, track and camera-path sampling, frame-rate conform and cadence, depth encodings, plate measurements (levels, light direction, noise), seeded grain, object-id colours and shutter sampling.
+- Add `editableframes/three-plate`: depth occlusion by the footage, matte hold-out, lighting from the footage, camera-path replay, a shadow catcher and clay/depth/normal/id/matte passes.
+- Add optional `mediaInfo` and `derived` renderer services, declared control passes (`passes`, `clock.pass`) and `render --pass`.
+- Add shutter motion blur at export: `render --motion-blur ANGLE [--samples N]`.
+- Add `init --hybrid`, a starter with a synthetic plate, and `npm run test:hybrid`.
+- Document a trial of the hybrid helpers on generated footage, and how to conform mattes and depth maps made by other tools.
+- The hybrid starter lights its can from the footage at environment intensity 1 (was 1.5, set while half of the panorama was empty), with aluminium lids at aluminium's reflectance. Measured against real cans in generated plates.
+- Fix video frames looked up one frame early: media preparation read frame times as six-decimal seconds, so frame 1 of a 24 fps clip (0.041667) seemed to start after 1/24 s and a third of the frames of any 24 or 30 fps clip showed their predecessor. Frame times are now exact ticks in the stream's time base.
+- Fix MP4 and MOV exports coming out 10–13 levels darker than the frames drawn (128 became 115), footage included: the encoder converted sRGB to the BT.709 camera curve, which players do not undo. Exports now keep the drawn values (BT.709 matrix, limited range, transfer tagged as sRGB).
+- Fix footage tagged with BT.709 primaries and transfer (most camera footage) drawing darker than its values, and mattes and depth maps tagged the same way drawing changed data: decoded frames carried colour chunks the browser applied. Frames are now decoded without them.
+- Fix MOV export of a scene with no transparency, which failed extracting an alpha channel the frames did not have.
+- Document a trial of the hybrid helpers on filmed footage.
+- Fix transparent DOM-root exports capturing the preview page's own header through the scene. Any transparent renderer export smaller than the header area was affected.
+
+Runtime files changed, so existing projects need their normal `rebind`.
+
 ## 0.1.0-beta.1 — 2026-10-07
 
 First beta for trusted local-code projects. No remote publication is implied.

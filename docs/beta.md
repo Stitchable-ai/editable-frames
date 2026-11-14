@@ -67,3 +67,7 @@ npm run check:public
 ## Opening an alpha project
 
 Keep a copy of the complete project folder. Beta changes the runtime binding, so an alpha project can initially report an incompatible binding. Run `rebind DIR` to validate its existing schema/history against beta and record the new runtime. A compatible rebind preserves edits and archives the prior project. Do not use `--reset` just to dismiss an error: it deliberately starts from defaults and belongs only to an intentional incompatible schema replacement. Historic arbitrary-source restoration remains manual; property undo/redo is the supported persisted history contract.
+
+### Interrupted CLI work
+
+Imports cancel cleanly on SIGINT/SIGTERM/SIGHUP. Numbered edit locks can recover a provably dead local owner. CLI renders record owned temporary resources; subsequent renders attempt non-signalling recovery, also available through `recover DIR`. Use `--dry-run` to inspect, or explicitly `--stop-browsers` to request SIGTERM for a verified orphan browser. Unknown owners are left alone. These checks passed on one Mac/APFS; Windows takeover, network filesystems, power loss, preview and native-app integration are not covered. Existing projects need `rebind` after the runtime update. [Evidence](hybrid-concurrent-recovery-2026-11-14.md).

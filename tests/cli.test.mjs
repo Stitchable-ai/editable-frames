@@ -12,7 +12,7 @@ test('portable CLI starter and exact public documentation compile outside the ch
  const tmp=await fs.mkdtemp(path.join(os.tmpdir(),'ef-portable-cli-')),dir=path.join(tmp,'scene');
  try{
   cli('init',dir,'--renderer');const c=cli('inspect',dir);assert.equal(c.anchors[0].id,'orb');assert.equal(c.anchors[0].values.color,'#38bdf8');
-  const guide=await fs.readFile(path.join(root,'docs/renderer-contract.md'),'utf8');assert.equal(await fs.readFile(path.join(root,'skills/editableframes/references/renderer.md'),'utf8'),guide);
+  const guide=await fs.readFile(path.join(root,'docs/renderer-contract.md'),'utf8');assert.equal(await fs.readFile(path.join(root,'skills/editableframes/references/renderer.md'),'utf8'),guide);/* The skill copy drops the pictures, whose relative links would not resolve from the skill folder. */assert.equal(await fs.readFile(path.join(root,'skills/editableframes/references/hybrid.md'),'utf8'),(await fs.readFile(path.join(root,'docs/hybrid-scenes.md'),'utf8')).replace(/\n!\[[^\n]*\]\(media\/[^\n]*\)\n\n\*[^\n]*\*\n/g,''));
   const code=guide.match(/```js\n([\s\S]*?)```/)[1];await fs.writeFile(path.join(dir,'clip.mjs'),code);cli('rebind',dir,'--reset');assert.deepEqual(cli('inspect',dir).anchors,[]);
   const {readProject}=await import('../scripts/project.mjs');const d=await readProject(dir);assert.equal(d.kind,'renderer');assert.deepEqual(d.studio.doc.fps,{num:30,den:1});assert.equal(d.studio.doc.width,640);
  }finally{await fs.rm(tmp,{recursive:true,force:true})}

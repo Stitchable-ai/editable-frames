@@ -1,6 +1,7 @@
+import {validatePreparedAnalysis} from '../packages/plate/prepared.mjs';
 import fs from 'node:fs/promises';import path from 'node:path';import {pathToFileURL} from 'node:url';import {createHash,randomUUID} from 'node:crypto';import {build} from 'esbuild';
-import {root} from './build.mjs';import {Studio,clone} from '../packages/core/index.mjs';import {serve,sendFile} from './server.mjs';import {readAssets,prepareMedia,fileHash} from './media.mjs';
-import {normalizeClipModule} from '../packages/core/definition.mjs';
+import {root} from './build.mjs';import {acquireLock,recordId,processTable} from './lock.mjs';import {Studio,clone} from '../packages/core/index.mjs';import {serve,sendFile} from './server.mjs';import {readAssets,prepareMedia,fileHash,checkDeclaration,checkBytes,preflightMedia} from './media.mjs';
+import {normalizeClipModule} from '../packages/core/definition.mjs';import {validateDerived} from '../packages/plate/manifest.mjs';import {validateTrack} from '../packages/plate/track.mjs';import {validateCameraPath} from '../packages/plate/camera.mjs';
 const publicExports=JSON.parse(await fs.readFile(path.join(root,'package.json'),'utf8')).exports;
 function publicPackagePlugin(){return {name:'editableframes-public-exports',setup(b){b.onResolve({filter:/^editableframes(?:\/.*)?$/},args=>{const key=args.path==='editableframes'?'.':'./'+args.path.slice('editableframes/'.length),file=publicExports[key];return file?{path:path.join(root,file)}:{errors:[{text:'Unknown EditableFrames export: '+args.path}]};});}};}
 export const hash=s=>createHash('sha256').update(s).digest('hex');
@@ -8,7 +9,7 @@ export async function definition(dir){
  dir=await fs.realpath(dir);const file=path.join(dir,'clip.mjs');
  const bundled=await build({entryPoints:[file],bundle:true,format:'esm',platform:'browser',write:false,minify:true,nodePaths:[path.join(root,'node_modules')],plugins:[publicPackagePlugin()]});
  const assets=await readAssets(dir);const assetIdentity=Object.fromEntries(Object.entries(assets).map(([id,{file,...rest}])=>[id,rest]));
- const runtimeFiles=['packages/core/rotation.mjs','packages/core/spatial-session.mjs','packages/three/spatial-math.mjs','packages/three/spatial-editor.mjs','packages/core/key-timing.mjs','packages/core/manipulation.mjs','packages/three/manipulation.mjs','packages/core/index.mjs','packages/core/animation.mjs','packages/core/host.mjs','packages/core/renderer.mjs','packages/core/controls.mjs','packages/core/objects.mjs','packages/core/interaction.mjs','packages/core/definition.mjs','packages/runtime/renderer-host.mjs','packages/runtime/renderer-compositor.mjs','packages/runtime/editor.mjs','packages/runtime/compositor.mjs','packages/media/ports.mjs','packages/media/browser.mjs','packages/media/audio-plan.mjs','packages/media/playback.mjs','scripts/render.mjs','scripts/audio.mjs','package-lock.json'];
+ const runtimeFiles=['packages/core/rotation.mjs','packages/core/spatial-session.mjs','packages/three/spatial-math.mjs','packages/three/spatial-editor.mjs','packages/core/key-timing.mjs','packages/core/manipulation.mjs','packages/three/manipulation.mjs','packages/core/index.mjs','packages/core/animation.mjs','packages/core/host.mjs','packages/core/renderer.mjs','packages/core/controls.mjs','packages/core/objects.mjs','packages/core/interaction.mjs','packages/core/definition.mjs','packages/runtime/renderer-host.mjs','packages/runtime/renderer-compositor.mjs','packages/runtime/editor.mjs','packages/runtime/compositor.mjs','packages/media/ports.mjs','packages/media/browser.mjs','packages/media/audio-plan.mjs','packages/media/playback.mjs','scripts/render.mjs','scripts/browser.mjs','scripts/audio.mjs','package-lock.json'];
  const runtimeIdentity=Object.fromEntries(await Promise.all(runtimeFiles.map(async file=>[file,hash(await fs.readFile(path.join(root,file)))])));
  const binding=hash(Buffer.concat([Buffer.from(bundled.outputFiles[0].contents),Buffer.from(JSON.stringify(runtimeIdentity)),Buffer.from(JSON.stringify(assetIdentity))]));
  const normalized=normalizeClipModule(await import('data:text/javascript;base64,'+Buffer.from(bundled.outputFiles[0].contents).toString('base64')));
@@ -16,16 +17,50 @@ export async function definition(dir){
 }
 export async function init(dir,{template='canvas'}={}){
  await fs.mkdir(dir,{recursive:true});if((await fs.readdir(dir)).length)throw Error('init needs an empty directory');
- if(!['canvas','media','renderer'].includes(template))throw Error('Unknown starter');
+ if(!['canvas','media','renderer','hybrid'].includes(template))throw Error('Unknown starter');
  await fs.copyFile(path.join(root,'templates',template,'clip.mjs'),path.join(dir,'clip.mjs'));
  if(template==='media'){const {createDemoMedia}=await import('./demo-media.mjs');await createDemoMedia(dir);}
+ if(template==='hybrid'){const {createHybridDemo}=await import('./demo-hybrid.mjs');await createHybridDemo(dir);}
  const d=await definition(dir),s=new Studio(d.templates,{binding:d.binding});s.doc.clips=[s.make(d.template.id)];s.doc.width=d.template.width??1280;s.doc.height=d.template.height??720;s.doc.fps=d.frameRate;s.check(s.doc);s.base=clone(s.doc);
  await snapshotSource(d);await fs.writeFile(path.join(dir,'project.json'),s.serialize());return {directory:path.resolve(dir),template:d.template.id};
 }
 export async function readProject(dir){const d=await definition(dir),raw=await fs.readFile(path.join(d.dir,'project.json'),'utf8');return {...d,raw,revision:hash(raw),studio:Studio.restore(raw,d.templates,d.binding)};}
+// One edit per project. The lock records its owner, so an edit that was killed no longer blocks the project
+// for ever: the next edit takes over in one atomic step (lock.mjs) and removes what the dead one left.
+// `.editableframe-edit.lock` is still created while the lock is held, so an older CLI is kept out as well.
+export async function editLock(dir){
+ dir=await fs.realpath(dir);const legacy=path.join(dir,'.editableframe-edit.lock'),lock=await acquireLock(path.join(dir,'.editableframe','locks','edit')),release=lock.release;let mine=false;
+ lock.release=async()=>{if(mine)await fs.rm(legacy,{force:true});await release()};
+ try{
+  // Holding the lock, a legacy file that names an earlier generation belongs to a holder that is gone.
+  const old=await fs.readFile(legacy,'utf8').then(JSON.parse).catch(e=>e.code==='ENOENT'?undefined:null);
+  if(old===null||old&&!(old.gen<lock.gen))throw Error('Another edit is active (a lock without a verifiable owner exists; if no edit is running, remove '+legacy+')');
+  if(old)await fs.rm(legacy);
+  await fs.writeFile(legacy,JSON.stringify({gen:lock.gen,token:lock.token}),{flag:'wx'}).catch(e=>{throw e.code==='EEXIST'?Error('Another edit is active; retry after it finishes'):e});mine=true;
+  lock.recovered=await lock.reclaim(record=>sweepEdit(dir,record));
+ }catch(e){await lock.release();throw e}
+ return lock;
+}
+// What a killed edit left behind. Each name carries that edit's own lock generation and token, so nothing is
+// found by pattern. A decoder it started may still be writing; it is never signalled, it ends by itself,
+// and its directory is left for the next edit to remove.
+async function sweepEdit(dir,record){
+ const id=recordId(record),removed=[],left=[];if(!id)return {complete:true};
+ const stage=path.join(dir,'assets','.import-'+id),st=await fs.lstat(stage).catch(()=>null);
+ if(st&&!st.isDirectory()){await fs.rm(stage,{force:true});removed.push(stage)}
+ else if(st){
+  const users=await processTable().then(rows=>rows.filter(r=>r.command.includes('.import-'+id)).map(r=>r.pid),()=>null);
+  if(users===null||users.length)left.push({path:stage,why:users?'still used by process '+users.join(', '):'cannot list processes'});
+  else{await fs.rm(stage,{recursive:true,force:true});removed.push(stage)}
+ }
+ for(const f of ['assets.json','project.json']){const t=path.join(dir,f+'.'+id+'.tmp');if(await fs.lstat(t).then(s=>s.isFile(),()=>false)){await fs.rm(t,{force:true});removed.push(t)}}
+ const result={complete:!left.length,removed,left};
+ if(removed.length||left.length){const log=path.join(dir,'.editableframe','recovered');await fs.mkdir(log,{recursive:true});await fs.writeFile(path.join(log,'edit-'+id+'.json'),JSON.stringify({at:new Date().toISOString(),owner:record.owner,...result},null,1))}
+ return result;
+}
 export async function mutate(dir,operation){
- const lock=path.join(dir,'.editableframe-edit.lock');const fd=await fs.open(lock,'wx').catch(error=>{if(error.code==='EEXIST')throw Error('Another edit is active; retry after it finishes');throw error;});
- try{const d=await readProject(dir);await operation(d);const raw=d.studio.serialize(),dest=path.join(d.dir,'project.json'),temp=dest+'.'+randomUUID()+'.tmp';try{await fs.writeFile(temp,raw);await fs.rename(temp,dest)}finally{await fs.rm(temp,{force:true})}return {revision:hash(raw),history:d.studio.history.length,cursor:d.studio.cursor};}finally{await fd.close();await fs.rm(lock,{force:true})}
+ const lock=await editLock(dir);
+ try{const d=await readProject(dir);await operation(d);const raw=d.studio.serialize(),dest=path.join(d.dir,'project.json'),temp=dest+'.'+lock.id+'.tmp';try{await fs.writeFile(temp,raw);await lock.assertHeld();await fs.rename(temp,dest)}finally{await fs.rm(temp,{force:true})}return {revision:hash(raw),history:d.studio.history.length,cursor:d.studio.cursor};}finally{await lock.release()}
 }
 export async function preview(dir,{port=8791,editable=true,signal,snapshot}={}){
  const d=snapshot??await readProject(dir),media=await prepareMedia(d.assets,{signal});
@@ -72,26 +107,43 @@ export async function snapshotSource(d){
  const dest=path.join(d.dir,'.editableframe','sources',d.binding);await fs.mkdir(dest,{recursive:true});await fs.writeFile(path.join(dest,'clip.bundle.mjs'),d.bundledSource);await fs.copyFile(d.file,path.join(dest,'clip.mjs'));await fs.copyFile(path.join(root,'packages/core/index.mjs'),path.join(dest,'core.mjs'));await fs.copyFile(path.join(root,'packages/core/animation.mjs'),path.join(dest,'animation.mjs'));for(const file of ['rotation.mjs','spatial-session.mjs','key-timing.mjs','manipulation.mjs','renderer.mjs','controls.mjs','objects.mjs','interaction.mjs','definition.mjs'])await fs.copyFile(path.join(root,'packages/core',file),path.join(dest,file));await fs.writeFile(path.join(dest,'runtime.json'),JSON.stringify(d.runtimeIdentity,null,2));await fs.writeFile(path.join(dest,'assets.json'),JSON.stringify({version:1,assets:d.assetIdentity},null,2));
 }
 export async function rebind(dir,{reset=false}={}){
- const lock=path.join(dir,'.editableframe-edit.lock'),fd=await fs.open(lock,'wx');
+ const lock=await editLock(dir);
  try{const d=await definition(dir),file=path.join(d.dir,'project.json'),raw=await fs.readFile(file,'utf8'),p=JSON.parse(raw);
  let s;if(reset){s=new Studio(d.templates,{binding:d.binding});s.doc.clips=[s.make(d.template.id)];s.doc.width=d.template.width??1280;s.doc.height=d.template.height??720;s.doc.fps=d.frameRate;s.check(s.doc);s.base=clone(s.doc);}else{s=Studio.restore(raw,d.templates,p.binding);s.binding=d.binding;}
  const archive=path.join(d.dir,'.editableframe','revisions');await fs.mkdir(archive,{recursive:true});const backup=path.join(archive,hash(raw)+'.json');await fs.writeFile(backup,raw);await snapshotSource(d);
- const temp=file+'.'+randomUUID()+'.tmp';try{await fs.writeFile(temp,s.serialize());await fs.rename(temp,file)}finally{await fs.rm(temp,{force:true})}
+ const temp=file+'.'+lock.id+'.tmp';try{await fs.writeFile(temp,s.serialize());await lock.assertHeld();await fs.rename(temp,file)}finally{await fs.rm(temp,{force:true})}
  return {binding:d.binding,backup,reset};
- }finally{await fd.close();await fs.rm(lock,{force:true})}
+ }finally{await lock.release()}
 }
 
-export async function importAsset(dir,id,source,{type}={}){
+export async function importAsset(dir,id,source,{type,role,of,encoding,subject,signal}={}){
  if(['__proto__','constructor','prototype'].includes(id)||!/^[a-zA-Z0-9_-]{1,80}$/.test(id))throw Error('Invalid asset ID');
- dir=await fs.realpath(dir);const lock=path.join(dir,'.editableframe-edit.lock'),fd=await fs.open(lock,'wx');
+ dir=await fs.realpath(dir);const lock=await editLock(dir);let stage;
  try{
-  const d=await readProject(dir);if(Object.hasOwn(d.assets,id))throw Error('Asset IDs are immutable; use a new ID and swap the port');
-  const ext=path.extname(source).toLowerCase();type??=(['.png','.jpg','.jpeg','.webp'].includes(ext)?'image':['.wav','.mp3','.flac','.m4a'].includes(ext)?'audio':'video');
-  if(!['image','audio','video'].includes(type)||!/^\.[a-z0-9]{1,8}$/.test(ext))throw Error('Invalid asset type/extension');
-  const sha256=await fileHash(source),src='assets/'+sha256+ext;await fs.mkdir(path.join(dir,'assets'),{recursive:true});await fs.copyFile(source,path.join(dir,src));
-  const manifest={version:1,assets:{...d.assetIdentity,[id]:{src,type,sha256}}};
-  const file=path.join(dir,'assets.json'),tmp=file+'.'+randomUUID()+'.tmp';await fs.writeFile(tmp,JSON.stringify(manifest,null,2));await fs.rename(tmp,file);
-  // Rebinding is separate and explicit; the old project/source snapshot is retained.
-  return {id,sha256,next:'Run rebind to accept the added asset; set a media port to its ID.'};
- }finally{await fd.close();await fs.rm(lock,{force:true})}
+  // Only the asset manifest is needed. Reading the whole project would refuse the
+  // binding the previous import changed, so a second import before rebind failed.
+  const d=await definition(dir);if(Object.hasOwn(d.assets,id))throw Error('Asset IDs are immutable; use a new ID and swap the port');
+  const ext=path.extname(source).toLowerCase();type??=(['.png','.jpg','.jpeg','.webp'].includes(ext)?'image':['.wav','.mp3','.flac','.m4a'].includes(ext)?'audio':ext==='.json'?'data':'video');
+  if(!['image','audio','video','data'].includes(type)||!/^\.[a-z0-9]{1,8}$/.test(ext))throw Error('Invalid asset type/extension');
+  // A derived asset records the hash of the take it describes, so a regenerated take cannot reuse it.
+  if((role===undefined)!==(of===undefined))throw Error('Use --role and --of together');
+  let derived;if(role){if(!Object.hasOwn(d.assets,of))throw Error('Unknown --of asset: '+of);derived={of,role,sourceSha256:d.assets[of].sha256,...(subject?{subject}:{}),...(encoding?{encoding}:{})};}
+  // Validate a private copy. Hashing the source before copying can pin different bytes under that hash.
+  signal?.throwIfAborted();const assetsDir=path.join(dir,'assets');await fs.mkdir(assetsDir,{recursive:true});
+  // Named after this edit's lock, so a later edit can tell exactly whose it was. The decode goes inside it.
+  stage=path.join(assetsDir,'.import-'+lock.id);await fs.mkdir(stage);const candidate=path.join(stage,'candidate'+ext);
+  await fs.copyFile(source,candidate,fs.constants.COPYFILE_EXCL);
+  const sha256=await fileHash(candidate),src='assets/'+sha256+ext,declaration={src,type,sha256,...(derived?{derived}:{})};
+  checkDeclaration(id,declaration);await checkBytes(id,declaration,candidate);
+  const manifest={version:1,assets:{...d.assetIdentity,[id]:declaration}};validateDerived(manifest.assets);
+  const related={},relate=k=>{if(!k||related[k]||!d.assets[k])return;related[k]=d.assets[k];relate(d.assets[k].derived?.of)};relate(of);
+  if(type==='data'&&role==='analysis'){const receipt=JSON.parse(await fs.readFile(candidate,'utf8'));relate(receipt?.alpha?.asset);}
+  const probe=await preflightMedia(id,{...declaration,file:candidate},related,{signal,root:stage});signal?.throwIfAborted();
+  if(await fileHash(candidate)!==sha256)throw Error('Import candidate changed during validation');
+  // Content is installed without overwriting an existing immutable file. Publish the manifest last.
+  await lock.assertHeld();const final=path.join(dir,src);try{await fs.link(candidate,final)}catch(e){if(e.code!=='EEXIST')throw e;if(await fileHash(final)!==sha256)throw Error('Stored file does not match its content address: '+src)}
+  const file=path.join(dir,'assets.json'),tmp=file+'.'+lock.id+'.tmp';
+  try{await fs.writeFile(tmp,JSON.stringify(manifest,null,2));await fs.rename(tmp,file)}finally{await fs.rm(tmp,{force:true})}
+  return {id,sha256,probe,next:'Run rebind to accept the added asset; set a media port to its ID.'};
+ }finally{try{if(stage)await fs.rm(stage,{recursive:true,force:true})}finally{await lock.release()}}
 }

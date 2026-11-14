@@ -43,3 +43,38 @@ test('a failed resident is removed and retries create a new instance',async()=>{
  await compositor.render(studio,0,options);await assert.rejects(compositor.render(studio,1/30,options),/frame failed/);
  assert.equal(stage.children.length,0);assert.equal(disposed,1);await compositor.render(studio,2/30,options);assert.equal(created,2);assert.equal(stage.children.length,1);await compositor.dispose();assert.equal(disposed,2);
 });
+
+test('shutter samples carry a fixed media clock through trims, retiming and backward seeks', async () => {
+ const clocks=[];
+ const {compositor,studio,options}=setup({capture:true,render:clock=>clocks.push(clock)});
+ const clip=studio.doc.clips[0];
+ // Clip offsets use document ticks; evaluate both clocks through the same clip mapping.
+ const {HZ}=await import('../packages/core/index.mjs');
+ clip.start=HZ;clip.sourceIn=HZ/2;clip.rate=2;
+ for(const time of [1.49,1.51,1.49])await compositor.render(studio,time,{...options,timeline:true,mediaTime:1.5});
+ assert.deepEqual(clocks.map(c=>c.mediaTime),[1.5,1.5,1.5]);
+ assert.ok(clocks[0].frame<clocks[1].frame);
+ assert.equal(clocks[0].frame,clocks[2].frame);
+ await compositor.render(studio,1.7,{...options,timeline:true});
+ assert.ok(Math.abs(clocks.at(-1).mediaTime-clocks.at(-1).frame/30)<1e-12,'ordinary seeks reset both clocks');
+ await compositor.dispose();
+});
+
+test('legacy renderers receive both source clocks without rewriting requested media times', async () => {
+ const {createCompositor}=await import('../packages/runtime/compositor.mjs');
+ const {HZ}=await import('../packages/core/index.mjs');
+ const scene=defineRenderer({id:'legacy-clock',renderer:'dom',width:320,height:180,fps:30,durationInFrames:90,create(){}});
+ const d=normalizeClipModule({default:scene}),studio=new Studio(d.templates);
+ const clip=studio.make(scene.id);studio.doc.clips=[clip];clip.start=HZ;clip.sourceIn=HZ/2;clip.rate=2;
+ const context={clearRect(){},save(){},restore(){},translate(){},scale(){},drawImage(){}};
+ const canvas={getContext:()=>context},calls=[],clocks=[],host={portFrame:(port,time)=>calls.push(time)};
+ const compositor=createCompositor(canvas,{templates:d.templates,host,createRenderer(surface,{host:initialHost}){
+  return {render(frame){assert.equal(frame.host,initialHost);clocks.push(frame);
+   frame.host.portFrame(null,frame.mediaTime+.25);return surface;}};
+ }});
+ for(const time of [1.49,1.51,1.49])await compositor.render(studio,time,{timeline:true,mediaTime:1.5});
+ assert.deepEqual(calls,[1.75,1.75,1.75]);assert.ok(clocks[0].time<clocks[1].time);
+ await compositor.render(studio,1.7,{timeline:true});
+ assert.equal(clocks.at(-1).mediaTime,clocks.at(-1).time);
+ await compositor.dispose();
+});

@@ -7,15 +7,16 @@ export function evaluateClip(studio,clip,time){
 }
 export function createCompositor(canvas,{templates,createRenderer,host}){
  const ctx=canvas.getContext('2d',{alpha:true}),renderers=new Map();let chain=Promise.resolve(),generation=0;
- const draw=async(studio,time,{selected,timeline=false}={})=>{
-  if(!Number.isFinite(time)||time<0)throw Error('Invalid render time');
+ const draw=async(studio,time,{selected,timeline=false,mediaTime=time}={})=>{
+  if(!Number.isFinite(time)||time<0||!Number.isFinite(mediaTime)||mediaTime<0)throw Error('Invalid render time');
   const clips=timeline?studio.doc.clips.filter(c=>time>=c.start/HZ&&time<(c.start+c.duration)/HZ):[studio.clip(selected)];
   const active=new Set(clips.map(c=>c.id));for(const [id,r]of renderers)if(!active.has(id)){await r.instance.dispose?.();renderers.delete(id)}
   const first=clips[0],t=first&&templates[first.template];canvas.width=timeline?studio.doc.width:(t?.width??1280);canvas.height=timeline?studio.doc.height:(t?.height??720);ctx.clearRect(0,0,canvas.width,canvas.height);
   for(const clip of clips){
    const spec=templates[clip.template];let r=renderers.get(clip.id);if(!r){const surface=document.createElement('canvas');surface.width=spec.width??1280;surface.height=spec.height??720;const instance=await createRenderer(surface,{host,template:spec});if(typeof instance?.render!=='function')throw Error('Renderer must implement render(frame)');r={surface,instance};renderers.set(clip.id,r)}
    const evaluated=evaluateClip(studio,clip,timeline?time:clip.start/HZ+time);
-   const output=await r.instance.render({template:spec,time:evaluated.sourceTime,projectTime:time,nodes:evaluated.nodes,ports:evaluated.ports,host,clip});
+   const mediaSourceTime=evaluateClip(studio,clip,timeline?mediaTime:clip.start/HZ+mediaTime).sourceTime;
+   const output=await r.instance.render({template:spec,time:evaluated.sourceTime,mediaTime:mediaSourceTime,projectTime:time,nodes:evaluated.nodes,ports:evaluated.ports,host,clip});
    const image=await r.instance.capture?.()??output??r.surface;
    if(typeof image?.width!=='number'||typeof image?.height!=='number')throw Error('Renderer needs an image surface or capture() adapter');
    ctx.save();const tr=clip.transform;ctx.globalAlpha=tr.opacity;ctx.translate(tr.x,tr.y);ctx.scale(tr.scale,tr.scale);ctx.drawImage(image,0,0,canvas.width,canvas.height);

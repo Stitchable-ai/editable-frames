@@ -1,5 +1,5 @@
 import {run,ffmpeg} from './process.mjs';import {audioPlan} from '../packages/media/audio-plan.mjs';
-export function tempoFilters(rate){const f=[];while(rate>2){f.push('atempo=2');rate/=2}while(rate<.5){f.push('atempo=0.5');rate*=2}f.push('atempo='+rate);return f.join(',')}
+export function tempoFilters(rate){if(rate===1)return 'anull';const f=[];while(rate>2){f.push('atempo=2');rate/=2}while(rate<.5){f.push('atempo=0.5');rate*=2}f.push('atempo='+rate);return f.join(',')}
 export async function mixAudio(d,catalog,output,duration,{signal}={}){
  const tracks=audioPlan(d.studio,catalog);if(!tracks.length)return {tracks:0};
  const args=['-v','error','-n','-f','lavfi','-i','anullsrc=r=48000:cl=stereo'];

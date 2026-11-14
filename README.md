@@ -76,6 +76,7 @@ These are original code-built studies and previews, not copies of other creators
 - **Give each clip the right controls.** Expose a camera for a 3D scene, colors for a title, or media timing for an embedded speaker. Panels support conditional fields, presets and numeric macros.
 - **Let people and agents refine the same work.** Stable anchors, validated changes, saved history and undo/redo make targeted edits practical.
 - **Bring video into the scene.** Import an MP4 as an editable media port, with timing, playback speed and audio controls. Export an opaque video or a transparent overlay.
+- **Put code inside footage.** Let a filmed or generated shot hide, light and carry code-rendered elements: a product behind a passing hand, a headline behind a presenter, a price pinned to a moving sign. Mattes, depth and tracks are pinned inputs from any tool; no model runs here. See [hybrid scenes](docs/hybrid-scenes.md).
 - **Choose your model and host.** No Stitchable account, Remotion dependency or model API key is required by the framework. The shared skill and CLI are available for Claude Code, Codex and other tool-capable agents, including Grok; host-specific setup is documented separately.
 
 ## Try it

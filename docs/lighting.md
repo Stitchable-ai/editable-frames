@@ -27,3 +27,19 @@ For generated geometry, use `createDeviceMaterial` on every chassis, and use sep
 The website exposes **Body finish** and **Reflection angle** through its normal editable schema and undo/redo. The library viewer's **Satin aluminium bodies** toggle is saved with its existing appearance history. Screen content uses a separate unlit material so exposure does not alter interface colors. Look profiles record device, camera, HDR identity and material policy.
 
 Lighting cannot recover missing geometry or separate parts merged in the source model. These are fan-made models with varying fidelity, not calibrated scans. New renderers may use other lighting and materials without changing the core document.
+
+## Photographs versus models
+
+A real product can enter a scene two ways, and they light differently. A trial on 2026-11-12 used official photographs of four products and third-party models of three.
+
+| Route | Can | Cannot |
+|---|---|---|
+| Product photograph on an alpha plane | Keep the exact logo, controls and proportions; take restrained colour and exposure matching from the scene | Respond to a moving light. Its highlights and shadows are baked in and turn with the image, and it has no unseen sides. |
+| 3D model | Respond to moving lights and environment: at a fixed pose, moving the lights changed a neutral patch from about 106 to 193 RGB | Look better than its materials. Two phone models read flat beside product photography and were unsuitable for close-ups. |
+
+Name the operation the scene performs: on a photograph it is colour matching, not relighting. Keep a device's display out of the grade applied to its case. Downsample a large photograph explicitly before drawing it small; a fine grille aliased until it was downsampled in steps, which cut its error against a Lanczos reference by 58%. When a metal model washes out, check the environment before the lights: in the trial the pale plateau came from environment strength, and 0.8 → 0.2 restored the surface. Moving, correct highlights on a product only available as photographs need CAD with material maps, a photogrammetry capture, or photographs taken under several lights.
+
+## Checking overlap between moving products
+
+Two copies of each product in one scene, one turning and one orbiting behind and in front of it, were checked with separate object-id passes (A only, B only, both) at 35 crossing poses: no wrong foreground assignment over 353,771 interior pixels, antialiased edges excluded. Axis-aligned bounding boxes flagged 36 collisions between the two laptops that a rotation-invariant footprint showed were at least 0.44 scene units apart. Use a tight bound before reporting a collision. The photographed products rotated only in the image plane, with their baked highlights turning too; draw order cannot repair that. Reflections of one copy in the other, bounce light and area-light shadows were not simulated.
+
