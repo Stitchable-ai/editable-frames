@@ -46,3 +46,7 @@ Hair/contact whole-clip evidence, mixed human/product directional lighting, nest
 ## Resumed glass study
 
 The earlier interruption is historical. [Verified nested-transparency follow-up](hybrid-glass-study-2026-11-14.md) changes GLASS1 to partial: 54 fresh frame comparisons and five control restorations pass; sixteen clip files decode. Source and isolated layers explain why stock capture hides contents. R2 restores cylinder inversion but omits submerged ice; the matched Cycles candidate preserves stronger nested detail at substantial cost. General transparent-material support remains open.
+
+## Resumed hair isolation study
+
+The provider interruption is historical. [Completed mask follow-up](hybrid-mask-followup-2026-11-14.md) keeps MASK1 partial: source preparation, context and resolution are separated; the room-aware repair reduces a partial halo proxy by48% but synthetic yellow composite error by only2%. Coordinator checks reproduce36 frames, nine control restorations, a fresh mount and all12 video decodes. Reference data remains model-assisted; no general hair-accuracy or production approval follows.

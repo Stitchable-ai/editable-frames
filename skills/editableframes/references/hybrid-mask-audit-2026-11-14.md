@@ -32,3 +32,5 @@ Keep soft mattes independent of hard SAM support at fine hair. Validate each rep
 The glass worker also reached its rate limit. Its raster and Cycles stills and diagnostic sources were retained, but it stopped while diagnosing dark submerged ice. There is no completed calibrated comparison, motion clip acceptance or approved transparency route from that interrupted study.
 
 **Subsequent glass update:** the interrupted study resumed and was independently checked. See [nested-transparency follow-up](hybrid-glass-study-2026-11-14.md); its status is now partial, not awaiting a first result. The mask findings above are unchanged.
+
+**Subsequent hair update:** Fable completed the isolation study after resumption. [Verified follow-up](hybrid-mask-followup-2026-11-14.md) adds limited reference tests and a conservative repair. This earlier fixed-RGB, linear-light comparison remains a separate measurement, not a ground-truth score.
