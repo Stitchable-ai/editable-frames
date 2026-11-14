@@ -1,15 +1,32 @@
 import fs from 'node:fs/promises';import path from 'node:path';import os from 'node:os';import {createHash} from 'node:crypto';import {createReadStream} from 'node:fs';
 import {run,ffmpeg,ffprobe} from './process.mjs';import {validateDerived} from '../packages/plate/manifest.mjs';import {validateTrack} from '../packages/plate/track.mjs';import {validatePreparedAnalysis} from '../packages/plate/prepared.mjs';import {validateCameraPath} from '../packages/plate/camera.mjs';
 export async function fileHash(file){const h=createHash('sha256');for await(const chunk of createReadStream(file))h.update(chunk);return h.digest('hex')}
+export function checkDeclaration(id,a){
+ if(['__proto__','constructor','prototype'].includes(id)||!/^[a-zA-Z0-9_-]{1,80}$/.test(id)||!['video','audio','image','data'].includes(a.type)||typeof a.src!=='string'||path.isAbsolute(a.src)||a.src.split(/[\\/]/).some(p=>p==='..'||p.startsWith('.'))||!/^[a-f0-9]{64}$/.test(a.sha256))throw Error('Invalid asset declaration: '+id);
+}
+// The byte-level checks every reader applies. The importer runs them on the staged copy BEFORE publishing it.
+export async function checkBytes(id,a,file){
+ if(await fileHash(file)!==a.sha256)throw Error('Asset content changed: '+id+'; import it as a new immutable asset');
+ // `data` is small JSON a renderer reads (a track, a camera path); it is never decoded as media.
+ if(a.type==='data'){if((await fs.stat(file)).size>8*1024**2)throw Error('Data asset exceeds 8 MiB: '+id);let json;try{json=JSON.parse(await fs.readFile(file,'utf8'))}catch{throw Error('Data asset is not JSON: '+id)}if(a.derived?.role==='analysis')validatePreparedAnalysis(json);if(a.derived?.role==='track')validateTrack(json);if(a.derived?.role==='camera')validateCameraPath(json);}
+}
+// Import preflight for media: (1) a strict decode of every stream, which refuses a file the decoder reports
+// errors in even where it would still produce some frames (a truncated faststart MP4 decodes 13 of 24);
+// (2) the exact preparation a render performs, on this asset and the assets it is derived from.
+export async function preflightMedia(id,asset,related={},{signal}={}){
+ if(asset.type==='data'&&asset.derived?.role!=='analysis')return {type:'data'};
+ try{if(asset.type!=='data')await run(ffmpeg(),['-nostdin','-v','error','-xerror','-i',asset.file,'-map','0:v?','-map','0:a?','-f','null','-'],{signal,timeout:600000})}
+ catch(e){throw Error('Asset failed a strict decode: '+id+': '+String(e.message).split('\n').filter(Boolean).slice(0,2).join(' '))}
+ const media=await prepareMedia({...related,[id]:asset},{signal});
+ try{const c=media.catalog[id];return {type:c.type,frames:c.pts.length,duration:c.duration,audio:c.audio,width:c.width,height:c.height}}finally{await media.close()}
+}
 export async function readAssets(dir){
  let manifest;try{manifest=JSON.parse(await fs.readFile(path.join(dir,'assets.json'),'utf8'))}catch(e){if(e.code==='ENOENT')return {};throw e}
  if(manifest.version!==1 || !manifest.assets || Array.isArray(manifest.assets))throw Error('Invalid assets manifest');
  const assets={};for(const [id,a]of Object.entries(manifest.assets)){
-  if(['__proto__','constructor','prototype'].includes(id)||!/^[a-zA-Z0-9_-]{1,80}$/.test(id)||!['video','audio','image','data'].includes(a.type)||typeof a.src!=='string'||path.isAbsolute(a.src)||a.src.split(/[\\/]/).some(p=>p==='..'||p.startsWith('.'))||!/^[a-f0-9]{64}$/.test(a.sha256))throw Error('Invalid asset declaration: '+id);
+  checkDeclaration(id,a);
   const file=await fs.realpath(path.join(dir,a.src));if(!file.startsWith(dir+path.sep))throw Error('Asset escapes project: '+id);
-  if(await fileHash(file)!==a.sha256)throw Error('Asset content changed: '+id+'; import it as a new immutable asset');
-  // `data` is small JSON a renderer reads (a track, a camera path); it is never decoded as media.
-  if(a.type==='data'){if((await fs.stat(file)).size>8*1024**2)throw Error('Data asset exceeds 8 MiB: '+id);let json;try{json=JSON.parse(await fs.readFile(file,'utf8'))}catch{throw Error('Data asset is not JSON: '+id)}if(a.derived?.role==='analysis')validatePreparedAnalysis(json);if(a.derived?.role==='track')validateTrack(json);if(a.derived?.role==='camera')validateCameraPath(json);}
+  await checkBytes(id,a,file);
   assets[id]={...a,file};
  }
  // Mattes, depth, tracks and camera paths are pinned to the exact bytes they were computed from.

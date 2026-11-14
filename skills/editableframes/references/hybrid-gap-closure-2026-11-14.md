@@ -66,3 +66,7 @@ LIGHT1 stays partial. New worker evidence is under independent review; the total
 ## Shared human/product light checkpoint
 
 HUMAN1 moves from working to partial. No new independently resolved subcheck: 28 remain. Broad relighting and the proposed simple guard are not validated. [Evidence](hybrid-shared-human-light-2026-11-14.md). Follow-up reflection repair and import recovery hit the Claude API rate limit; no completed result is claimed.
+
+## Import and recovery checkpoint
+
+Validated imports and expected export identity add two scoped checks: 30 resolved, 0 whole items closed. The worker recovery proposal remains unadopted after the coordinator reproduced concurrent stale-lock takeover. [Evidence](hybrid-import-recovery-2026-11-14.md).

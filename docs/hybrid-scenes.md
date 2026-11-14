@@ -1,5 +1,8 @@
 # Hybrid scenes: code inside footage
 
+> Import/export reliability: private-copy validation and expected-revision export gates are implemented in the library. Automatic crash recovery remains proposed after a reproduced stale-lock race. [Evidence and remaining work](hybrid-import-recovery-2026-11-14.md).
+
+
 > Shared human/product light: one continuous track works, but footage correction is experimental. Half-house light plus front direction is not a sufficient acceptance rule. [Evidence and routing boundaries](hybrid-shared-human-light-2026-11-14.md).
 
 

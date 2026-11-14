@@ -1,6 +1,6 @@
 import {validatePreparedAnalysis} from '../packages/plate/prepared.mjs';
 import fs from 'node:fs/promises';import path from 'node:path';import {pathToFileURL} from 'node:url';import {createHash,randomUUID} from 'node:crypto';import {build} from 'esbuild';
-import {root} from './build.mjs';import {Studio,clone} from '../packages/core/index.mjs';import {serve,sendFile} from './server.mjs';import {readAssets,prepareMedia,fileHash} from './media.mjs';
+import {root} from './build.mjs';import {Studio,clone} from '../packages/core/index.mjs';import {serve,sendFile} from './server.mjs';import {readAssets,prepareMedia,fileHash,checkDeclaration,checkBytes,preflightMedia} from './media.mjs';
 import {normalizeClipModule} from '../packages/core/definition.mjs';import {validateDerived} from '../packages/plate/manifest.mjs';import {validateTrack} from '../packages/plate/track.mjs';import {validateCameraPath} from '../packages/plate/camera.mjs';
 const publicExports=JSON.parse(await fs.readFile(path.join(root,'package.json'),'utf8')).exports;
 function publicPackagePlugin(){return {name:'editableframes-public-exports',setup(b){b.onResolve({filter:/^editableframes(?:\/.*)?$/},args=>{const key=args.path==='editableframes'?'.':'./'+args.path.slice('editableframes/'.length),file=publicExports[key];return file?{path:path.join(root,file)}:{errors:[{text:'Unknown EditableFrames export: '+args.path}]};});}};}
@@ -83,9 +83,9 @@ export async function rebind(dir,{reset=false}={}){
  }finally{await fd.close();await fs.rm(lock,{force:true})}
 }
 
-export async function importAsset(dir,id,source,{type,role,of,encoding,subject}={}){
+export async function importAsset(dir,id,source,{type,role,of,encoding,subject,signal}={}){
  if(['__proto__','constructor','prototype'].includes(id)||!/^[a-zA-Z0-9_-]{1,80}$/.test(id))throw Error('Invalid asset ID');
- dir=await fs.realpath(dir);const lock=path.join(dir,'.editableframe-edit.lock'),fd=await fs.open(lock,'wx');
+ dir=await fs.realpath(dir);const lock=path.join(dir,'.editableframe-edit.lock'),fd=await fs.open(lock,'wx');let stage;
  try{
   // Only the asset manifest is needed. Reading the whole project would refuse the
   // binding the previous import changed, so a second import before rebind failed.
@@ -95,12 +95,21 @@ export async function importAsset(dir,id,source,{type,role,of,encoding,subject}=
   // A derived asset records the hash of the take it describes, so a regenerated take cannot reuse it.
   if((role===undefined)!==(of===undefined))throw Error('Use --role and --of together');
   let derived;if(role){if(!Object.hasOwn(d.assets,of))throw Error('Unknown --of asset: '+of);derived={of,role,sourceSha256:d.assets[of].sha256,...(subject?{subject}:{}),...(encoding?{encoding}:{})};}
-  const sha256=await fileHash(source),src='assets/'+sha256+ext;await fs.mkdir(path.join(dir,'assets'),{recursive:true});await fs.copyFile(source,path.join(dir,src));
-  const manifest={version:1,assets:{...d.assetIdentity,[id]:{src,type,sha256,...(derived?{derived}:{})}}};
-  // Validate the whole manifest before publishing it; a refused import leaves assets.json unchanged.
-  validateDerived(manifest.assets);if(type==='data'&&role){const json=JSON.parse(await fs.readFile(source,'utf8'));if(role==='analysis')validatePreparedAnalysis(json);if(role==='track')validateTrack(json);if(role==='camera')validateCameraPath(json);}
-  const file=path.join(dir,'assets.json'),tmp=file+'.'+randomUUID()+'.tmp';await fs.writeFile(tmp,JSON.stringify(manifest,null,2));await fs.rename(tmp,file);
-  // Rebinding is separate and explicit; the old project/source snapshot is retained.
-  return {id,sha256,next:'Run rebind to accept the added asset; set a media port to its ID.'};
- }finally{await fd.close();await fs.rm(lock,{force:true})}
+  // Validate a private copy. Hashing the source before copying can pin different bytes under that hash.
+  signal?.throwIfAborted();const assetsDir=path.join(dir,'assets');await fs.mkdir(assetsDir,{recursive:true});
+  stage=await fs.mkdtemp(path.join(assetsDir,'.import-'));const candidate=path.join(stage,'candidate'+ext);
+  await fs.copyFile(source,candidate,fs.constants.COPYFILE_EXCL);
+  const sha256=await fileHash(candidate),src='assets/'+sha256+ext,declaration={src,type,sha256,...(derived?{derived}:{})};
+  checkDeclaration(id,declaration);await checkBytes(id,declaration,candidate);
+  const manifest={version:1,assets:{...d.assetIdentity,[id]:declaration}};validateDerived(manifest.assets);
+  const related={},relate=k=>{if(!k||related[k]||!d.assets[k])return;related[k]=d.assets[k];relate(d.assets[k].derived?.of)};relate(of);
+  if(type==='data'&&role==='analysis'){const receipt=JSON.parse(await fs.readFile(candidate,'utf8'));relate(receipt?.alpha?.asset);}
+  const probe=await preflightMedia(id,{...declaration,file:candidate},related,{signal});signal?.throwIfAborted();
+  if(await fileHash(candidate)!==sha256)throw Error('Import candidate changed during validation');
+  // Content is installed without overwriting an existing immutable file. Publish the manifest last.
+  const final=path.join(dir,src);try{await fs.link(candidate,final)}catch(e){if(e.code!=='EEXIST')throw e;if(await fileHash(final)!==sha256)throw Error('Stored file does not match its content address: '+src)}
+  const file=path.join(dir,'assets.json'),tmp=file+'.'+randomUUID()+'.tmp';
+  try{await fs.writeFile(tmp,JSON.stringify(manifest,null,2));await fs.rename(tmp,file)}finally{await fs.rm(tmp,{force:true})}
+  return {id,sha256,probe,next:'Run rebind to accept the added asset; set a media port to its ID.'};
+ }finally{try{if(stage)await fs.rm(stage,{recursive:true,force:true})}finally{await fd.close();await fs.rm(lock,{force:true})}}
 }

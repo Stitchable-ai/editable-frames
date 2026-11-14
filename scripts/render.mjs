@@ -7,9 +7,12 @@ export function frameRate(value={num:24,den:1}){
  if(!Number.isSafeInteger(value.num)||!Number.isSafeInteger(value.den)||value.num<1||value.den<1||value.num/value.den>120||value.num/value.den<1||value.num>1000000||value.den>1000000)throw Error('Invalid rational frame rate');return value;
 }
 async function absent(file){try{await fs.lstat(file);throw Error('Output already exists: '+file)}catch(e){if(e.code!=='ENOENT')throw e}}
-export async function render(dir,output,{fps,frames,format,background='#101922',pass='beauty',motionBlur,signal,onProgress=()=>{}}={}){
+export async function render(dir,output,{fps,frames,format,background='#101922',pass='beauty',motionBlur,signal,onProgress=()=>{},expectRevision,expectBinding}={}){
  if(!output)throw Error('Output path is required');signal?.throwIfAborted();
- const d=await readProject(dir),rate=frameRate(fps??d.studio.doc.fps),duration=Math.max(0,...d.studio.doc.clips.map(c=>(c.start+c.duration)/HZ));
+ const d=await readProject(dir);
+ if(expectRevision!==undefined&&expectRevision!==d.revision)throw Error('Stale export revision: inspect again');
+ if(expectBinding!==undefined&&expectBinding!==d.binding)throw Error('Stale export binding: rebind and inspect again');
+ const rate=frameRate(fps??d.studio.doc.fps),duration=Math.max(0,...d.studio.doc.clips.map(c=>(c.start+c.duration)/HZ));
  const count=frames??Math.ceil(duration*rate.num/rate.den);if(!Number.isSafeInteger(count)||count<1||count>36000)throw Error('Invalid export frame budget');
  // A control pass exists only where the scene's own code draws it.
  if(pass!=='beauty'&&(d.kind!=='renderer'||!(d.scene.passes??[]).includes(pass)))throw Error(`This scene does not declare a ${pass} pass`+(d.kind==='renderer'&&d.scene.passes?.length?`; it declares: ${d.scene.passes.join(', ')}`:''));
