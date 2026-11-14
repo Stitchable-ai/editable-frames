@@ -82,3 +82,7 @@ LIGHT1 remains partial; 30 scoped checks remain resolved and 0 whole items are c
 ## Direct-light calibration checkpoint
 
 35 scoped research subchecks are resolved, with 0 whole work items closed. The café point-shadow bias mismatch is explained and direct light repaired in A/I. A single-scatter GGX direct reference agrees with separate CPU integration across three retained poses. Coordinator recomputation and 48-frame decode confirm the recorded evidence, not fresh-render or motion approval. No default shader changes are adopted. Mixed bounces, nearby reflections and a bright horizon band remain; offline rendering remains a code-based route, not a reason to regenerate known geometry with diffusion. [Evidence and next motion/proxy test](hybrid-light-calibration-2026-11-14.md).
+
+## Motion and spatial-reflection checkpoint
+
+38 scoped research subchecks are resolved; 0 whole work items are closed. One-bounce reference validation, the satin/polished sampling boundary, and exact-proxy reflections are now evidenced. Held-out cylinder error falls from 20.0 to 2.4 display codes, but proxies exactly match the simple test shapes. Tiny polished highlights shimmer without supersampling; matte bounce and real-product proxy errors remain open. Three old frozen-method hashes are stale and are not valid protocol evidence. Coordinator checked 86 hashes, decoded 408 preview frames and recomputed 45 ratios. [Results, corrections and next real-product test](hybrid-motion-proxy-2026-11-14.md).

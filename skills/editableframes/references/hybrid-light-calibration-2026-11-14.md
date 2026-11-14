@@ -1,5 +1,7 @@
 # Direct-light calibration and the remaining reflection boundary
 
+> Follow-up: [motion and spatial-proxy testing](hybrid-motion-proxy-2026-11-14.md) independently validates the one-bounce reference, demonstrates a polished-highlight shimmer limit, and corrects the old freeze/emitter/horizon claims. This page records the earlier checkpoint.
+
 2026-11-14 · LIGHT1 remains partial · research options only
 
 The unexplained café penumbra comparison is now explained and repaired for direct light in the retained research scenes. The remaining indirect-light discrepancy is explained but not repaired. A glossy direct-light reference has also been checked against a separate CPU integration method. None of the shader changes is adopted as a library default.
