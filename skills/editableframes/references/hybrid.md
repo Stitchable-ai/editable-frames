@@ -1,5 +1,8 @@
 # Hybrid scenes: code inside footage
 
+> Reflection review: flat-deck self-reflection and local bounce improve, but broad highlights, curved surfaces and a cross-renderer penumbra mismatch remain open. [Corrections, measured limits and routing](hybrid-reflection-review-2026-11-14.md).
+
+
 > Import/export reliability: private-copy validation and expected-revision export gates are implemented in the library. Automatic crash recovery remains proposed after a reproduced stale-lock race. [Evidence and remaining work](hybrid-import-recovery-2026-11-14.md).
 
 

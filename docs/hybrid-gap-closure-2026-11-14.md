@@ -70,3 +70,7 @@ HUMAN1 moves from working to partial. No new independently resolved subcheck: 28
 ## Import and recovery checkpoint
 
 Validated imports and expected export identity add two scoped checks: 30 resolved, 0 whole items closed. The worker recovery proposal remains unadopted after the coordinator reproduced concurrent stale-lock takeover. [Evidence](hybrid-import-recovery-2026-11-14.md).
+
+## Independent moving-reflection review
+
+LIGHT1 remains partial; 30 scoped checks remain resolved and 0 whole items are closed. Pixel-based review improves flat self-reflection and local irradiance but corrects earlier geometry-only accuracy claims. A matte offline comparison fails in one penumbra arrangement; glossy calibration remains untested. [Evidence and next experiment](hybrid-reflection-review-2026-11-14.md).

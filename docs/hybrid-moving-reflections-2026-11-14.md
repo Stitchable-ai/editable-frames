@@ -1,5 +1,8 @@
 # Moving-camera and moving-product reflections
 
+> Superseded interpretations: [the independent reflection review](hybrid-reflection-review-2026-11-14.md) corrects the self-reflection, neighbour-effect and screen-cleanliness claims, adds a bounded matte offline comparison, and measures equal-sample timing. The text below records the earlier checkpoint.
+
+
 2026-11-14 · LIGHT1 remains partial · two scenes on one Mac
 
 The new raster method uses colocated visible emitters and direct/specular light, per-object reflection captures, and planar mirrors for flat surfaces. It improves reflection placement under camera orbit and product rotation. It does not establish calibrated product realism or general self-reflection support.
