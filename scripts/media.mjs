@@ -13,11 +13,11 @@ export async function checkBytes(id,a,file){
 // Import preflight for media: (1) a strict decode of every stream, which refuses a file the decoder reports
 // errors in even where it would still produce some frames (a truncated faststart MP4 decodes 13 of 24);
 // (2) the exact preparation a render performs, on this asset and the assets it is derived from.
-export async function preflightMedia(id,asset,related={},{signal}={}){
+export async function preflightMedia(id,asset,related={},{signal,root}={}){
  if(asset.type==='data'&&asset.derived?.role!=='analysis')return {type:'data'};
  try{if(asset.type!=='data')await run(ffmpeg(),['-nostdin','-v','error','-xerror','-i',asset.file,'-map','0:v?','-map','0:a?','-f','null','-'],{signal,timeout:600000})}
  catch(e){throw Error('Asset failed a strict decode: '+id+': '+String(e.message).split('\n').filter(Boolean).slice(0,2).join(' '))}
- const media=await prepareMedia({...related,[id]:asset},{signal});
+ const media=await prepareMedia({...related,[id]:asset},{signal,root});
  try{const c=media.catalog[id];return {type:c.type,frames:c.pts.length,duration:c.duration,audio:c.audio,width:c.width,height:c.height}}finally{await media.close()}
 }
 export async function readAssets(dir){
@@ -32,8 +32,8 @@ export async function readAssets(dir){
  // Mattes, depth, tracks and camera paths are pinned to the exact bytes they were computed from.
  validateDerived(assets);return assets;
 }
-export async function prepareMedia(assets,{signal,maxDecodedBytes=8*1024**3,maxFrames=18000}={}){
- const dir=await fs.mkdtemp(path.join(os.tmpdir(),'ef-media-')),catalog={},frozenAssets={};let budget=0;
+export async function prepareMedia(assets,{signal,root,maxDecodedBytes=8*1024**3,maxFrames=18000}={}){
+ const dir=await fs.mkdtemp(path.join(root??os.tmpdir(),'ef-media-')),catalog={},frozenAssets={};let budget=0;
  try{await fs.mkdir(path.join(dir,'sources'));for(const [id,original]of Object.entries(assets)){
   const file=path.join(dir,'sources',id+path.extname(original.file));await fs.copyFile(original.file,file);if(await fileHash(file)!==original.sha256)throw Error('Asset changed while preparing: '+id);const a={...original,file};frozenAssets[id]=a;
   if(a.type==='data'){catalog[id]={type:'data',sha256:a.sha256,derived:a.derived,audio:false,pts:[],url:'/__ef/source/'+id};continue}

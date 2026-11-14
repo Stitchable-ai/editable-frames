@@ -1,5 +1,7 @@
 # Validated imports and gated exports; crash recovery still open
 
+> Superseded recovery status: numbered locks and bounded CLI job recovery are now adopted after fresh fault tests. The rejected proposal below remains historical evidence. [Current implementation and limits](hybrid-concurrent-recovery-2026-11-14.md).
+
 2026-11-14 · FLOW1 remains partial
 
 The worker reproduced corrupt imports, orphaned render resources, stale edit locks and export races on one Mac. Its full scratch patch is retained as a proposal. Coordinator review adopted only private-copy import validation and expected export identity checks. Automatic job recovery, stale-lock breaking, asset removal, runtime rehashing and the self-SIGKILL test hook are not adopted.

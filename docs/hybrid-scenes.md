@@ -3,7 +3,7 @@
 > Reflection review: flat-deck self-reflection and local bounce improve, but broad highlights, curved surfaces and a cross-renderer penumbra mismatch remain open. [Corrections, measured limits and routing](hybrid-reflection-review-2026-11-14.md).
 
 
-> Import/export reliability: private-copy validation and expected-revision export gates are implemented in the library. Automatic crash recovery remains proposed after a reproduced stale-lock race. [Evidence and remaining work](hybrid-import-recovery-2026-11-14.md).
+> Import/export reliability: private-copy validation and expected-revision export gates are implemented in the library. Numbered locks and bounded CLI render recovery now pass fresh crash/concurrency tests on this Mac. Automatic recovery sends no signals; native and cross-platform integration remain open. [Evidence and remaining work](hybrid-concurrent-recovery-2026-11-14.md).
 
 
 > Shared human/product light: one continuous track works, but footage correction is experimental. Half-house light plus front direction is not a sufficient acceptance rule. [Evidence and routing boundaries](hybrid-shared-human-light-2026-11-14.md).

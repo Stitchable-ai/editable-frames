@@ -74,3 +74,7 @@ Validated imports and expected export identity add two scoped checks: 30 resolve
 ## Independent moving-reflection review
 
 LIGHT1 remains partial; 30 scoped checks remain resolved and 0 whole items are closed. Pixel-based review improves flat self-reflection and local irradiance but corrects earlier geometry-only accuracy claims. A matte offline comparison fails in one penumbra arrangement; glossy calibration remains untested. [Evidence and next experiment](hybrid-reflection-review-2026-11-14.md).
+
+## Concurrent recovery adoption checkpoint
+
+33 scoped checks are resolved, with 0 whole work items closed. Fresh verification passes 147 unit tests, build/browser/beta, 19 import/edit faults, 21 render faults and 30 rounds of six contenders. Numbered locks and private CLI render records replace the rejected stale-unlink design. Automatic recovery sends no signals; explicit browser termination is opt-in. The coordinator also repaired mutating dry-run behavior. Native/provider integration, other platforms, network filesystems and power-loss durability remain open. [Implementation, evidence and limits](hybrid-concurrent-recovery-2026-11-14.md).
