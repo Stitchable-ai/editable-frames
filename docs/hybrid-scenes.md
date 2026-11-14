@@ -1,6 +1,6 @@
 # Hybrid scenes: code inside footage
 
-> Latest lighting result: exact scene proxies restore nearby reflections in held-out simple scenes. Tiny polished highlights need supersampling; approximate real-product geometry and matte/multiple bounce remain open. No default shader adopted. [Motion evidence and routing](hybrid-motion-proxy-2026-11-14.md).
+> Latest examples (15 November): a 34-second illustrated 2D story broadens the code-animation route. Real-mesh reflection tests help the laptop deck but fail beside a hollow handle; retain offline rendering for complex transport. No default adopted. [Examples, editability and remaining limits](hybrid-learning-checkpoint-2026-11-15.md).
 
 
 > Import/export reliability: private-copy validation and expected-revision export gates are implemented in the library. Numbered locks and bounded CLI render recovery now pass fresh crash/concurrency tests on this Mac. Automatic recovery sends no signals; native and cross-platform integration remain open. [Evidence and remaining work](hybrid-concurrent-recovery-2026-11-14.md).
