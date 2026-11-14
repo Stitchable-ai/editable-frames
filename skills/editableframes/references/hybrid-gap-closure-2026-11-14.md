@@ -50,3 +50,7 @@ The earlier interruption is historical. [Verified nested-transparency follow-up]
 ## Resumed hair isolation study
 
 The provider interruption is historical. [Completed mask follow-up](hybrid-mask-followup-2026-11-14.md) keeps MASK1 partial: source preparation, context and resolution are separated; the room-aware repair reduces a partial halo proxy by48% but synthetic yellow composite error by only2%. Coordinator checks reproduce36 frames, nine control restorations, a fresh mount and all12 video decodes. Reference data remains model-assisted; no general hair-accuracy or production approval follows.
+
+## Stronger models tested; MASK1 remains partial
+
+[Verified local model comparison](hybrid-stronger-matting-2026-11-14.md): ResNet50 reduces a room-opacity proxy but loses more hair; ViTMatte softens low-contrast curls. Coordinator reproduces the synthetic ranking reversal, 36 fresh renderer samples, 13 controls, a fresh mount, saved CPU/MPS alpha agreement within one code and all 12 comparison-video decodes. A fixed-region head/body combination is experimental. No whole work item closes; 26 scoped subchecks remain resolved.

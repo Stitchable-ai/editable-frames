@@ -55,3 +55,7 @@ Selected stills were inspected. The concrete-side smoke is reduced, but faint wo
 5. Test a stronger video-matting model against the same source and references, plus genuinely independent footage and annotated edges. The installed MobileNet model remains the main limitation in this study; stronger weights/runtime were not tested here.
 
 The previous coordinator used linear-light compositing with fixed foreground RGB. This study uses encoded-sRGB canvas compositing and model foreground colours. Its 5.3× white/dark error ratio and the prior 7.7× alpha-edit sensitivity measure different quantities; neither replaces the other. Colour-space convention must be declared in comparisons. Keep both evidence sets and all failed repairs.
+
+## Subsequent model comparison
+
+The earlier stronger-model resource gap has now been exercised: [ResNet50 and ViTMatte comparison](hybrid-stronger-matting-2026-11-14.md). Neither earns adoption as a hair matte. The remaining acceptance gap is independent real-hair evidence and motion review, not merely access to larger weights.
