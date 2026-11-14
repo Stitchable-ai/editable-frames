@@ -14,9 +14,23 @@ The HTML includes simple route illustrations, searchable trial cards, the strong
 
 ---
 
+**Glass follow-up (2026-11-14):** [Verified nested-transparency limits](hybrid-glass-study-2026-11-14.md). The resumed study supports an experimental cylinder-only raster route and a slower Cycles quality candidate for this drink. Submerged ice, general shapes, moving-light response and native integration remain open.
+
+**CLI round trip (2026-11-14):** [Verified replay composition and audio fixes](hybrid-roundtrip-workflow-2026-11-14.md). Live overlays remain editable over retained generated interaction; staging/action changes invalidate dependent takes. Local CLI slice works, native/provider integration remains open.
+
+**Stronger-model follow-up (2026-11-14):** [Matched local model comparison](hybrid-stronger-matting-2026-11-14.md). Neither ResNet50 nor ViTMatte earns hair adoption. Body cleanup is a separate fixed-region experiment; independent alpha and motion acceptance remain open.
+
+**Mask isolation follow-up (2026-11-14):** [Completed independent study and coordinator verification](hybrid-mask-followup-2026-11-14.md). Lossless preparation matters; smoothing is not accurate extraction. A conservative room-aware repair helps this locked shot, but model limits and hand smears remain.
+
+**Mask audit (2026-11-14):** [Same foreground on five backgrounds](hybrid-mask-audit-2026-11-14.md). Dark backgrounds conceal alpha errors; temporal repair trades stability against real edge changes. Keep raw mattes and adjustable repair strength. Both studies subsequently resumed; see the follow-ups above. Neither is production-approved.
+
 **Gap closure checkpoint (2026-11-14):** [Verified subchecks, retained failures and remaining gates](hybrid-gap-closure-2026-11-14.md). The completed Fable film now passes independent seeking/control checks and a three-frame CLI edit/undo specimen. Target-texture warnings and a local recovery prototype add safeguards; tracking geometry, native integration and visual acting remain open.
 
-**Latest decisions (2026-11-13):** the user accepts the full-pickup and two-person handoff examples and prefers Fable 5.2’s visual direction for the 48-second code-generated fantasy story. [Results, technical comparison and story track ST1–ST4](code-generated-story-results-2026-11-13.md). At that checkpoint the Fable draft was unfinished and failed a random-seek check. The resumed film now passes the scoped runtime checks above; cross-style reuse remains a planned experiment. Realistic joint generation and explicitly authored stylized animation are separate routes.
+**Lighting correction (2026-11-14):** [Verified glare/shadow refinement and corrected measurement regions](hybrid-lighting-refinement-2026-11-14.md). Fixed-pose improvements are real; whole-scene realism and moving-product acceptance remain open.
+
+**Cross-style follow-up (2026-11-14):** [Three rendered styles and independent checks](hybrid-story-reuse-2026-11-14.md). The same cast now performs one shared-prop brief in sci-fi, cel-shaded village and toy/clay settings. A [second carry/set-down brief](hybrid-story-second-brief-2026-11-14.md) now demonstrates cast/rig/look reuse in two styles, but requires new choreography and a tray-specific grip. General action reuse remains partial.
+
+**Latest decisions (2026-11-13):** the user accepts the full-pickup and two-person handoff examples and prefers Fable 5.2’s visual direction for the 48-second code-generated fantasy story. [Results, technical comparison and story track ST1–ST4](code-generated-story-results-2026-11-13.md). At that checkpoint the Fable draft was unfinished and failed a random-seek check. The resumed film now passes the scoped runtime checks above; cross-style cast reuse now spans two action briefs, while action generalization and natural contact remain partial. Realistic joint generation and explicitly authored stylized animation are separate routes.
 
 **Generated trials completed (2026-11-13):** [staged camera-left pickup and completed two-person handoff](staged-generation-results-2026-11-13.md), both returned to editable finishing. One take per case; exact product fidelity and native integration remain open. Estimated total US$1.90 under the fresh US$2 cap; account ledger unverified.
 

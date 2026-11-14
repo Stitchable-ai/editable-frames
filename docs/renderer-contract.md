@@ -132,8 +132,8 @@ returns a URL for a pinned manifest ID. `context.mediaFrame(id, sourceSeconds)` 
 available with prepared media and returns a PTS-selected frame URL or undefined.
 Load/decode that image before finishing the render; this API does not return a
 borrowed Canvas. The CLI supports image/video/audio manifests; its default renderer
-path does not mix arbitrary DOM audio automatically. Legacy media-port audio keeps
-its existing mixing path. `captureSurface` is absent in this host. Feature-check
+path does not mix arbitrary DOM audio automatically. Explicit static `scene.media` ports use
+the same mixing path as legacy media ports. `captureSurface` is absent in this host. Feature-check
 optional services; do not invent layer, depth, simulation or screen services.
 
 `context.mediaInfo(id)` returns `{type, width, height, duration, frames, frameRate,
@@ -196,3 +196,22 @@ animation. `mediaFrame(id, seconds)` still honors the exact time requested, so
 custom scenes must choose the appropriate clock. Legacy renderers receive
 `mediaTime` alongside `time`; pass `mediaTime` to `host.portFrame` for footage.
 The media starter uses this clock too; authored media offsets remain explicit.
+
+### Static audio on portable renderer scenes
+
+A `defineRenderer` descriptor may declare `media` ports just like a template:
+
+```js
+media: {
+  firstTake: {asset: 'pickup', offset: 0, end: 'transparent'},
+  secondTake: {asset: 'handoff', offset: 121 / 24, end: 'transparent'},
+}
+```
+
+The editing adapter preserves this declaration for the existing audio scheduler.
+Audio follows clip trim, playback rate and port offsets; pictures must still sample
+those sources explicitly. At unchanged speed, the mixer uses a passthrough filter
+instead of time-stretching. This does not imply dynamic audio automation, arbitrary
+renderer-prop bindings, or sample-identical AAC encoding. Source/runtime changes
+still require an explicit project rebind. `npm run test:audio` exercises PCM trim,
+delay and 1× sample alignment through the real mixer and requires FFmpeg.

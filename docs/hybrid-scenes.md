@@ -16,6 +16,8 @@ The HTML includes simple route illustrations, searchable trial cards, the strong
 
 **Glass follow-up (2026-11-14):** [Verified nested-transparency limits](hybrid-glass-study-2026-11-14.md). The resumed study supports an experimental cylinder-only raster route and a slower Cycles quality candidate for this drink. Submerged ice, general shapes, moving-light response and native integration remain open.
 
+**CLI round trip (2026-11-14):** [Verified replay composition and audio fixes](hybrid-roundtrip-workflow-2026-11-14.md). Live overlays remain editable over retained generated interaction; staging/action changes invalidate dependent takes. Local CLI slice works, native/provider integration remains open.
+
 **Stronger-model follow-up (2026-11-14):** [Matched local model comparison](hybrid-stronger-matting-2026-11-14.md). Neither ResNet50 nor ViTMatte earns hair adoption. Body cleanup is a separate fixed-region experiment; independent alpha and motion acceptance remain open.
 
 **Mask isolation follow-up (2026-11-14):** [Completed independent study and coordinator verification](hybrid-mask-followup-2026-11-14.md). Lossless preparation matters; smoothing is not accurate extraction. A conservative room-aware repair helps this locked shot, but model limits and hand smears remain.

@@ -54,3 +54,7 @@ The provider interruption is historical. [Completed mask follow-up](hybrid-mask-
 ## Stronger models tested; MASK1 remains partial
 
 [Verified local model comparison](hybrid-stronger-matting-2026-11-14.md): ResNet50 reduces a room-opacity proxy but loses more hair; ViTMatte softens low-contrast curls. Coordinator reproduces the synthetic ranking reversal, 36 fresh renderer samples, 13 controls, a fresh mount, saved CPU/MPS alpha agreement within one code and all 12 comparison-video decodes. A fixed-region head/body combination is experimental. No whole work item closes; 26 scoped subchecks remain resolved.
+
+## Local CLI round trip and audio repair
+
+[Verified replay workflow](hybrid-roundtrip-workflow-2026-11-14.md) adds two scoped subchecks, bringing the checkpoint to 28 resolved subchecks and zero whole items closed. The coordinator fixes portable-renderer audio loss and unity-rate stretching in the SDK, verifies full film/trim exports and repairs a separate reference-descriptor mismatch in the research ledger. Native import, provider reconciliation, audio listening and normal-speed visual acceptance remain open.
